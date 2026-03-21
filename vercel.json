@@ -4,7 +4,6 @@
   "buildCommand": "",
   "outputDirectory": ".",
   "env": {},
-  "envPrefix": "VERCEL_",
   "headers": [
     {
       "source": "/service-worker.js",
