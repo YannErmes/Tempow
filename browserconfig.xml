@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'><rect width='70' height='70' fill='%235de0a8'/><text x='35' y='50' text-anchor='middle' font-size='35' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>"/>
+      <square150x150logo src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'><rect width='150' height='150' fill='%235de0a8'/><text x='75' y='105' text-anchor='middle' font-size='70' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>"/>
+      <square310x310logo src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 310'><rect width='310' height='310' fill='%235de0a8'/><text x='155' y='215' text-anchor='middle' font-size='140' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>"/>
+      <wide310x150logo src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 150'><rect width='310' height='150' fill='%235de0a8'/><text x='155' y='105' text-anchor='middle' font-size='70' fill='%230e0e11' font-family='system-ui' font-weight='bold'>Tempow</text></svg>"/>
+      <tilecolor>#5de0a8</tilecolor>
+    </tile>
+    <notification>
+      <polling-uri src="https://tempow.example.com/notifications/polling"/>
+      <period>60</period>
+      <cycle>1</cycle>
+    </notification>
+  </msapplication>
+</browserconfig>

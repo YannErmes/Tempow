@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5000 5000">
+  <defs>
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5de0a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a8cff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="lightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7feff5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6fa8ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="200" stdDeviation="300" flood-opacity="0.25" flood-color="#000000"/>
+    </filter>
+    <filter id="innerShadow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="50"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="5000" height="5000" fill="#0e0e11"/>
+  
+  <!-- Main gradient circle with shadow -->
+  <circle cx="2500" cy="2500" r="2300" fill="url(#mainGrad)" filter="url(#shadow)"/>
+  
+  <!-- Dark inner ring -->
+  <circle cx="2500" cy="2500" r="2200" fill="#0e0e11"/>
+  
+  <!-- Gradient ring -->
+  <circle cx="2500" cy="2500" r="2180" fill="none" stroke="url(#mainGrad)" stroke-width="150"/>
+  
+  <!-- Light accent circle -->
+  <circle cx="2500" cy="2500" r="2050" fill="url(#lightGrad)" opacity="0.3"/>
+  
+  <!-- Inner dark circle -->
+  <circle cx="2500" cy="2500" r="1900" fill="#0e0e11"/>
+  
+  <!-- Main TW logo text with gradient -->
+  <text x="2500" y="3200" text-anchor="middle" font-size="1400" fill="#0e0e11" font-family="Syne, system-ui" font-weight="800" letter-spacing="80">TW</text>
+  
+  <!-- Highlight effect on text -->
+  <text x="2500" y="3200" text-anchor="middle" font-size="1400" fill="url(#mainGrad)" font-family="Syne, system-ui" font-weight="800" letter-spacing="80" opacity="0.8" filter="url(#innerShadow)">TW</text>
+  
+  <!-- Subtle decorative elements -->
+  <circle cx="2500" cy="2500" r="1850" fill="none" stroke="url(#mainGrad)" stroke-width="20" opacity="0.4"/>
+  <circle cx="2500" cy="2500" r="1750" fill="none" stroke="url(#mainGrad)" stroke-width="15" opacity="0.2"/>
+  
+  <!-- Accent dots (representing focus points) -->
+  <circle cx="1600" cy="1600" r="80" fill="#5de0a8" opacity="0.6"/>
+  <circle cx="3400" cy="1600" r="80" fill="#4a8cff" opacity="0.6"/>
+  <circle cx="1600" cy="3400" r="80" fill="#4a8cff" opacity="0.6"/>
+  <circle cx="3400" cy="3400" r="80" fill="#5de0a8" opacity="0.6"/>
+</svg>

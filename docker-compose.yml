@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  tempow:
+    image: nginx:alpine
+    container_name: tempow-pwa
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Certbot for automatic SSL certificates (Let's Encrypt)
+  certbot:
+    image: certbot/certbot
+    container_name: tempow-certbot
+    volumes:
+      - ./ssl:/etc/letsencrypt
+      - ./:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot -d yourdomain.com --email your@email.com --agree-tos --non-interactive --keep-until-expiring
+    restart: unless-stopped
+    depends_on:
+      - tempow
+    profiles:
+      - ssl
+
+# Quick start:
+# 1. docker-compose up -d
+# 2. Open http://localhost
+#
+# With SSL (Let's Encrypt):
+# 1. Update yourdomain.com and email in certbot service
+# 2. Uncomment ssl block in nginx.conf
+# 3. docker-compose --profile ssl up -d
+# 4. Set up auto-renewal: docker-compose run certbot renew --dry-run

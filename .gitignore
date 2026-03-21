@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Development
+.DS_Store
+.env
+.env.local
+.env.*.local
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Build outputs
+dist/
+build/
+*.tar.gz
+tempow-backup-*.tar.gz
+
+# Logs
+npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+error.log*
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# OS
+._*
+desktop.ini
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# IDE
+.eslintcache
+.stylelintcache
+
+# SSL/Secrets (if self-hosting)
+ssl/
+certs/
+.key
+.pem
+
+# Service worker cache
+sw-cache/
+
+# Build artifacts
+*.map
+*.js.map
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Shell scripts (if any generated)
+*.sh
+!deploy.sh
+
+# Keep these files:
+!.gitignore
+!.gitkeep
+!manifest.json
+!service-worker.js
+!.htaccess

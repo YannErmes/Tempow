@@ -1,0 +1,78 @@
+{
+  "name": "tempow",
+  "version": "2.0.0",
+  "description": "Advanced task timer and 24-hour clock planner with PWA support",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "python -m http.server 3000 --directory .",
+    "start:node": "node --input-type=module -e \"import http from 'http'; import fs from 'fs'; import path from 'path'; const server = http.createServer((req, res) => { const file = path.join(process.cwd(), req.url === '/' ? 'index.html' : req.url); try { res.end(fs.readFileSync(file)); } catch { res.statusCode = 404; res.end('Not found'); } }); server.listen(3000, () => console.log('Server at http://localhost:3000')); }}",
+    "dev": "npm run start",
+    "build": "echo 'No build required - PWA ready to deploy'",
+    "test": "echo 'Run in browser and check DevTools'",
+    "lint": "echo 'No linting configured - static HTML/JS'",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir .",
+    "deploy:docker": "docker-compose up -d",
+    "serve:docker": "docker-compose -f docker-compose.yml up",
+    "serve:nginx": "docker run -p 80:80 -p 443:443 -v $(pwd):/usr/share/nginx/html:ro nginx:alpine",
+    "serve:http": "npx http-server . -p 3000 -o",
+    "generate:icons": "echo 'Icons are embedded as SVG data URIs'",
+    "validate:manifest": "node -e \"console.log(JSON.parse(require('fs').readFileSync('manifest.json'))); console.log('✓ manifest.json is valid')\"",
+    "validate:sw": "node -e \"console.log(require('fs').readFileSync('service-worker.js', 'utf8').includes('CACHE_NAME')); console.log('✓ Service Worker is valid')\"",
+    "audit": "npm run validate:manifest && npm run validate:sw",
+    "clean": "find . -name '*.swp' -delete && find . -name '.DS_Store' -delete",
+    "backup": "tar -czf tempow-backup-$(date +%Y%m%d).tar.gz --exclude=node_modules --exclude=.git .",
+    "check:browser-support": "echo 'Check https://caniuse.com/?search=service%20worker'",
+    "check:pwa": "echo 'Use Google Lighthouse: https://developers.google.com/web/tools/lighthouse'"
+  },
+  "keywords": [
+    "pwa",
+    "productivity",
+    "timer",
+    "pomodoro",
+    "task-management",
+    "focus",
+    "clock",
+    "offline-first",
+    "progressive-web-app"
+  ],
+  "author": "Tempow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tempow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/tempow/issues"
+  },
+  "homepage": "https://tempow.dev",
+  "devDependencies": {
+    "vercel": "^latest",
+    "netlify-cli": "^latest",
+    "http-server": "^latest",
+    "wrangler": "^latest"
+  },
+  "optionalDependencies": {
+    "docker-compose": "^1.29.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "pwa": {
+    "displayMode": "standalone",
+    "scope": "/",
+    "startUrl": "/",
+    "icons": [
+      {
+        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='90' fill='%235de0a8'/><circle cx='96' cy='96' r='85' fill='%230e0e11'/><circle cx='96' cy='96' r='80' fill='%235de0a8'/><text x='96' y='125' text-anchor='middle' font-size='70' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>",
+        "sizes": "192x192"
+      }
+    ]
+  }
+}

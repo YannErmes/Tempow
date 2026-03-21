@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="splashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0e0e11;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5de0a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a8cff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="40" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background gradient -->
+  <rect width="1080" height="1920" fill="url(#splashGrad)"/>
+  
+  <!-- Animated background elements -->
+  <circle cx="200" cy="300" r="300" fill="#5de0a8" opacity="0.05"/>
+  <circle cx="900" cy="1700" r="400" fill="#4a8cff" opacity="0.05"/>
+  
+  <!-- Logo circle container -->
+  <circle cx="540" cy="700" r="300" fill="none" stroke="url(#logoGrad)" stroke-width="4" opacity="0.3"/>
+  <circle cx="540" cy="700" r="280" fill="url(#logoGrad)" opacity="0.1"/>
+  
+  <!-- Main logo -->
+  <circle cx="540" cy="700" r="250" fill="#0e0e11"/>
+  <circle cx="540" cy="700" r="245" fill="url(#logoGrad)"/>
+  <circle cx="540" cy="700" r="230" fill="#0e0e11"/>
+  
+  <!-- TW text -->
+  <text x="540" y="830" text-anchor="middle" font-size="280" fill="#0e0e11" font-family="Syne, system-ui" font-weight="800" letter-spacing="20">TW</text>
+  <text x="540" y="830" text-anchor="middle" font-size="280" fill="url(#logoGrad)" font-family="Syne, system-ui" font-weight="800" letter-spacing="20" opacity="0.9" filter="url(#glow)">TW</text>
+  
+  <!-- App name -->
+  <text x="540" y="1150" text-anchor="middle" font-size="120" fill="#5de0a8" font-family="Syne, system-ui" font-weight="700">Tempow</text>
+  <text x="540" y="1280" text-anchor="middle" font-size="60" fill="#9998a5" font-family="DM Mono, monospace" letter-spacing="8">TASK TIMER &amp; CLOCK</text>
+  
+  <!-- Loading indicator text -->
+  <text x="540" y="1750" text-anchor="middle" font-size="50" fill="#6b6a75" font-family="DM Mono, monospace" letter-spacing="4">Loading...</text>
+  
+  <!-- Decorative line -->
+  <line x1="300" y1="1620" x2="780" y2="1620" stroke="#5de0a8" stroke-width="2" opacity="0.3"/>
+</svg>
