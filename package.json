@@ -51,10 +51,10 @@
   },
   "homepage": "https://tempow.dev",
   "devDependencies": {
-    "vercel": "^latest",
-    "netlify-cli": "^latest",
-    "http-server": "^latest",
-    "wrangler": "^latest"
+    "vercel": "*",
+    "netlify-cli": "*",
+    "http-server": "*",
+    "wrangler": "*"
   },
   "optionalDependencies": {
     "docker-compose": "^1.29.0"
