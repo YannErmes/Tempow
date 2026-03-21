@@ -83,6 +83,5 @@
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false,
-  "framework": "static"
+  "trailingSlash": false
 }
