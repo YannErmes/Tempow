@@ -1,0 +1,73 @@
+# Tempow PWA Apache Configuration
+
+# Enable gzip compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Set proper MIME types
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType application/javascript .js
+  AddEncoding gzip .gz .gzip
+</IfModule>
+
+# Cache control headers
+<IfModule mod_headers.c>
+  # HTML - Cache 24 hours
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "max-age=86400, must-revalidate"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+  </FilesMatch>
+
+  # CSS, JS - Cache 1 month (versioned)
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "max-age=2592000, public"
+  </FilesMatch>
+
+  # Manifest - Cache 1 hour
+  <FilesMatch "\.(webmanifest|manifest)$">
+    Header set Cache-Control "max-age=3600, must-revalidate"
+    Header set Content-Type "application/manifest+json"
+  </FilesMatch>
+
+  # Images - Cache 1 month
+  <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico)$">
+    Header set Cache-Control "max-age=2592000, public"
+  </FilesMatch>
+
+  # Fonts - Cache 1 year (basically forever)
+  <FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+    Header set Cache-Control "max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Service Worker - Cache short-term
+  <FilesMatch "service-worker\.js$">
+    Header set Cache-Control "max-age=3600, must-revalidate"
+  </FilesMatch>
+
+  # Security headers
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# SPA Routing - Rewrite all requests to index.html unless file/dir exists
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # If the request is not for a file or directory
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Rewrite to index.html
+  RewriteRule ^(.*)$ index.html [L]
+</IfModule>
+
+# ETag support
+<IfModule mod_expires.c>
+  ExpiresActive On
+</IfModule>

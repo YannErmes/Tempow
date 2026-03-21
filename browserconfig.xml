@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'&gt;&lt;circle cx='35' cy='35' r='32' fill='%235de0a8'/&gt;&lt;circle cx='35' cy='35' r='30' fill='%230e0e11'/&gt;&lt;text x='35' y='50' text-anchor='middle' font-size='20' fill='%235de0a8' font-family='system-ui' font-weight='bold'&gt;TW&lt;/text&gt;&lt;/svg&gt;" />
+      <square150x150logo src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'&gt;&lt;circle cx='75' cy='75' r='70' fill='%235de0a8'/&gt;&lt;circle cx='75' cy='75' r='65' fill='%230e0e11'/&gt;&lt;circle cx='75' cy='75' r='60' fill='%235de0a8'/&gt;&lt;text x='75' y='105' text-anchor='middle' font-size='50' fill='%230e0e11' font-family='system-ui' font-weight='bold'&gt;TW&lt;/text&gt;&lt;/svg&gt;" />
+      <square310x310logo src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 310'&gt;&lt;circle cx='155' cy='155' r='145' fill='%235de0a8'/&gt;&lt;circle cx='155' cy='155' r='135' fill='%230e0e11'/&gt;&lt;circle cx='155' cy='155' r='130' fill='%235de0a8'/&gt;&lt;text x='155' y='215' text-anchor='middle' font-size='100' fill='%230e0e11' font-family='system-ui' font-weight='bold'&gt;TW&lt;/text&gt;&lt;/svg&gt;" />
+      <wide310x150logo src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 150'&gt;&lt;rect width='310' height='150' fill='%235de0a8'/&gt;&lt;text x='155' y='100' text-anchor='middle' font-size='60' fill='%230e0e11' font-family='system-ui' font-weight='bold'&gt;Tempow&lt;/text&gt;&lt;/svg&gt;" />
+      <TileColor>#5de0a8</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>

@@ -17,7 +17,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='90' fill='%235de0a8'/><circle cx='96' cy='96' r='85' fill='%230e0e11'/><circle cx='96' cy='96' r='80' fill='%235de0a8'/><text x='96' y='125' text-anchor='middle' font-size='70' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><circle cx='90' cy='90' r='85' fill='%235de0a8'/><circle cx='90' cy='90' r='80' fill='%230e0e11'/><circle cx='90' cy='90' r='75' fill='%235de0a8'/><text x='90' y='115' text-anchor='middle' font-size='60' fill='%230e0e11' font-family='system-ui' font-weight='bold'>TW</text></svg>">
 <title>Tempow — Task Timer & Clock</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="preload" as="style">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════
    GLOBAL RESET & SHARED VARS
@@ -33,7 +35,7 @@
   --danger: #ff5e6c; --track: rgba(255,255,255,0.05);
   --clock-bg:#1a1a2e; --clock-card:#16213e; --clock-border:#2a2a4e;
   --clock-accent:#2563eb; --clock-text:#e0e0e0; --clock-muted:#b0b0b0;
-  --font-mono:'DM Mono',monospace; --font-display:'Syne',sans-serif;
+  --font-mono:'DM Mono','Courier New',monospace; --font-display:'Syne','Arial',sans-serif;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; overflow-x: hidden; }
 
@@ -899,6 +901,11 @@ canvas#clock {
 </style>
 </head>
 <body>
+
+<!-- ══ OFFLINE INDICATOR ══ -->
+<div id="offline-banner" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #ff5e6c; color: white; padding: 8px 16px; font-size: 12px; font-weight: 600; z-index: 9999; text-align: center;">
+  📡 OFFLINE MODE — Changes will sync when you're back online
+</div>
 
 <!-- ══ NAV ══ -->
 <nav class="app-nav">
@@ -2815,6 +2822,9 @@ if ('serviceWorker' in navigator) {
       console.log('[App] Running in standalone (installed) mode');
       document.body.classList.add('pwa-mode');
     }
+
+    // Offline detection setup
+    setupOfflineDetection();
   });
 
   // Prompt install on iOS
@@ -2831,6 +2841,28 @@ if ('serviceWorker' in navigator) {
       window.deferredPrompt = null;
     }
   });
+}
+
+// Setup offline/online detection
+function setupOfflineDetection() {
+  const offlineBanner = document.getElementById('offline-banner');
+  
+  function updateOfflineStatus() {
+    if (!navigator.onLine) {
+      offlineBanner.style.display = 'block';
+      console.log('[App] Going offline — Service Worker will handle requests');
+    } else {
+      offlineBanner.style.display = 'none';
+      console.log('[App] Back online');
+    }
+  }
+
+  // Check initial state
+  updateOfflineStatus();
+  
+  // Listen for online/offline events
+  window.addEventListener('online', updateOfflineStatus);
+  window.addEventListener('offline', updateOfflineStatus);
 }
 
 // Show update notification (graceful)
