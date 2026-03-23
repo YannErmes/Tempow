@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="YANN KOFFI">
 <meta name="theme-color" content="#0e0e11">
 <meta name="description" content="Tempow - Advanced task timer and 24-hour clock planner with smart analytics and background sync.">
 <meta name="mobile-web-app-capable" content="yes">
@@ -81,31 +82,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .nav-tab:hover { color: var(--text); }
 .nav-tab.active { color: var(--active); border-bottom-color: var(--active); }
 .nav-tab.clock-tab.active { color: #7b9fff; border-bottom-color: #7b9fff; }
-
-/* Download Button */
-.download-btn {
-  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 8px 16px; border: 1px solid var(--border2); background: rgba(93,224,168,0.1);
-  color: var(--active); cursor: pointer; border-radius: 6px;
-  transition: all 0.2s; white-space: nowrap; margin-left: auto; flex-shrink: 0;
-}
-.download-btn:hover {
-  background: rgba(93,224,168,0.2);
-  border-color: var(--active);
-  transform: translateY(-1px);
-}
-.download-btn:active {
-  transform: translateY(0);
-}
-
-@media (max-width: 900px) {
-  .download-btn { padding: 6px 12px; font-size: 11px; }
-}
-
-@media (max-width: 640px) {
-  .download-btn { padding: 6px 10px; font-size: 10px; }
-}
 
 /* transfer badge on nav */
 .transfer-badge {
@@ -479,13 +455,60 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 .btn-report:hover { border-color: var(--done); color: var(--done); background: var(--done-dim); }
 
-.flow-stats { display: flex; padding: 0 40px; border-bottom: 1px solid var(--border); }
+.flow-stats { display: flex; padding: 0 40px; border-bottom: 1px solid var(--border); align-items: center; }
 .stat { padding: 14px 28px 14px 0; margin-right: 28px; border-right: 1px solid var(--border); flex-shrink: 0; }
 .stat:last-child { border-right: none; }
 .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
 .stat-value { font-size: 19px; font-weight: 500; }
 .stat-value.green { color: var(--active); }
 .stat-value.amber { color: var(--break); }
+
+/* ══════════════════════════════════════════
+   COLLAPSIBLE SECTIONS
+══════════════════════════════════════════ */
+.collapsible-section {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.collapsible-section.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.section-toggle {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  margin-left: auto;
+  transition: color 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.section-toggle:hover {
+  color: var(--text);
+}
+
+.section-toggle.collapsed {
+  transform: rotate(180deg);
+}
+
+/* Make sections with headers */
+.flow-stats-header,
+.data-bar-header,
+.inbox-header,
+.discarded-header,
+.hours-tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
 .flow-main { padding: 28px 40px 80px; max-width: 900px; }
 
@@ -592,9 +615,14 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 
 /* ── JSON / data bar ── */
 .data-bar {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 10px 40px; border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 40px;
+  border-bottom: 1px solid var(--border);
   background: var(--surface);
+  justify-content: space-between;
 }
 .data-bar-label {
   font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
@@ -778,6 +806,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 .break-modal-confirm:hover { opacity:0.85; }
 
+/* Permanent stop button */
+.break-modal-stop {
+  font-family:var(--font-mono); font-size:13px; font-weight:500;
+  background:transparent; border:1px solid var(--muted2); color:var(--muted2); 
+  padding:9px 18px; border-radius:8px; cursor:pointer; transition: all 0.15s;
+}
+.break-modal-stop:hover {
+  border-color:var(--muted); color:var(--muted); background:var(--surface2);
+}
+
 /* ══════════════════════════════════════════
    EXTEND TIME MODAL
 ══════════════════════════════════════════ */
@@ -856,69 +894,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .btn.discard.discarded { background: #ff9a9e20; border-color: #ff9a9e; color: #ff9a9e; }
 
 /* Discarded tasks panel */
-.discarded-bubble {
-  position: fixed;
-  right: 16px;
-  bottom: 90px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 154, 158, 0.2);
-  color: #ff9a9e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1);
-  cursor: grab;
-  z-index: 460;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  user-select: none;
-  transition: all 0.3s ease;
-}
-.discarded-bubble:hover { 
-  transform: scale(1.08);
-  background: rgba(255, 154, 158, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-.discarded-bubble:active {
-  cursor: grabbing;
-}
-
-
 .discarded-tasks-panel {
-  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 10px;
-  padding: 8px; display: none;
-  width: auto; max-width: 220px;
+  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 12px;
+  padding: 12px; display: none;
+  max-width: 280px;
   position: fixed;
-  right: 16px;
-  bottom: 144px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
-  z-index: 450;
-  font-size: 11px;
+  right: 20px;
+  bottom: 100px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 400;
 }
-.discarded-tasks-panel.visible { display: block; }
-.discarded-tasks-title {
-  font-size: 10px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
-  letter-spacing: 0.06em; margin-bottom: 8px;
-}
-.discarded-task-item {
-  display: flex; gap: 8px; align-items: center; padding: 6px; background: #0e0e11;
-  border: 1px solid #ff9a9e; border-radius: 6px; margin-bottom: 6px;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.discarded-task-info {
-  flex: 1;
-  min-width: 100px;
-}
-.discarded-task-name { font-size: 10px; font-weight: 500; color: #ff9a9e; }
-.discarded-task-time { font-size: 9px; color: var(--muted); margin-top: 2px; }
-.btn.restore { border-color: #ff9a9e; color: #ff9a9e; padding: 3px 6px; font-size: 9px; white-space: nowrap; }
-.btn.restore:hover { background: #ff9a9e20; }
 .discarded-tasks-panel.visible { display: block; }
 .discarded-tasks-title {
   font-size: 11px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
@@ -979,56 +964,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 
 /* Responsive */
-@media (max-width:900px) {
-  .app-nav { padding: 0 12px; }
-  .nav-tabs { gap: 6px; }
-  .nav-tab { padding: 12px 10px; font-size: 12px; min-width: 90px; flex: 1; }
-  .flow-main { max-width: 100%; padding: 20px 16px 90px; }
-  .flow-header { padding: 16px 16px 12px; }
-  .flow-header-actions { gap: 8px; }
-  .stats-row .stat, .flow-stats .stat { padding: 10px 12px 10px 0; margin-right: 18px; }
-}
-
 @media (max-width:640px) {
-  .app-nav { padding: 0 8px; }
-  .nav-tabs { flex-wrap: wrap; gap: 5px; }
-  .nav-tab { font-size: 11px; padding: 10px 8px; min-width: 80px; }
-
-  .flow-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 12px 10px; }
-  .flow-header-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-  .btn-report, .btn-add { padding: 8px 12px; font-size: 12px; }
-
-  .flow-stats { flex-wrap: wrap; gap: 8px; padding: 0 12px 10px; }
-  .flow-stats .stat { width: calc(50% - 8px); margin-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding: 8px 0 8px 0; }
-  .flow-stats .stat:nth-child(odd) { margin-right: 8px; }
-  .flow-stats .stat:last-child { border-bottom: none; }
-
-  .hours-tracker { display: flex; flex-direction: column; gap: 10px; padding: 12px 12px; }
-  .hours-tracker-item { min-width: 100%; width: 100%; }
-  .hours-tracker-value { font-size: 18px; }
-  .hours-tracker-sub { font-size: 9px; }
-
-  .data-bar { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
-  .data-bar-label { margin-bottom: 4px; font-size: 10px; }
-  .data-btn { flex: 1 1 100%; min-width: calc(50% - 6px); padding: 8px; font-size: 11px; }
-  .data-sep { display: none; }
-
-  .task-card { padding: 10px; }
-  .task-card .task-row, .clock-window-item { flex-wrap: wrap; gap: 6px; }
-  .task-card .option-btn { font-size: 11px; padding: 6px 8px; }
-
-  .hours-tracker > div:last-child { margin-left: 0; }
-
-  .discarded-tasks-panel { right: 10px; bottom: 80px; max-width: calc(100% - 20px); }
-  .discarded-task-item { padding: 8px; }
-
-  .flow-main { padding-bottom: 120px; }
+  .flow-main { padding:20px 16px 80px; }
+  .flow-header, .flow-stats, .data-bar { padding-left:16px; padding-right:16px; }
+  .tmpw-inbox { margin-left:16px; margin-right:16px; }
+  .app-nav { padding:0 14px; }
+  .nav-tab { padding:16px 14px; font-size:11px; }
   .task-estimate { display: block; width: 100%; }
-
-  .tmpw-inbox { margin-left: 12px; margin-right: 12px; }
-  .clock-form-row { flex-direction: column; gap: 8px; align-items: stretch; }
-
-  .flow-header-date, .stat-label, .data-bar-label, .hours-tracker-label { font-size: 9px; }
 }
 
 </style>
@@ -1055,9 +997,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       📊 Reports
     </button>
   </div>
-  <button class="download-btn" onclick="downloadHTML()" title="Download HTML file to run offline">
-    ⬇ Download
-  </button>
 </nav>
 
 <!-- ══ ALARM BANNERS ══ -->
@@ -1101,14 +1040,19 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   </div>
 
   <div class="flow-stats">
-    <div class="stat"><div class="stat-label">Tasks</div><div class="stat-value" id="s-total">0</div></div>
-    <div class="stat"><div class="stat-label">Time worked</div><div class="stat-value green" id="s-worked">0:00</div></div>
-    <div class="stat"><div class="stat-label">Break time</div><div class="stat-value amber" id="s-break">0:00</div></div>
-    <div class="stat"><div class="stat-label">Completed</div><div class="stat-value" id="s-done">0</div></div>
+    <div class="flow-stats-header">
+      <div style="display: flex; flex: 1;">
+        <div class="stat"><div class="stat-label">Tasks</div><div class="stat-value" id="s-total">0</div></div>
+        <div class="stat"><div class="stat-label">Time worked</div><div class="stat-value green" id="s-worked">0:00</div></div>
+        <div class="stat"><div class="stat-label">Break time</div><div class="stat-value amber" id="s-break">0:00</div></div>
+        <div class="stat"><div class="stat-label">Completed</div><div class="stat-value" id="s-done">0</div></div>
+      </div>
+      <button class="section-toggle" onclick="toggleSection(this, 'hoursTrackerPanel')" title="Toggle hours tracker">▼</button>
+    </div>
   </div>
 
   <!-- Hours tracker -->
-  <div class="hours-tracker">
+  <div class="hours-tracker collapsible-section" id="hoursTrackerPanel">
     <div class="hours-tracker-item">
       <div class="hours-tracker-label">📅 Hours left today</div>
       <div class="hours-tracker-value" id="hoursLeft">—</div>
@@ -1132,31 +1076,33 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   </div>
 
   <!-- Data toolbar -->
-  <div class="data-bar">
-    <span class="data-bar-label">Data</span>
-    <button class="data-btn dl" onclick="exportFlowJSON('all')">↓ All tasks JSON</button>
-    <div class="data-sep"></div>
-    <button class="data-btn ul" onclick="openImportModal('flow')">↑ Import JSON</button>
-    <div class="data-sep"></div>
-    <button class="data-btn" onclick="exportFlowJSON('done')">↓ Completed only</button>
-    <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
-    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+  <div class="data-bar" style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap;">
+      <span class="data-bar-label">Data</span>
+      <button class="data-btn dl" onclick="exportFlowJSON('all')">↓ All tasks JSON</button>
+      <div class="data-sep"></div>
+      <button class="data-btn ul" onclick="openImportModal('flow')">↑ Import JSON</button>
+      <div class="data-sep"></div>
+      <button class="data-btn" onclick="exportFlowJSON('done')">↓ Completed only</button>
+      <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
       <button class="data-btn clr" onclick="clearAllFlowTasks()">✕ Clear all</button>
     </div>
+    <button class="section-toggle" onclick="toggleSection(this, 'inboxPanel')" title="Toggle inbox and discarded">▼</button>
   </div>
 
   <!-- Tempow incoming inbox (tasks from clock) -->
-  <div class="tmpw-inbox" id="tmpwInbox">
-    <div class="tmpw-inbox-title">↙ Incoming from 24h Clock</div>
-    <div id="tmpwInboxItems"></div>
-  </div>
+  <div class="collapsible-section" id="inboxPanel">
+    <div class="tmpw-inbox" id="tmpwInbox">
+      <div class="tmpw-inbox-title">↙ Incoming from 24h Clock</div>
+      <div id="tmpwInboxItems"></div>
+    </div>
 
-  <!-- Discarded tasks bubble + panel -->
-  <div class="discarded-bubble" id="discardedBubble" title="Show discarded tasks" style="display:none;">0</div>
-  <div class="discarded-tasks-panel" id="discardedPanel">
-    <div class="discarded-tasks-title">⚠ Discarded tasks</div>
-    <div id="discardedTasksList"></div>
+    <!-- Discarded tasks panel -->
+    <div class="discarded-tasks-panel" id="discardedPanel">
+      <div class="discarded-tasks-title">⚠ Discarded tasks</div>
+      <div id="discardedTasksList"></div>
+    </div>
   </div>
 
   <main class="flow-main">
@@ -1328,8 +1274,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 <!-- Break reason + duration modal -->
 <div class="break-modal-bg" id="breakModal">
   <div class="break-modal">
-    <h2>Taking a break</h2>
-    <div class="break-modal-sub">Set how long and why — you'll be alerted when time is up.</div>
+    <h2>Pause task</h2>
+    <div class="break-modal-sub">Take a timed break or stop permanently to switch to another task.</div>
 
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Break duration</div>
     <div class="break-dur-grid">
@@ -1343,12 +1289,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       <label>min custom</label>
     </div>
 
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Why are you taking this break?</div>
-    <textarea class="break-note-area" id="breakNoteInput" rows="3" placeholder="e.g. Phone call, coffee, stretch, lunch…"></textarea>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Why are you pausing?</div>
+    <textarea class="break-note-area" id="breakNoteInput" rows="3" placeholder="e.g. Phone call, coffee, stretch, lunch, switching tasks…"></textarea>
 
     <div class="break-modal-actions">
       <button class="break-modal-cancel" id="breakModalCancel">Cancel</button>
-      <button class="break-modal-confirm" id="breakModalConfirm">Start break</button>
+      <button class="break-modal-stop" id="breakModalStop">⏹ Stop permanently</button>
+      <button class="break-modal-confirm" id="breakModalConfirm">⏸ Start break</button>
     </div>
   </div>
 </div>
@@ -1405,40 +1352,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 
 <script>
 /* ═══════════════════════════════════════════
-   DOWNLOAD HTML FUNCTION
-═══════════════════════════════════════════ */
-function downloadHTML() {
-  try {
-    // Get the current HTML document
-    const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-    
-    // Create a Blob from the HTML content
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    
-    // Create a temporary download link
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
-    // Set the download filename with timestamp
-    const timestamp = new Date().toISOString().split('T')[0];
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Tempow-TW-${timestamp}.html`);
-    link.style.display = 'none';
-    
-    // Trigger the download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Clean up the URL object
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error('Error downloading HTML:', error);
-    alert('Failed to download HTML file. Check console for details.');
-  }
-}
-
-/* ═══════════════════════════════════════════
    PAGE SWITCHING
 ═══════════════════════════════════════════ */
 function switchPage(name) {
@@ -1449,7 +1362,6 @@ function switchPage(name) {
   if (name === 'flow') {
     document.querySelectorAll('.nav-tab')[0].classList.add('active');
     renderFlowInbox();
-    initDiscardedBubbleDrag();
   } else if (name === 'clock') {
     document.querySelectorAll('.nav-tab')[1].classList.add('active');
     renderClockPage();
@@ -1803,6 +1715,14 @@ document.getElementById('breakModalConfirm').addEventListener('click', () => {
   breakModalTaskId = null;
 });
 
+document.getElementById('breakModalStop').addEventListener('click', () => {
+  if (!breakModalTaskId) return;
+  const note = document.getElementById('breakNoteInput').value.trim();
+  _stopTaskPermanently(breakModalTaskId, note);
+  document.getElementById('breakModal').classList.remove('open');
+  breakModalTaskId = null;
+});
+
 // ── Task controls ────────────────────────────────────
 function startTask(id) {
   flowTasks.forEach(t => { if (t.state==='running') openBreakModal(t.id); });
@@ -1842,6 +1762,19 @@ function _commitPause(id, note, limitSecs) {
   }
   _queuedStart = null;
   ensureTick();
+  renderFlowList();
+}
+
+function _stopTaskPermanently(id, note) {
+  const t = flowTasks.find(x => x.id===id);
+  if (!t || t.state!=='running') return;
+  const live = liveSegment(t);
+  if (live) live.endTs = Date.now();
+  t.state = 'paused';
+  // Create a permanent break segment (ends immediately, no timer)
+  t.segments.push({type:'break', secs:0, startTs:Date.now(), endTs:Date.now(), note, breakLimitSecs:0, overrun:false, isPermanent:true});
+  stopRepeatingAlarm();
+  _queuedStart = null;
   renderFlowList();
 }
 
@@ -2257,127 +2190,18 @@ function dismissFromFlow(id) {
   renderFlowInbox();
 }
 
-/* ── Discarded Tasks Bubble Drag ── */
-let bubbleDragState = {
-  isDragging: false,
-  hasMovedEnough: false,
-  offsetX: 0,
-  offsetY: 0,
-  startX: 0,
-  startY: 0,
-  initialized: false,
-  dragThreshold: 5 // pixels before considering it a drag
-};
-
-function initDiscardedBubbleDrag() {
-  if (bubbleDragState.initialized) return;
-  
-  const bubble = document.getElementById('discardedBubble');
-  if (!bubble) return;
-  
-  bubbleDragState.initialized = true;
-  
-  // Load saved position
-  const savedPos = localStorage.getItem('discarded_bubble_pos');
-  if (savedPos) {
-    try {
-      const pos = JSON.parse(savedPos);
-      bubble.style.right = 'auto';
-      bubble.style.bottom = 'auto';
-      bubble.style.left = pos.x + 'px';
-      bubble.style.top = pos.y + 'px';
-    } catch (e) {
-      console.error('Failed to load bubble position:', e);
-    }
-  }
-  
-  bubble.addEventListener('pointerdown', (e) => {
-    bubbleDragState.isDragging = true;
-    bubbleDragState.hasMovedEnough = false;
-    const rect = bubble.getBoundingClientRect();
-    bubbleDragState.offsetX = e.clientX - rect.left;
-    bubbleDragState.offsetY = e.clientY - rect.top;
-    bubbleDragState.startX = e.clientX;
-    bubbleDragState.startY = e.clientY;
-    bubble.style.cursor = 'grabbing';
-    bubble.setPointerCapture(e.pointerId);
-    e.preventDefault();
-  });
-  
-  bubble.addEventListener('pointermove', (e) => {
-    if (!bubbleDragState.isDragging) return;
-    
-    // Check if movement exceeds threshold
-    const dx = Math.abs(e.clientX - bubbleDragState.startX);
-    const dy = Math.abs(e.clientY - bubbleDragState.startY);
-    
-    if (dx > bubbleDragState.dragThreshold || dy > bubbleDragState.dragThreshold) {
-      bubbleDragState.hasMovedEnough = true;
-    }
-    
-    if (!bubbleDragState.hasMovedEnough) return;
-    
-    let x = e.clientX - bubbleDragState.offsetX;
-    let y = e.clientY - bubbleDragState.offsetY;
-    
-    // Clamp to screen bounds
-    x = Math.max(0, Math.min(x, window.innerWidth - 48));
-    y = Math.max(0, Math.min(y, window.innerHeight - 48));
-    
-    bubble.style.left = x + 'px';
-    bubble.style.top = y + 'px';
-    bubble.style.right = 'auto';
-    bubble.style.bottom = 'auto';
-  });
-  
-  bubble.addEventListener('pointerup', (e) => {
-    if (!bubbleDragState.isDragging) return;
-    bubbleDragState.isDragging = false;
-    bubble.style.cursor = 'grab';
-    bubble.releasePointerCapture(e.pointerId);
-    
-    // If it didn't move enough, treat as a click
-    if (!bubbleDragState.hasMovedEnough) {
-      toggleDiscardedPanel();
-    } else {
-      // Save position after drag
-      const rect = bubble.getBoundingClientRect();
-      localStorage.setItem('discarded_bubble_pos', JSON.stringify({ x: rect.left, y: rect.top }));
-    }
-  });
-}
-
 /* ── Discarded Tasks Panel ── */
-function toggleDiscardedPanel() {
-  const panel = document.getElementById('discardedPanel');
-  if (!panel) return;
-  if (panel.style.display === 'block') {
-    panel.style.display = 'none';
-  } else {
-    panel.style.display = 'block';
-  }
-}
-
 function renderDiscardedTasks() {
-  const bubble = document.getElementById('discardedBubble');
   const panel = document.getElementById('discardedPanel');
   const list = document.getElementById('discardedTasksList');
   
-  if (!bubble || !panel || !list) return;
-  
   if (discardedTasks.length === 0) {
-    bubble.style.display = 'none';
     panel.style.display = 'none';
     return;
   }
   
-  bubble.style.display = 'flex';
-  bubble.textContent = discardedTasks.length;
+  panel.style.display = 'block';
   list.innerHTML = '';
-
-  if (panel.style.display !== 'block') {
-    panel.style.display = 'none';
-  }
   
   discardedTasks.forEach(t => {
     const worked = totalWorkedSecs(t);
@@ -3991,23 +3815,54 @@ const FLOW_KEY  = 'flow_tasks_v2';
 
 function saveFlowData() {
   try {
-    localStorage.setItem(FLOW_KEY, JSON.stringify({
+    const dataToSave = {
       tasks: flowTasks,
       discardedTasks: discardedTasks,
       workStartTime: workStartTime,
       workEndTime: workEndTime,
       savedAt: new Date().toISOString()
-    }));
+    };
+    
+    // Try to save to file (Electron)
+    if (window.api && window.api.saveTasks) {
+      window.api.saveTasks(dataToSave).catch(() => {
+        // Fallback to localStorage if file save fails
+        localStorage.setItem(FLOW_KEY, JSON.stringify(dataToSave));
+      });
+    } else {
+      // Fallback to localStorage
+      localStorage.setItem(FLOW_KEY, JSON.stringify(dataToSave));
+    }
+    
     flashSaveIndicator('flowSaveIndicator');
     updateFlowLastSaved();
   } catch(e) {}
 }
 
-function loadFlowData() {
+async function loadFlowData() {
   try {
-    const raw = localStorage.getItem(FLOW_KEY);
-    if (!raw) return;
-    const data = JSON.parse(raw);
+    let data = null;
+    
+    // Try to load from file (Electron)
+    if (window.api && window.api.loadTasks) {
+      const result = await window.api.loadTasks();
+      if (result.success && result.tasks && result.tasks.length > 0) {
+        data = result.tasks;
+      }
+    }
+    
+    // Fallback to localStorage
+    if (!data) {
+      const raw = localStorage.getItem(FLOW_KEY);
+      if (!raw) return;
+      data = JSON.parse(raw);
+    }
+    
+    // If data is an array (from file), wrap it properly
+    if (Array.isArray(data)) {
+      const tasks = data;
+      data = { tasks, discardedTasks: [], savedAt: new Date().toISOString() };
+    }
     
     // Load work hours
     if (data.workStartTime) {
@@ -4040,8 +3895,28 @@ function loadFlowData() {
         return t;
       });
     }
+    
+    // Handle elapsed time for running tasks
+    if (window.api && window.api.getElapsedTime) {
+      const timeResult = await window.api.getElapsedTime();
+      if (timeResult.success && timeResult.elapsedSeconds > 0) {
+        const elapsedSecs = timeResult.elapsedSeconds;
+        flowTasks.forEach(t => {
+          if (t.state === 'paused' || t.state === 'running') {
+            const live = liveSegment(t);
+            if (live) {
+              // Add elapsed time to the live segment
+              live.secs += elapsedSecs;
+            }
+          }
+        });
+      }
+    }
+    
     updateFlowLastSaved(data.savedAt);
-  } catch(e) {}
+  } catch(e) {
+    console.error('Error loading flow data:', e);
+  }
 }
 
 function flashSaveIndicator(id) {
@@ -4354,9 +4229,48 @@ document.addEventListener('dragenter', e => {
 });
 
 /* ═══════════════════════════════════════════
+   COLLAPSIBLE SECTIONS
+═══════════════════════════════════════════ */
+function toggleSection(btn, sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  
+  const isCollapsed = section.classList.toggle('collapsed');
+  btn.classList.toggle('collapsed', isCollapsed);
+  
+  // Save state to localStorage
+  const stateKey = 'section_collapsed_' + sectionId;
+  localStorage.setItem(stateKey, isCollapsed);
+}
+
+function restoreCollapsibleStates() {
+  const sections = ['hoursTrackerPanel', 'inboxPanel'];
+  sections.forEach(sectionId => {
+    const stateKey = 'section_collapsed_' + sectionId;
+    const isCollapsed = localStorage.getItem(stateKey) === 'true';
+    const section = document.getElementById(sectionId);
+    const button = section ? section.parentElement.querySelector('.section-toggle') : null;
+    
+    if (section && isCollapsed) {
+      section.classList.add('collapsed');
+      if (button) button.classList.add('collapsed');
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */
-loadFlowData();
+(async function initApp() {
+  await loadFlowData();
+  renderFlowList();
+  restoreCollapsibleStates();
+  
+  // Auto-save task data every 5 seconds
+  setInterval(() => {
+    saveFlowData();
+  }, 5000);
+})();
 
 // Initialize work hour inputs
 const startInput = document.getElementById('workStartTime');
@@ -4366,8 +4280,12 @@ if (endInput) endInput.value = String(workEndTime.h).padStart(2, '0') + ':' + St
 
 document.getElementById('hdate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 renderFlowList();
+
+// Save data before closing the app
+window.addEventListener('beforeunload', () => {
+  saveFlowData();
+});
 renderFlowInbox();
-initDiscardedBubbleDrag();
 updateBadges();
 updateFlowLastSaved();
 updateHoursTracker();
@@ -4378,6 +4296,26 @@ setInterval(() => {
 }, 60000);
 
 </script>
+
+<!-- Footer with author credit -->
+<style>
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 8px 14px;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  z-index: 100;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.app-footer:hover {
+  opacity: 1;
+}
+</style>
+<div class="app-footer">Created by YANN KOFFI — Tempow v1.0.0</div>
 
 </body>
 </html>
