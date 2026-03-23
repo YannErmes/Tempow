@@ -97,6 +97,299 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .page.active { display: block; }
 
 /* ══════════════════════════════════════════
+   24H CLOCK STYLES (integrated)
+══════════════════════════════════════════ */
+#clock-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 28px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.clock-left {
+  flex: 1 1 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.clock-right {
+  width: 360px;
+  min-width: 260px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+#clock {
+  width: 500px;
+  height: 500px;
+  max-width: 100%;
+  border-radius: 8px;
+  background: transparent;
+  touch-action: none;
+}
+
+.clock-form-section {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.clock-form-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.clock-form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.clock-form-row label {
+  font-size: 11px;
+  color: var(--muted2);
+  min-width: 80px;
+  text-transform: uppercase;
+}
+
+.clock-time-inputs {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.clock-time-inputs input {
+  width: 50px;
+  padding: 8px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  text-align: center;
+}
+
+.clock-time-sep {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.clock-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--active);
+  color: #0a1f16;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.clock-btn:hover { opacity: 0.85; }
+.clock-btn.ghost {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.clock-btn.ghost:hover { background: var(--surface2); color: var(--text); }
+
+.clock-task-list {
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.clock-task-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.clock-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  flex: 0 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 11px;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+.clock-task-meta {
+  flex: 1;
+  min-width: 150px;
+}
+
+.clock-task-meta div:first-child {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.clock-task-meta .meta-muted {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.clock-color-input {
+  width: 40px;
+  height: 36px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.clock-delete {
+  background: var(--danger);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  transition: opacity 0.2s;
+}
+
+.clock-delete:hover { opacity: 0.85; }
+
+.clock-footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.clock-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+}
+
+.clock-modal-overlay.open { display: flex; }
+
+.clock-modal {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  border: 1px solid var(--border2);
+  max-width: 500px;
+  width: 90%;
+}
+
+.clock-modal h2 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.clock-slot-option {
+  padding: 12px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--bg);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+}
+
+.clock-slot-option:hover {
+  background: var(--surface2);
+  border-color: var(--active);
+}
+
+.clock-slot-option.selected {
+  background: var(--active-dim);
+  border-color: var(--active);
+  color: var(--active);
+}
+
+.clock-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(30,30,50,0.95);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  transform: translate(-50%, -120%);
+  white-space: nowrap;
+  z-index: 9999;
+  border: 1px solid var(--border);
+  display: none;
+}
+
+.clock-windows-list {
+  margin-top: 8px;
+}
+
+.clock-window-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  #clock-container { flex-direction: column-reverse; }
+  .clock-right { width: 100%; max-height: none; }
+  .clock-left { padding: 0; }
+  #clock { height: 420px; width: 420px; }
+}
+
+@media (max-width: 640px) {
+  #clock-container { padding: 16px; }
+  .clock-form-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .clock-time-inputs input { width: 45px; }
+  #clock { height: 360px; width: 360px; }
+}
+
+/* ══════════════════════════════════════════
    TRANSFER TRAY (floating strip)
 ══════════════════════════════════════════ */
 .transfer-tray {
@@ -460,6 +753,153 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 .break-modal-confirm:hover { opacity:0.85; }
 
+/* ══════════════════════════════════════════
+   EXTEND TIME MODAL
+══════════════════════════════════════════ */
+.extend-time-modal-bg {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  z-index: 1500; align-items: center; justify-content: center;
+}
+.extend-time-modal-bg.open { display: flex; }
+.extend-time-modal {
+  background: var(--surface); border: 1px solid var(--active);
+  border-radius: 14px; padding: 28px; width: 380px;
+  box-shadow: 0 16px 56px rgba(0,0,0,0.6);
+}
+.extend-time-modal h2 {
+  font-family: var(--font-display); font-size: 17px; font-weight: 700;
+  color: var(--active); margin-bottom: 6px;
+}
+.extend-time-modal .extend-sub {
+  font-size: 12px; color: var(--muted); margin-bottom: 20px; line-height: 1.6;
+}
+.extend-time-info {
+  background: var(--active-dim); border: 1px solid var(--active);
+  border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 11px;
+  color: var(--text); line-height: 1.6;
+}
+.extend-time-info strong { color: var(--active); font-weight: 600; }
+.extend-time-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 12px; }
+.extend-time-row label { color: var(--muted2); }
+.extend-time-input {
+  width: 80px; background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--text); font-family: var(--font-mono);
+  font-size: 13px; padding: 8px; outline: none; text-align: center;
+  transition: border-color 0.15s;
+}
+.extend-time-input:focus { border-color: var(--active); }
+.extend-time-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+.extend-btn-cancel {
+  font-family: var(--font-mono); font-size: 13px; background: transparent;
+  border: 1px solid var(--border2); color: var(--muted2); padding: 9px 18px;
+  border-radius: 8px; cursor: pointer;
+}
+.extend-btn-confirm {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  background: var(--active); border: none; color: #0a1f16;
+  padding: 9px 18px; border-radius: 8px; cursor: pointer;
+}
+.extend-btn-confirm:hover { opacity: 0.85; }
+.extend-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ══════════════════════════════════════════
+   HOURS REMAINING TRACKER
+══════════════════════════════════════════ */
+.hours-tracker {
+  display: flex; gap: 24px; padding: 16px 40px; background: var(--surface);
+  border-bottom: 1px solid var(--border); align-items: center; flex-wrap: wrap;
+}
+.hours-tracker-item {
+  display: flex; flex-direction: column;
+}
+.hours-tracker-label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 600;
+}
+.hours-tracker-value {
+  font-size: 24px; font-weight: 700; color: var(--active);
+}
+.hours-tracker-value.warning { color: var(--break); }
+.hours-tracker-value.danger { color: var(--danger); }
+.hours-tracker-sub {
+  font-size: 10px; color: var(--muted2); margin-top: 4px;
+}
+
+/* Discard button style */
+.btn.discard { border-color: #ff9a9e; color: #ff9a9e; }
+.btn.discard:hover { background: rgba(255,154,158,0.15); }
+.btn.discard.discarded { background: #ff9a9e20; border-color: #ff9a9e; color: #ff9a9e; }
+
+/* Discarded tasks panel */
+.discarded-tasks-panel {
+  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 12px;
+  padding: 12px; display: none;
+  max-width: 280px;
+  position: fixed;
+  right: 20px;
+  bottom: 100px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 400;
+}
+.discarded-tasks-panel.visible { display: block; }
+.discarded-tasks-title {
+  font-size: 11px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
+  letter-spacing: 0.06em; margin-bottom: 10px;
+}
+.discarded-task-item {
+  display: flex; gap: 8px; align-items: center; padding: 8px; background: #0e0e11;
+  border: 1px solid #ff9a9e; border-radius: 6px; margin-bottom: 6px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.discarded-task-info {
+  flex: 1;
+  min-width: 120px;
+}
+.discarded-task-name {
+  font-size: 11px; font-weight: 500; color: #ff9a9e;
+}
+.discarded-task-time {
+  font-size: 9px; color: var(--muted); margin-top: 2px;
+}
+.btn.restore { border-color: #ff9a9e; color: #ff9a9e; padding: 4px 8px; font-size: 9px; white-space: nowrap; }
+.btn.restore:hover { background: #ff9a9e20; }
+
+@media (max-width: 640px) {
+  .discarded-tasks-panel {
+    max-width: 240px;
+    right: 10px;
+    bottom: 80px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   DRAG AND DROP STYLES
+══════════════════════════════════════════ */
+.task-card {
+  cursor: grab;
+}
+.task-card:active {
+  cursor: grabbing;
+}
+.task-card.dragging {
+  opacity: 0.5; transform: scale(0.98);
+  background: var(--border); border-color: var(--border2);
+}
+.task-card.drag-over {
+  border-color: var(--active); border-style: dashed;
+  background: var(--active-dim);
+  box-shadow: inset 0 0 0 2px var(--active);
+}
+.task-list-placeholder {
+  height: 100px; background: var(--active-dim);
+  border: 2px dashed var(--active); border-radius: 12px;
+  margin-bottom: 14px; display: none;
+}
+.task-list-placeholder.visible {
+  display: block;
+}
+
 /* Responsive */
 @media (max-width:640px) {
   .flow-main { padding:20px 16px 80px; }
@@ -543,6 +983,30 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div class="stat"><div class="stat-label">Completed</div><div class="stat-value" id="s-done">0</div></div>
   </div>
 
+  <!-- Hours tracker -->
+  <div class="hours-tracker">
+    <div class="hours-tracker-item">
+      <div class="hours-tracker-label">📅 Hours left today</div>
+      <div class="hours-tracker-value" id="hoursLeft">—</div>
+      <div class="hours-tracker-sub" id="hoursLeftDetail"></div>
+    </div>
+    <div class="hours-tracker-item">
+      <div class="hours-tracker-label">⏱ Remaining task time</div>
+      <div class="hours-tracker-value" id="remainingTime">0h</div>
+      <div class="hours-tracker-sub" id="remainingDetail"></div>
+    </div>
+    <div class="hours-tracker-item">
+      <div class="hours-tracker-label">⚠ Status</div>
+      <div class="hours-tracker-value" id="timeStatus" style="font-size: 14px;">—</div>
+      <div class="hours-tracker-sub" id="timeStatusDetail"></div>
+    </div>
+    <div style="margin-left: auto; font-size: 11px; color: var(--muted); padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+      <div style="font-weight: 600; color: var(--muted2);">⚙ Set work hours</div>
+      <input type="time" id="workStartTime" value="09:00" style="width: 80px; padding: 4px; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 11px;" />
+      <input type="time" id="workEndTime" value="18:00" style="width: 80px; padding: 4px; margin-left: 4px; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 11px;" />
+    </div>
+  </div>
+
   <!-- Data toolbar -->
   <div class="data-bar">
     <span class="data-bar-label">Data</span>
@@ -564,6 +1028,12 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div id="tmpwInboxItems"></div>
   </div>
 
+  <!-- Discarded tasks panel -->
+  <div class="discarded-tasks-panel" id="discardedPanel">
+    <div class="discarded-tasks-title">⚠ Discarded tasks</div>
+    <div id="discardedTasksList"></div>
+  </div>
+
   <main class="flow-main">
     <div id="task-list"></div>
     <div class="empty" id="empty-state">
@@ -576,7 +1046,132 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 <!-- ══════════════════════════════════════════
      PAGE 2 — 24H CLOCK
 ══════════════════════════════════════════ -->
-<div class="page" id="page-clock"></div>
+<div class="page" id="page-clock">
+  <div style="padding: 20px 40px 16px; border-bottom: 1px solid var(--border);">
+    <h2 style="margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 700;">◕ 24-Hour Task Clock</h2>
+  </div>
+
+  <div id="clock-container">
+    <div class="clock-left">
+      <canvas id="clock" width="500" height="500" role="img" aria-label="24 hour clock"></canvas>
+      <div id="clock-tooltip" class="clock-tooltip"></div>
+    </div>
+
+    <aside class="clock-right">
+      <!-- Incoming from Timer -->
+      <div id="clockIncomingSection" class="clock-form-section" style="display: none;">
+        <div class="clock-form-section-title">↙ Incoming from Timer</div>
+        <div id="clockIncomingItems" style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border);"></div>
+      </div>
+
+      <!-- Availability Windows -->
+      <div class="clock-form-section">
+        <div class="clock-form-section-title">Availability Windows</div>
+        <div class="clock-form-row">
+          <label>From</label>
+          <div class="clock-time-inputs">
+            <input id="fromHour" type="number" min="0" max="23" value="08" />
+            <span class="clock-time-sep">:</span>
+            <input id="fromMin" type="number" min="0" max="59" value="00" />
+            <span class="clock-time-sep">:</span>
+            <input id="fromSec" type="number" min="0" max="59" value="00" />
+          </div>
+        </div>
+        <div class="clock-form-row">
+          <label>To</label>
+          <div class="clock-time-inputs">
+            <input id="toHour" type="number" min="0" max="23" value="18" />
+            <span class="clock-time-sep">:</span>
+            <input id="toMin" type="number" min="0" max="59" value="00" />
+            <span class="clock-time-sep">:</span>
+            <input id="toSec" type="number" min="0" max="59" value="00" />
+          </div>
+        </div>
+        <div class="clock-form-row">
+          <button id="addWindow" class="clock-btn" style="flex: 1;">Add Window</button>
+          <button id="clearAllWindows" class="clock-btn ghost" style="flex: 1;">Clear All</button>
+        </div>
+        <div id="windowsList" class="clock-windows-list"></div>
+      </div>
+
+      <!-- Add Task -->
+      <div class="clock-form-section">
+        <div class="clock-form-section-title">Add New Task</div>
+        <div class="clock-form-row">
+          <label>Task name</label>
+          <input id="taskName" type="text" placeholder="e.g. Meeting" style="flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font-size: 12px;" />
+        </div>
+        <div class="clock-form-row">
+          <label>Duration</label>
+          <div class="clock-time-inputs">
+            <input id="durationHours" type="number" min="0" max="24" value="0" title="hours" />
+            <span class="clock-time-sep">h</span>
+            <input id="durationMinutes" type="number" min="0" max="59" value="30" title="minutes" />
+            <span class="clock-time-sep">m</span>
+            <input id="durationSeconds" type="number" min="0" max="59" value="0" title="seconds" />
+            <span style="margin-left: 8px; color: var(--muted); font-size: 11px;" id="durationPreview">00:30:00</span>
+          </div>
+        </div>
+        <div class="clock-form-row">
+          <label>Task color</label>
+          <input id="taskColor" type="color" value="#5de0a8" class="clock-color-input" />
+          <button id="randomColor" class="clock-btn ghost" style="flex: 1; margin-left: 8px;">Random</button>
+        </div>
+        <div class="clock-form-row">
+          <label>Free gap color</label>
+          <input id="freeGapColor" type="color" value="#86efa4" class="clock-color-input" />
+        </div>
+        <button id="addTask" class="clock-btn" style="width: 100%;">Add Task</button>
+      </div>
+
+      <!-- Tasks List -->
+      <div class="clock-form-section">
+        <div class="clock-form-section-title">Tasks</div>
+        <div class="clock-task-list" id="taskList"></div>
+        <div class="clock-footer">
+          <button id="import" class="clock-btn" style="flex: 1;">Import CSV</button>
+          <button id="export" class="clock-btn" style="flex: 1;">Export CSV</button>
+        </div>
+        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+      </div>
+
+      <!-- Session -->
+      <div class="clock-form-section">
+        <div class="clock-form-section-title">Session</div>
+        <div style="font-size: 11px; color: var(--muted); margin-bottom: 12px; min-height: 40px;">
+          <div id="sessionStatus">No session saved today</div>
+        </div>
+        <div class="clock-footer">
+          <button id="saveSession" class="clock-btn" style="flex: 1;">Save Session</button>
+          <button id="clearSession" class="clock-btn ghost" style="flex: 1;">Clear</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modals -->
+  <div id="clockPlacementModal" class="clock-modal-overlay">
+    <div class="clock-modal">
+      <h2>Select Availability Window</h2>
+      <div class="modal-content" id="modalContent"></div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="clock-btn ghost" id="clockModalCancel">Cancel</button>
+        <button class="clock-btn" id="clockModalConfirm">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="importModal" class="clock-modal-overlay">
+    <div class="clock-modal">
+      <h2>Import Tasks Preview</h2>
+      <div id="importModalContent" style="max-height: 250px; overflow-y: auto; margin-bottom: 16px;"></div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button class="clock-btn ghost" id="importCancel">Cancel</button>
+        <button class="clock-btn" id="importConfirm">Import Tasks</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      PAGE 3 — REPORTS
@@ -584,7 +1179,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 <div class="page" id="page-report"></div>
 
 <!-- Tempow add-task modal -->
-<div class="modal-bg" id="modal">
+<div class="modal-bg" id="addTaskModal">
   <div class="modal">
     <h2>New task</h2>
     <div class="field"><label>Task name</label><input type="text" id="inp-name" placeholder="e.g. Write project brief" /></div>
@@ -654,6 +1249,34 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   </div>
 </div>
 <input type="file" id="jsonFileInput" accept=".json" style="display:none" />
+
+<!-- Extend time modal -->
+<div class="extend-time-modal-bg" id="extendTimeModal">
+  <div class="extend-time-modal">
+    <h2>Extend task time</h2>
+    <div class="extend-time-modal-sub" id="extendTimeTaskName"></div>
+    
+    <div class="extend-time-info">
+      <div style="margin-bottom: 8px;">Current allocated: <strong id="extendTimeCurrentAlloc"></strong></div>
+      <div style="margin-bottom: 8px;">Maximum extension: <strong style="color: var(--active);" id="extendTimeMaxExt"></strong> (25% of initial)</div>
+      <div>You can only extend by up to <strong>$</strong> of the original time.</div>
+    </div>
+
+    <div class="extend-time-row">
+      <label>Add extra minutes:</label>
+      <input type="number" id="extendTimeInput" class="extend-time-input" min="1" placeholder="minutes" />
+    </div>
+
+    <div style="background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px; color: var(--muted);">
+      <div style="margin-bottom: 6px;">📌 Preview: <strong style="color: var(--text);" id="extendTimePreview"></strong></div>
+    </div>
+
+    <div class="extend-time-modal-actions">
+      <button class="extend-btn-cancel" onclick="closeExtendModal()">Cancel</button>
+      <button class="extend-btn-confirm" id="extendConfirmBtn" onclick="confirmExtendTime()">Extend time</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════════
@@ -780,9 +1403,12 @@ function updateBadges() {
    ════════  FLOW TIMER  ════════════════════
 ═══════════════════════════════════════════ */
 let flowTasks = [];
+let discardedTasks = [];
 let globalTick = null;
 let openTip = null;
 let breakModalTaskId = null;
+let workStartTime = { h: 9, m: 0 };
+let workEndTime = { h: 18, m: 0 };
 
 function fmtF(s) {
   const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
@@ -811,6 +1437,120 @@ function liveSegment(t) {
 }
 
 // ╔════════════════════════════════════════════════════════════════╗
+// ║ HOURS REMAINING CALCULATION                                   ║
+// ║ Calculate hours left in the day and remaining task duration    ║
+// ╚════════════════════════════════════════════════════════════════╝
+function getHoursLeftInDay() {
+  const now = new Date();
+  
+  // End of day is always 11:59 PM (23:59)
+  const endDate = new Date();
+  endDate.setHours(23, 59, 0, 0);
+  
+  if (now >= endDate) return 0;
+  
+  const msLeft = endDate - now;
+  return msLeft / (1000 * 60 * 60);
+}
+
+function getRemainingTasksHours() {
+  // Only count active (non-discarded, non-done) tasks
+  const activeTasks = flowTasks.filter(t => t.state !== 'done');
+  let totalSecs = 0;
+  
+  activeTasks.forEach(t => {
+    const worked = totalWorkedSecs(t);
+    const remaining = Math.max(t.allocSecs - worked, 0);
+    totalSecs += remaining;
+  });
+  
+  return totalSecs / 3600;
+}
+
+function updateHoursTracker() {
+  const hoursLeft = getHoursLeftInDay();
+  const taskHours = getRemainingTasksHours();
+  
+  const hoursLeftEl = document.getElementById('hoursLeft');
+  const hoursLeftDetail = document.getElementById('hoursLeftDetail');
+  const remainingTimeEl = document.getElementById('remainingTime');
+  const remainingDetail = document.getElementById('remainingDetail');
+  const statusEl = document.getElementById('timeStatus');
+  const statusDetail = document.getElementById('timeStatusDetail');
+  
+  // Format hours left
+  const h = Math.floor(hoursLeft);
+  const m = Math.round((hoursLeft - h) * 60);
+  hoursLeftEl.textContent = h + 'h ' + (m > 0 ? m + 'm' : '');
+  
+  const now = new Date();
+  const endDate = new Date();
+  endDate.setHours(23, 59, 0, 0);
+  const endTimeStr = endDate.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+  hoursLeftDetail.textContent = 'until ' + endTimeStr;
+  
+  // Format task hours
+  const th = Math.floor(taskHours);
+  const tm = Math.round((taskHours - th) * 60);
+  remainingTimeEl.textContent = th + 'h ' + (tm > 0 ? tm + 'm' : '');
+  remainingDetail.textContent = flowTasks.filter(t => t.state !== 'done').length + ' active task' + (flowTasks.filter(t => t.state !== 'done').length !== 1 ? 's' : '');
+  
+  // Status indicator
+  if (taskHours === 0) {
+    statusEl.textContent = '✓ All done!';
+    statusEl.style.color = 'var(--active)';
+    statusDetail.textContent = 'No remaining tasks';
+  } else if (taskHours > hoursLeft) {
+    statusEl.textContent = '⚠ Tight!';
+    statusEl.style.color = 'var(--danger)';
+    const overage = taskHours - hoursLeft;
+    const oh = Math.floor(overage);
+    const om = Math.round((overage - oh) * 60);
+    statusDetail.textContent = 'Need ' + oh + 'h ' + (om > 0 ? om + 'm' : '') + ' more';
+    remainingTimeEl.classList.add('danger');
+    remainingTimeEl.classList.remove('warning');
+  } else if (taskHours > hoursLeft * 0.8) {
+    statusEl.textContent = '⏱ Cutting it';
+    statusEl.style.color = 'var(--break)';
+    statusDetail.textContent = taskHours.toFixed(1) + 'h tasks fit';
+    remainingTimeEl.classList.add('warning');
+    remainingTimeEl.classList.remove('danger');
+  } else {
+    statusEl.textContent = '✓ Comfortable';
+    statusEl.style.color = 'var(--active)';
+    statusDetail.textContent = taskHours.toFixed(1) + 'h of ' + hoursLeft.toFixed(1) + 'h';
+    remainingTimeEl.classList.remove('warning', 'danger');
+  }
+}
+
+function discardTask(id) {
+  const t = flowTasks.find(x => x.id === id);
+  if (!t) return;
+  
+  // Move task to discarded
+  discardedTasks.push({...t, discardedAt: Date.now()});
+  flowTasks = flowTasks.filter(x => x.id !== id);
+  tray = tray.filter(x => x.id !== id);
+  
+  renderFlowList();
+  updateHoursTracker();
+}
+
+function restoreTask(id) {
+  const t = discardedTasks.find(x => x.id === id);
+  if (!t) return;
+  
+  // Move back
+  const taskToRestore = {...t};
+  delete taskToRestore.discardedAt;
+  flowTasks.push(taskToRestore);
+  discardedTasks = discardedTasks.filter(x => x.id !== id);
+  
+  renderFlowList();
+  updateHoursTracker();
+}
+
+// ╔════════════════════════════════════════════════════════════════╗
 // ║ NEW FEATURE: ESTIMATED COMPLETION TIME                        ║
 // ║ This function calculates when your task will be done          ║
 // ╚════════════════════════════════════════════════════════════════╝
@@ -829,10 +1569,23 @@ document.getElementById('hdate').textContent =
   new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 
 // ── Add task modal ──
-function openModal() { document.getElementById('modal').classList.add('open'); document.getElementById('inp-name').focus(); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); document.getElementById('inp-name').value=''; }
-document.getElementById('modal').addEventListener('click', e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+function openModal() { document.getElementById('addTaskModal').classList.add('open'); document.getElementById('inp-name').focus(); }
+function closeModal() { document.getElementById('addTaskModal').classList.remove('open'); document.getElementById('inp-name').value=''; }
+document.getElementById('addTaskModal').addEventListener('click', e=>{ if(e.target===document.getElementById('addTaskModal')) closeModal(); });
 document.getElementById('inp-name').addEventListener('keydown', e=>{ if(e.key==='Enter') addFlowTask(); });
+
+// Work hour listeners
+document.getElementById('workStartTime')?.addEventListener('change', e => {
+  const parts = e.target.value.split(':');
+  workStartTime = { h: parseInt(parts[0]) || 9, m: parseInt(parts[1]) || 0 };
+  updateHoursTracker();
+});
+
+document.getElementById('workEndTime')?.addEventListener('change', e => {
+  const parts = e.target.value.split(':');
+  workEndTime = { h: parseInt(parts[0]) || 18, m: parseInt(parts[1]) || 0 };
+  updateHoursTracker();
+});
 
 document.addEventListener('click', e=>{
   if (openTip && !e.target.closest('.brk-seg') && !e.target.closest('.brk-tip')) closeTip();
@@ -1256,8 +2009,10 @@ function renderFlowList() {
     if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})">▶ Resume</button>`;
     if (t.state==='done')    ctrl += `<button class="btn" disabled>✓ Complete</button>`;
     if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)">✓ Done</button>`;
+    ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)">⏱ Extend</button>`;
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock">⇄ Clock</button>`;
     ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON">↓ JSON</button>`;
+    ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others">⊘ Discard</button>`;
     ctrl += `<button class="btn del" onclick="deleteFlowTask(${t.id})">✕</button>`;
 
     const card = document.createElement('div');
@@ -1266,6 +2021,11 @@ function renderFlowList() {
       + (inTray?' in-tray':'')
       + (isOverrun?' break-overrun':'');
     card.id = 'flow-card-'+t.id;
+    card.draggable = true;
+    card.addEventListener('dragstart', (e) => handleTaskDragStart(e, t.id));
+    card.addEventListener('dragover', () => handleTaskDragOver(event, flowTasks.indexOf(t)));
+    card.addEventListener('dragleave', handleTaskDragLeave);
+    card.addEventListener('drop', (e) => handleTaskDrop(e, t.id));
     
     // ╔════════════════════════════════════════════════════════════════╗
     // ║ NEW: ADD ESTIMATED END TIME BADGE TO RUNNING TASKS            ║
@@ -1274,12 +2034,15 @@ function renderFlowList() {
     card.innerHTML = `
       <div class="task-card-inner-clip">
         <div class="task-inner">
-          <div>
-            <div class="task-name">${t.name}</div>
-            <div class="task-meta">
-              <span>⏱ ${t.allocSecs/60}m allocated</span>
-              ${breakCount>0 ? `<span>${breakCount} break${breakCount>1?'s':''}</span>` : ''}
-              <span class="break-info">${brk>0 ? `· <span class="b-time">${fmtShortF(brk)}</span> break` : ''}</span>
+          <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
+            <div style="color: var(--muted); cursor: grab; padding-top: 2px; flex-shrink: 0; user-select: none;">⋮⋮</div>
+            <div style="flex: 1;">
+              <div class="task-name">${t.name}</div>
+              <div class="task-meta">
+                <span>⏱ ${t.allocSecs/60}m allocated</span>
+                ${breakCount>0 ? `<span>${breakCount} break${breakCount>1?'s':''}</span>` : ''}
+                <span class="break-info">${brk>0 ? `· <span class="b-time">${fmtShortF(brk)}</span> break` : ''}</span>
+              </div>
             </div>
           </div>
           <div class="timer-block">
@@ -1296,6 +2059,8 @@ function renderFlowList() {
     list.appendChild(card);
   });
   updateFlowStats();
+  updateHoursTracker();
+  renderDiscardedTasks();
   if (flowTasks.some(t=>t.state==='running'||t.state==='paused')) ensureTick();
   if (typeof saveFlowData === 'function') saveFlowData();
 }
@@ -1332,75 +2097,877 @@ function dismissFromFlow(id) {
   renderFlowInbox();
 }
 
-/* ═══════════════════════════════════════════
-   CLOCK PAGE (24h)
-═══════════════════════════════════════════ */
-let clockTasks = [];
-
-function renderClockPage() {
-  const page = document.getElementById('page-clock');
-  if (!page) return;
+/* ── Discarded Tasks Panel ── */
+function renderDiscardedTasks() {
+  const panel = document.getElementById('discardedPanel');
+  const list = document.getElementById('discardedTasksList');
   
-  const incomingCount = pendingToClock.length;
-  const isEmpty = clockTasks.length === 0 && incomingCount === 0;
+  if (discardedTasks.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
   
-  let html = `
-    <div style="padding: 20px 40px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-      <div style="font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;">24-hour Clock</div>
-      <button class="btn-add" onclick="openClockModal()">+ Add to clock</button>
-    </div>
+  panel.style.display = 'block';
+  list.innerHTML = '';
+  
+  discardedTasks.forEach(t => {
+    const worked = totalWorkedSecs(t);
+    const remaining = Math.max(t.allocSecs - worked, 0);
+    const timeStr = remaining > 0 ? fmtDurF(remaining) + ' left' : 'completed';
     
-    <div style="padding: 28px 40px; max-width: 900px;">`;
-  
-  if (incomingCount > 0) {
-    html += `
-      <div style="background: var(--active-dim); border: 1px solid var(--active); border-radius: 12px; padding: 20px; margin-bottom: 28px;">
-        <div style="font-size: 12px; color: var(--active); font-weight: 500; margin-bottom: 12px;">↙ Incoming from Timer (${incomingCount})</div>`;
-    pendingToClock.forEach(item => {
-      html += `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(93,224,168,0.2);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${item.color}; flex-shrink: 0;"></div>
-            <span style="font-size: 13px;">${item.name}</span>
-            <span style="font-size: 11px; color: var(--muted);">${fmtDurShort(item.allocSecs)}</span>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn" style="padding: 5px 10px; font-size: 11px;" onclick="acceptToClock('${item.id}')">+ Add</button>
-            <button class="btn del" style="padding: 5px 10px; font-size: 11px;" onclick="dismissFromClock('${item.id}')">✕</button>
-          </div>
-        </div>`;
-    });
-    html += `</div>`;
+    const item = document.createElement('div');
+    item.className = 'discarded-task-item';
+    item.innerHTML = `
+      <div class="discarded-task-info">
+        <div class="discarded-task-name">${t.name}</div>
+        <div class="discarded-task-time">${timeStr}</div>
+      </div>
+      <button class="btn restore" onclick="restoreTask(${t.id})">↻ Restore</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   24-HOUR CLOCK PAGE
+═══════════════════════════════════════════ */
+
+// Clock utilities and constants
+const CANVAS_SIZE = 500;
+const DAY_MIN = 24 * 60;
+const DAY_SEC = 24 * 3600;
+const SNAP_MIN = 5;
+const FREE_GAP_MIN = 15;
+
+// Clock state
+let clockTasks = [];
+let availabilityWindows = [];
+let draggingClock = null;
+let dragPreviewClock = null;
+let pendingTaskToAdd = null;
+let selectedWindowForTask = null;
+
+function clockTimeToSecs(h, m = 0, s = 0) { return h * 3600 + m * 60 + s; }
+function clockSecsToTime(secs) {
+  secs = ((secs % DAY_SEC) + DAY_SEC) % DAY_SEC;
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  return { h, m, s };
+}
+function clockFormatHMS(secsVal) {
+  const t = clockSecsToTime(secsVal);
+  return String(t.h).padStart(2, '0') + ':' + String(t.m).padStart(2, '0') + ':' + String(t.s).padStart(2, '0');
+}
+function clockTimeToAngle(sec) {
+  return -Math.PI / 2 + (2 * Math.PI) * (sec / DAY_SEC);
+}
+function clockAngleToTime(angle) {
+  let frac = (angle + Math.PI / 2) / (2 * Math.PI);
+  frac = frac - Math.floor(frac);
+  return frac * DAY_SEC;
+}
+function clockSnapToSeconds(sec) {
+  const SNAP_SEC = SNAP_MIN * 60;
+  return Math.round(sec / SNAP_SEC) * SNAP_SEC;
+}
+function clockUid() { return Math.random().toString(36).slice(2, 9); }
+function clockRgbToHex(rgb) {
+  if (rgb.startsWith('#')) return rgb;
+  const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (!match) return '#5de0a8';
+  const hex = [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])].map(x => {
+    const h = x.toString(16);
+    return h.length === 1 ? '0' + h : h;
+  }).join('');
+  return '#' + hex;
+}
+function clockParseTimeToSeconds(timeStr) {
+  const parts = timeStr.trim().split(':');
+  if (parts.length !== 3) return 0;
+  const hours = parseInt(parts[0]) || 0;
+  const mins = parseInt(parts[1]) || 0;
+  const secs = parseInt(parts[2]) || 0;
+  return hours * 3600 + mins * 60 + secs;
+}
+
+function clockSplitInterval(start, dur) {
+  start = ((start % DAY_SEC) + DAY_SEC) % DAY_SEC;
+  const end = (start + dur);
+  if (end <= DAY_SEC) return [[start, end]];
+  else return [[start, DAY_SEC], [0, end % DAY_SEC]];
+}
+
+function clockGetAvailabilityIntervals() {
+  return availabilityWindows.sort((a, b) => a.start - b.start);
+}
+
+function clockDetectOverlaps() {
+  const intervals = [];
+  clockTasks.forEach(t => {
+    const parts = clockSplitInterval(t.start, t.duration);
+    parts.forEach(p => intervals.push({ task: t, start: p[0], end: p[1] }));
+  });
+  clockTasks.forEach(t => t.overlap = false);
+  for (let i = 0; i < intervals.length; i++) {
+    for (let j = i + 1; j < intervals.length; j++) {
+      const a = intervals[i], b = intervals[j];
+      if (a.task === b.task) continue;
+      if (a.start < b.end && b.start < a.end) {
+        a.task.overlap = true;
+        b.task.overlap = true;
+      }
+    }
   }
+}
+
+function drawClock() {
+  const canvas = document.getElementById('clock');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const DPR = window.devicePixelRatio || 1;
   
-  if (isEmpty) {
-    html += `
-      <div style="text-align: center; padding: 80px 40px; color: var(--muted);">
-        <div style="font-size: 40px; margin-bottom: 16px; opacity: 0.3;">◕</div>
-        <p style="font-size: 14px; line-height: 1.8;">No tasks on your 24-hour clock yet.<br>Create one or transfer a task from Timer.</p>
-      </div>`;
-  } else {
-    html += `<div style="font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 16px;">Tasks (${clockTasks.length})</div>`;
+  ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  const cx = CANVAS_SIZE / 2, cy = CANVAS_SIZE / 2;
+  const R = 200;
+  const innerR = 120;
+
+  // Background
+  ctx.beginPath();
+  ctx.arc(cx, cy, R + 6, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fill();
+
+  // Main ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+  ctx.fillStyle = '#2a2a4e';
+  ctx.fill();
+
+  // Availability windows highlight
+  const windows = clockGetAvailabilityIntervals();
+  if (windows.length > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    windows.forEach(w => {
+      const a1 = clockTimeToAngle(w.start);
+      const a2 = clockTimeToAngle(w.end);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, a1, a2, false);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(93,224,168,0.15)';
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // Hour ticks and numbers
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '13px system-ui,Arial';
+  for (let h = 0; h < 24; h++) {
+    const angle = clockTimeToAngle(h * 3600);
+    const x1 = Math.cos(angle) * (innerR - 10);
+    const y1 = Math.sin(angle) * (innerR - 10);
+    const x2 = Math.cos(angle) * (R + 10);
+    const y2 = Math.sin(angle) * (R + 10);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = '#4a4a6a';
+    ctx.lineWidth = (h % 6 === 0) ? 2 : 1;
+    ctx.stroke();
+    const nx = Math.cos(angle) * (R + 24);
+    const ny = Math.sin(angle) * (R + 24);
+    ctx.fillStyle = '#b0b0b0';
+    ctx.font = (h % 6 === 0) ? 'bold 13px system-ui,Arial' : '12px system-ui,Arial';
+    ctx.fillText(String(h).padStart(2, '0'), nx, ny);
+  }
+  ctx.restore();
+
+  // Draw free gaps
+  if (windows.length > 0) {
+    const taskParts = [];
     clockTasks.forEach(t => {
-      html += `
-        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-            <div style="width: 12px; height: 12px; border-radius: 50%; background: ${t.color}; flex-shrink: 0;"></div>
-            <div style="flex: 1;">
-              <div style="font-size: 14px; font-weight: 500;">${t.name}</div>
-              <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${fmtDurShort(t.duration)}</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn transfer-btn" onclick="addToTray('${t.id}','clock')" title="Send back to Timer">⇄ Timer</button>
-            <button class="btn del" onclick="deleteClockTask('${t.id}')">✕</button>
-          </div>
-        </div>`;
+      clockSplitInterval(t.start, t.duration).forEach(p => {
+        windows.forEach(wi => {
+          const s = Math.max(p[0], wi.start);
+          const e = Math.min(p[1], wi.end);
+          if (e - s > 0) taskParts.push({ task: t, start: s, end: e });
+        });
+      });
+    });
+    taskParts.sort((a, b) => a.start - b.start);
+    const gaps = [];
+    const FREE_GAP_SEC = FREE_GAP_MIN * 60;
+    windows.forEach(wi => {
+      let cursor = wi.start;
+      for (const tp of taskParts.filter(x => x.start >= wi.start && x.end <= wi.end)) {
+        if (tp.start - cursor >= FREE_GAP_SEC) gaps.push([cursor, tp.start]);
+        cursor = Math.max(cursor, tp.end);
+      }
+      if (wi.end - cursor >= FREE_GAP_SEC) gaps.push([cursor, wi.end]);
+    });
+    gaps.forEach(g => {
+      const a1 = clockTimeToAngle(g[0]);
+      const a2 = clockTimeToAngle(g[1]);
+      ctx.beginPath();
+      ctx.lineWidth = R - innerR;
+      ctx.strokeStyle = 'rgba(134,239,172,0.5)';
+      ctx.lineCap = 'butt';
+      ctx.arc(cx, cy, (R + innerR) / 2, a1, a2, false);
+      ctx.stroke();
     });
   }
+
+  // Draw tasks
+  clockDetectOverlaps();
+  clockTasks.forEach(t => {
+    const parts = clockSplitInterval(t.start, t.duration);
+    parts.forEach(p => {
+      const a1 = clockTimeToAngle(p[0]);
+      const a2 = clockTimeToAngle(p[1]);
+      const col = t.overlap ? '#ff6b6b' : t.color;
+      ctx.beginPath();
+      ctx.lineWidth = R - innerR;
+      ctx.strokeStyle = col;
+      ctx.lineCap = 'butt';
+      ctx.arc(cx, cy, (R + innerR) / 2, a1, a2, false);
+      ctx.stroke();
+
+      const mid = (p[0] + (p[1] - p[0]) / 2);
+      const angleMid = clockTimeToAngle(mid);
+      const tx = cx + Math.cos(angleMid) * ((R + innerR) / 2);
+      const ty = cy + Math.sin(angleMid) * ((R + innerR) / 2);
+      const textColor = t.overlap ? '#ffcccc' : '#ffffff';
+      ctx.save();
+      ctx.translate(tx, ty);
+      ctx.rotate(angleMid + Math.PI / 2);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = textColor;
+      ctx.font = 'bold 12px system-ui,Arial';
+      let txt = t.name;
+      if (txt.length > 20) txt = txt.slice(0, 18) + '…';
+      ctx.fillText(txt, 0, 0);
+      ctx.restore();
+    });
+  });
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 6, 0, 2 * Math.PI);
+  ctx.fillStyle = '#16213e';
+  ctx.fill();
+  ctx.save();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 14px system-ui,Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('24h', cx, cy - 10);
+  ctx.font = '12px system-ui,Arial';
+  ctx.fillStyle = '#b0b0b0';
+  ctx.fillText('Task Clock', cx, cy + 10);
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 6, 0, 2 * Math.PI);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#2a2a4e';
+  ctx.stroke();
+}
+
+function clockRefreshWindowsList() {
+  const windowsListDiv = document.getElementById('windowsList');
+  windowsListDiv.innerHTML = '';
+  const windows = clockGetAvailabilityIntervals();
+  if (windows.length === 0) {
+    windowsListDiv.innerHTML = '<div style="color:var(--muted);font-size:11px">No windows added yet</div>';
+    return;
+  }
+  windows.forEach(w => {
+    const el = document.createElement('div');
+    el.className = 'clock-window-item';
+    const t = document.createElement('span');
+    t.textContent = `${clockFormatHMS(w.start)} → ${clockFormatHMS(w.end)}`;
+    const btn = document.createElement('button');
+    btn.className = 'clock-btn ghost';
+    btn.textContent = 'Remove';
+    btn.style.padding = '4px 8px';
+    btn.onclick = () => {
+      availabilityWindows = availabilityWindows.filter(x => x.id !== w.id);
+      clockRefreshWindowsList();
+      drawClock();
+    };
+    el.appendChild(t);
+    el.appendChild(btn);
+    windowsListDiv.appendChild(el);
+  });
+}
+
+function clockRefreshUI() {
+  const taskListDiv = document.getElementById('taskList');
+  taskListDiv.innerHTML = '';
+  if (clockTasks.length === 0) {
+    taskListDiv.innerHTML = '<div style="color:var(--muted);font-size:11px">No tasks yet</div>';
+  } else {
+    clockTasks.forEach(t => {
+      const el = document.createElement('div');
+      el.className = 'clock-task-item';
+      el.setAttribute('data-task-id', t.id);
+      const sw = document.createElement('div');
+      sw.className = 'clock-swatch';
+      sw.style.background = t.overlap ? '#ff6b6b' : t.color;
+      sw.textContent = t.name.split(' ').map(w => w[0] || '').slice(0, 2).join('');
+      const meta = document.createElement('div');
+      meta.className = 'clock-task-meta';
+      const title = document.createElement('div');
+      title.textContent = t.name;
+      const details = document.createElement('div');
+      details.className = 'meta-muted';
+      const endTime = t.start + t.duration;
+      details.textContent = `${clockFormatHMS(t.start)} → ${clockFormatHMS(endTime)} • ${Math.round(t.duration / 60)} min`;
+      meta.appendChild(title);
+      meta.appendChild(details);
+
+      const colorPicker = document.createElement('input');
+      colorPicker.type = 'color';
+      colorPicker.value = clockRgbToHex(t.color);
+      colorPicker.className = 'clock-color-input';
+      colorPicker.addEventListener('change', (e) => {
+        t.color = e.target.value;
+        drawClock();
+      });
+
+      const transfer = document.createElement('button');
+      transfer.className = 'clock-btn';
+      transfer.textContent = '⇄ Timer';
+      transfer.title = 'Send to Timer page';
+      transfer.onclick = () => addToTray(t.id, 'clock');
+
+      const del = document.createElement('button');
+      del.className = 'clock-delete';
+      del.textContent = 'Delete';
+      del.onclick = () => {
+        clockTasks = clockTasks.filter(x => x.id !== t.id);
+        clockRefreshUI();
+        drawClock();
+      };
+      el.appendChild(sw);
+      el.appendChild(meta);
+      el.appendChild(colorPicker);
+      el.appendChild(transfer);
+      el.appendChild(del);
+      taskListDiv.appendChild(el);
+    });
+  }
+
+  // Display incoming tasks from Timer
+  const incomingSection = document.getElementById('clockIncomingSection');
+  const incomingItems = document.getElementById('clockIncomingItems');
+  if (pendingToFlow.length > 0) {
+    incomingSection.style.display = 'block';
+    incomingItems.innerHTML = '';
+    pendingToFlow.forEach(item => {
+      const pill = document.createElement('div');
+      pill.className = 'inbox-item';
+      pill.innerHTML = `
+        <div style="flex:1">
+          <div style="font-weight:500;font-size:12px">${item.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">${Math.round(item.allocSecs / 60)} min</div>
+        </div>
+        <button class="inbox-accept" onclick="acceptToFlow('${item.id}')" title="Add to Timer">+ Add</button>
+        <button class="inbox-dismiss" onclick="dismissFromFlow('${item.id}')" title="Dismiss">✕</button>
+      `;
+      incomingItems.appendChild(pill);
+    });
+  } else {
+    incomingSection.style.display = 'none';
+  }
+}
+
+
+function clockFindSlotInWindow(windowId, durationSec) {
+  const window = availabilityWindows.find(w => w.id === windowId);
+  if (!window) return null;
+  const occupied = [];
+  clockTasks.forEach(t => {
+    clockSplitInterval(t.start, t.duration).forEach(p => {
+      const s = Math.max(p[0], window.start);
+      const e = Math.min(p[1], window.end);
+      if (e - s > 0) occupied.push([s, e]);
+    });
+  });
+  occupied.sort((a, b) => a[0] - b[0]);
+  let cursor = window.start;
+  for (const o of occupied) {
+    if (o[0] - cursor >= durationSec) return cursor;
+    cursor = Math.max(cursor, o[1]);
+  }
+  if (window.end - cursor >= durationSec) return cursor;
+  return null;
+}
+
+function clockShowTaskPlacementModal(name, durationSec, color) {
+  pendingTaskToAdd = { name, durationSec, color };
+  const modalContent = document.getElementById('modalContent');
+  modalContent.innerHTML = `<div style="margin-bottom:12px;font-weight:600;color:var(--text)">${name} — ${clockFormatHMS(durationSec)}</div>`;
+  const windows = clockGetAvailabilityIntervals();
+  if (windows.length === 0) {
+    alert('Add at least one availability window first.');
+    pendingTaskToAdd = null;
+    return;
+  }
+  windows.forEach(w => {
+    const slot = clockFindSlotInWindow(w.id, durationSec);
+    const canFit = slot !== null;
+    const el = document.createElement('div');
+    el.className = 'clock-slot-option';
+    el.style.cursor = canFit ? 'pointer' : 'not-allowed';
+    el.style.opacity = canFit ? '1' : '0.5';
+    const timeStr = `${clockFormatHMS(w.start)} → ${clockFormatHMS(w.end)}`;
+    let slotStr = '';
+    if (canFit) {
+      const slotEnd = slot + durationSec;
+      slotStr = `(${clockFormatHMS(slot)} → ${clockFormatHMS(slotEnd)})`;
+    } else {
+      slotStr = '(No space available)';
+    }
+    el.innerHTML = `<div style="font-weight:600">${timeStr}</div><div style="font-size:11px;opacity:0.8">${slotStr}</div>`;
+    el.dataset.windowId = w.id;
+    el.dataset.canFit = canFit;
+    if (canFit) {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.clock-slot-option').forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedWindowForTask = w.id;
+      });
+    }
+    modalContent.appendChild(el);
+  });
+  document.getElementById('clockPlacementModal').classList.add('open');
+}
+
+function clockCommitTaskToWindow() {
+  if (!selectedWindowForTask || !pendingTaskToAdd) return;
+  const { name, durationSec, color } = pendingTaskToAdd;
+  const slot = clockFindSlotInWindow(selectedWindowForTask, durationSec);
+  if (slot === null) {
+    alert('Not enough space in selected window.');
+    return;
+  }
+  const newTask = {
+    id: clockUid(),
+    name: name || 'Task',
+    start: slot,
+    duration: durationSec,
+    color: color || document.getElementById('taskColor').value,
+    overlap: false
+  };
+  clockTasks.push(newTask);
+  clockTasks.sort((a, b) => a.start - b.start);
+  clockRefreshUI();
+  drawClock();
+  document.getElementById('modal').classList.remove('open');
+  pendingTaskToAdd = null;
+  selectedWindowForTask = null;
+  document.getElementById('taskName').value = '';
+}
+
+// Clock event listeners
+document.getElementById('addWindow')?.addEventListener('click', () => {
+  const h1 = parseInt(document.getElementById('fromHour').value) || 0;
+  const m1 = parseInt(document.getElementById('fromMin').value) || 0;
+  const s1 = parseInt(document.getElementById('fromSec').value) || 0;
+  const h2 = parseInt(document.getElementById('toHour').value) || 0;
+  const m2 = parseInt(document.getElementById('toMin').value) || 0;
+  const s2 = parseInt(document.getElementById('toSec').value) || 0;
+  const start = clockTimeToSecs(h1, m1, s1);
+  const end = clockTimeToSecs(h2, m2, s2);
+  if (start === end) {
+    alert('Start and end times must be different.');
+    return;
+  }
+  availabilityWindows.push({ id: clockUid(), start, end });
+  clockRefreshWindowsList();
+  drawClock();
+});
+
+document.getElementById('clearAllWindows')?.addEventListener('click', () => {
+  availabilityWindows = [];
+  clockRefreshWindowsList();
+  drawClock();
+});
+
+document.getElementById('durationHours')?.addEventListener('change', () => {
+  const h = parseInt(document.getElementById('durationHours').value) || 0;
+  const m = parseInt(document.getElementById('durationMinutes').value) || 0;
+  const s = parseInt(document.getElementById('durationSeconds').value) || 0;
+  const totalSec = (h * 3600) + (m * 60) + s;
+  document.getElementById('durationPreview').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+});
+document.getElementById('durationMinutes')?.addEventListener('change', clockUpdateDurationPreview);
+document.getElementById('durationSeconds')?.addEventListener('change', clockUpdateDurationPreview);
+
+function clockUpdateDurationPreview() {
+  const h = parseInt(document.getElementById('durationHours').value) || 0;
+  const m = parseInt(document.getElementById('durationMinutes').value) || 0;
+  const s = parseInt(document.getElementById('durationSeconds').value) || 0;
+  document.getElementById('durationPreview').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+document.getElementById('addTask')?.addEventListener('click', () => {
+  const name = document.getElementById('taskName').value.trim() || 'Task';
+  const h = parseInt(document.getElementById('durationHours').value) || 0;
+  const m = parseInt(document.getElementById('durationMinutes').value) || 0;
+  const s = parseInt(document.getElementById('durationSeconds').value) || 0;
+  const durationSec = (h * 3600) + (m * 60) + s;
+  if (durationSec < 60) {
+    alert('Please choose a duration of at least 1 minute.');
+    return;
+  }
+  const color = document.getElementById('taskColor').value;
+  clockShowTaskPlacementModal(name, durationSec, color);
+});
+
+document.getElementById('randomColor')?.addEventListener('click', () => {
+  const h = Math.floor(Math.random() * 360);
+  const colors = ['#5de0a8', '#f5a623', '#4a8cff', '#ff9a9e', '#a1c4fd', '#ffa751', '#ffb75e'];
+  document.getElementById('taskColor').value = colors[Math.floor(Math.random() * colors.length)];
+});
+
+document.getElementById('freeGapColor')?.addEventListener('change', drawClock);
+
+document.getElementById('clockModalCancel')?.addEventListener('click', () => {
+  document.getElementById('clockPlacementModal').classList.remove('open');
+  pendingTaskToAdd = null;
+  selectedWindowForTask = null;
+});
+
+document.getElementById('clockModalConfirm')?.addEventListener('click', clockCommitTaskToWindow);
+
+// CSV import/export
+document.getElementById('import')?.addEventListener('click', () => {
+  document.getElementById('csvFileInput').click();
+});
+
+document.getElementById('csvFileInput')?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const csv = event.target.result;
+      const lines = csv.trim().split('\n');
+      const importedTasks = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+        for (let j = 0; j < line.length; j++) {
+          const ch = line[j];
+          const nextCh = line[j + 1];
+          if (ch === '"') {
+            if (inQuotes && nextCh === '"') {
+              current += '"';
+              j++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === ',' && !inQuotes) {
+            fields.push(current.trim());
+            current = '';
+          } else {
+            current += ch;
+          }
+        }
+        fields.push(current.trim());
+        if (fields.length >= 4) {
+          const name = fields[0] || 'Task';
+          const startTime = clockParseTimeToSeconds(fields[1] || '0:00:00');
+          let duration = 3600;
+          if (fields[4]) {
+            const mins = parseInt(fields[4]);
+            duration = !isNaN(mins) && mins > 0 ? mins * 60 : clockParseTimeToSeconds(fields[3] || '0:00:00') || 3600;
+          } else if (fields[3]) {
+            duration = clockParseTimeToSeconds(fields[3]) || 3600;
+          }
+          let color = '#5de0a8';
+          if (fields[5] && /^#[0-9a-fA-F]{6}$/.test(fields[5])) color = fields[5];
+          if (name && startTime >= 0 && startTime < 86400 && duration > 0) {
+            importedTasks.push({ name, start: startTime, duration: Math.min(duration, 86400), color });
+          }
+        }
+      }
+      if (importedTasks.length > 0) {
+        const html = importedTasks.map((t, idx) => {
+          const endTime = t.start + t.duration;
+          const durationMins = Math.round(t.duration / 60);
+          return `<div style="display:flex;gap:8px;align-items:center;padding:10px;background:var(--bg);border-radius:6px;margin-bottom:6px;border:1px solid var(--border);"><div style="width:20px;height:20px;background:${t.color};border-radius:4px;flex:0 0 20px;border:1px solid rgba(255,255,255,0.1);"></div><div style="flex:1;"><div style="font-weight:500;color:var(--text);">${t.name}</div><div style="color:var(--muted);font-size:10px;">${clockFormatHMS(t.start)} → ${clockFormatHMS(endTime)} (${durationMins}m)</div></div></div>`;
+        }).join('');
+        document.getElementById('importModalContent').innerHTML = `<div style="color:var(--active);margin-bottom:12px;font-weight:600;">✓ ${importedTasks.length} task(s) ready to import</div>${html}`;
+        pendingImportTasks = importedTasks;
+        document.getElementById('importModal').classList.add('open');
+      }
+      document.getElementById('csvFileInput').value = '';
+    } catch (err) {
+      alert('Error reading CSV: ' + err.message);
+      document.getElementById('csvFileInput').value = '';
+    }
+  };
+  reader.readAsText(file);
+});
+
+let pendingImportTasks = [];
+document.getElementById('importCancel')?.addEventListener('click', () => {
+  document.getElementById('importModal').classList.remove('open');
+  pendingImportTasks = [];
+});
+
+document.getElementById('importConfirm')?.addEventListener('click', () => {
+  if (pendingImportTasks.length === 0) return;
+  pendingImportTasks.forEach(t => clockTasks.push(t));
+  clockTasks.sort((a, b) => a.start - b.start);
+  clockRefreshUI();
+  drawClock();
+  document.getElementById('importModal').classList.remove('open');
+  pendingImportTasks = [];
+});
+
+document.getElementById('export')?.addEventListener('click', () => {
+  if (clockTasks.length === 0) {
+    alert('No tasks to export.');
+    return;
+  }
+  let csv = 'Task Name,Start Time (HH:mm:ss),End Time (HH:mm:ss),Duration (HH:mm:ss),Duration (minutes),Colour\n';
+  clockTasks.forEach(t => {
+    const endTime = t.start + t.duration;
+    const durationMin = Math.round(t.duration / 60);
+    const durationHMS = clockFormatHMS(t.duration);
+    csv += `"${t.name.replace(/"/g, '""')}",${clockFormatHMS(t.start)},${clockFormatHMS(endTime)},${durationHMS},${durationMin},"${t.color}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'clock-tasks.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+function clockGetToday() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function clockUpdateSessionStatus() {
+  const key = `tasksClock_${clockGetToday()}`;
+  const saved = localStorage.getItem(key);
+  const sessionStatus = document.getElementById('sessionStatus');
+  if (saved) {
+    const data = JSON.parse(saved);
+    const taskCount = data.tasks ? data.tasks.length : 0;
+    sessionStatus.innerHTML = `<strong style="color:var(--active);">✓ Saved today</strong><br/><span style="font-size:10px;color:var(--muted);">Tasks: ${taskCount} | ${data.timestamp}</span>`;
+  } else {
+    sessionStatus.innerHTML = 'No session saved today';
+  }
+}
+
+document.getElementById('saveSession')?.addEventListener('click', () => {
+  if (clockTasks.length === 0) {
+    alert('No tasks to save.');
+    return;
+  }
+  const key = `tasksClock_${clockGetToday()}`;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const data = {
+    tasks: clockTasks,
+    windows: availabilityWindows,
+    timestamp: time,
+    date: clockGetToday()
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+  clockUpdateSessionStatus();
+  alert(`Saved ${clockTasks.length} task(s) for today!`);
+});
+
+document.getElementById('clearSession')?.addEventListener('click', () => {
+  if (!confirm('Clear today\'s saved session?')) return;
+  const key = `tasksClock_${clockGetToday()}`;
+  localStorage.removeItem(key);
+  clockUpdateSessionStatus();
+});
+
+function clockLoadSessionIfAvailable() {
+  const key = `tasksClock_${clockGetToday()}`;
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.tasks && data.tasks.length > 0) {
+        clockTasks = data.tasks;
+        if (data.windows) availabilityWindows = data.windows;
+        clockRefreshUI();
+        drawClock();
+      }
+    } catch (err) {
+      console.error('Error loading session:', err);
+    }
+  }
+  clockUpdateSessionStatus();
+}
+
+// Initialize clock on page switch
+function initializeClock() {
+  if (!document.getElementById('clock')) return;
+  setTimeout(() => {
+    clockLoadSessionIfAvailable();
+    clockRefreshWindowsList();
+    clockRefreshUI();
+    drawClock();
+    setupClockDragHandlers();
+  }, 100);
+}
+
+// ── Clock Drag & Drop ──
+function setupClockDragHandlers() {
+  const canvas = document.getElementById('clock');
+  if (!canvas) return;
   
-  html += `</div>`;
-  page.innerHTML = html;
+  const CANVAS_SIZE = 500;
+  const cx = CANVAS_SIZE / 2;
+  const cy = CANVAS_SIZE / 2;
+  const R = 200;
+  const innerR = 120;
+
+  canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Check if click is on a task (on the ring)
+    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+    if (dist < innerR - 6 || dist > R + 6) return; // Not on task ring
+    
+    // Find which task was clicked
+    const angle = Math.atan2(y - cy, x - cx);
+    const normalizedAngle = angle + Math.PI / 2;
+    const timeFromAngle = (normalizedAngle / (2 * Math.PI)) * DAY_SEC;
+    const normalizedTime = ((timeFromAngle % DAY_SEC) + DAY_SEC) % DAY_SEC;
+    
+    for (const t of clockTasks) {
+      const parts = clockSplitInterval(t.start, t.duration);
+      for (const p of parts) {
+        if (normalizedTime >= p[0] && normalizedTime <= p[1]) {
+          draggingClock = t;
+          return;
+        }
+      }
+    }
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate angle and time from mouse position
+    const angle = Math.atan2(y - cy, x - cx);
+    const normalizedAngle = angle + Math.PI / 2;
+    const timeFromAngle = (normalizedAngle / (2 * Math.PI)) * DAY_SEC;
+    const normalizedTime = ((timeFromAngle % DAY_SEC) + DAY_SEC) % DAY_SEC;
+    
+    // Handle dragging
+    if (draggingClock) {
+      let newStart = clockSnapToSeconds(normalizedTime);
+      // Keep task duration, just move start time
+      if (newStart + draggingClock.duration <= DAY_SEC) {
+        draggingClock.start = newStart;
+      }
+      drawClock();
+      
+      // Update task list times in real-time
+      const taskListDiv = document.getElementById('taskList');
+      if (taskListDiv) {
+        clockTasks.forEach(t => {
+          const li = taskListDiv.querySelector(`[data-task-id="${t.id}"]`);
+          if (li) {
+            const endTime = t.start + t.duration;
+            const timeStr = `${clockFormatHMS(t.start)} → ${clockFormatHMS(endTime)}`;
+            const detailsDiv = li.querySelector('.meta-muted');
+            if (detailsDiv) {
+              detailsDiv.textContent = `${timeStr} • ${Math.round(t.duration / 60)} min`;
+              detailsDiv.style.color = '#5de0a8';
+              detailsDiv.style.fontWeight = 'bold';
+            }
+          }
+        });
+      }
+      
+      // Show tooltip with current time
+      const tooltip = document.getElementById('clock-tooltip');
+      if (tooltip) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX - rect.left) + 'px';
+        tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+        tooltip.textContent = clockFormatHMS(draggingClock.start) + ' → ' + clockFormatHMS(draggingClock.start + draggingClock.duration);
+      }
+      
+      canvas.style.cursor = 'grabbing';
+    } else {
+      // Hide tooltip
+      const tooltip = document.getElementById('clock-tooltip');
+      if (tooltip) {
+        tooltip.style.display = 'none';
+      }
+      
+      // Cursor feedback - check if hovering over a task
+      const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+      const isOnRing = dist >= innerR - 6 && dist <= R + 6;
+      
+      if (isOnRing) {
+        for (const t of clockTasks) {
+          const parts = clockSplitInterval(t.start, t.duration);
+          for (const p of parts) {
+            if (normalizedTime >= p[0] && normalizedTime <= p[1]) {
+              canvas.style.cursor = 'grab';
+              return;
+            }
+          }
+        }
+      }
+      canvas.style.cursor = 'default';
+    }
+  });
+
+  canvas.addEventListener('mouseup', () => {
+    if (draggingClock) {
+      draggingClock = null;
+      clockRefreshUI();
+      drawClock();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    if (draggingClock) {
+      draggingClock = null;
+      clockRefreshUI();
+      drawClock();
+    }
+  });
+}
+
+// Override renderClockPage with new function
+function renderClockPage() {
+  initializeClock();
 }
 
 function openClockModal() {
@@ -1457,6 +3024,157 @@ function exportClockJSON() {
 /* ═══════════════════════════════════════════
    REPORTS PAGE - ADVANCED ANALYTICS
 ═══════════════════════════════════════════ */
+
+// Generate AI-powered performance advice using Gemini API
+async function generatePerformanceAdvice(performanceData) {
+  const apiKey = localStorage.getItem('gemini_api_key') || '';
+  
+  if (!apiKey) {
+    return { success: false, error: 'API key not configured. Add your Gemini API key in the API Configuration section.' };
+  }
+  
+  const model = 'gemini-3-flash-preview';
+  
+  try {
+    const prompt = `Analyze this productivity data and provide SHORT, PRECISE observations:
+
+Performance Data:
+- Completion Rate: ${performanceData.completionRate}%
+- Work Time: ${performanceData.totalWorkedHours}h | Break Time: ${performanceData.totalBreakHours}h
+- Work-to-Break Ratio: ${performanceData.workBreakRatio}:1
+- Avg Break Duration: ${performanceData.avgBreakDuration} min per task
+
+Provide ONLY these 4 sections with SHORT bullet points (max 2 lines each):
+
+🔍 KEY FINDINGS:
+- What patterns/observations did you notice?
+
+⚠️ WHAT TO MONITOR:
+- What should be watched or tracked?
+
+💡 QUICK CHECKPOINTS:
+- What 2-3 specific metrics to focus on tomorrow?
+
+✓ POSITIVE NOTE:
+- One thing done well today?
+
+Keep it brief, factual, and actionable. NO lengthy explanations.`;
+
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+
+    if (!response.ok) {
+      let errorMsg = `API Error ${response.status}`;
+      if (response.status === 403) {
+        errorMsg = 'API Key is invalid or doesn\'t have access to this model';
+      } else if (response.status === 429) {
+        errorMsg = 'Rate limit exceeded. Try again in a moment';
+      } else if (response.status === 500) {
+        errorMsg = 'Gemini API server error. Try again later';
+      }
+      throw new Error(errorMsg);
+    }
+
+    const data = await response.json();
+    const advice = data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    
+    if (!advice) {
+      throw new Error('No response from API');
+    }
+    
+    return { success: true, advice: advice };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// Save API key to localStorage
+function saveGeminiApiKey() {
+  const input = document.getElementById('gemini-api-key-input');
+  const statusEl = document.getElementById('api-key-status');
+  const key = input.value.trim();
+  
+  if (!key) {
+    if (statusEl) statusEl.innerHTML = '<span style="color: var(--danger);">❌ Please enter an API key</span>';
+    return;
+  }
+  
+  localStorage.setItem('gemini_api_key', key);
+  input.value = '';
+  if (statusEl) statusEl.innerHTML = '<span style="color: var(--done);">✓ API key saved successfully!</span>';
+  setTimeout(() => {
+    if (statusEl) statusEl.innerHTML = '';
+  }, 3000);
+}
+
+// Clear API key from localStorage
+function clearGeminiApiKey() {
+  localStorage.removeItem('gemini_api_key');
+  const input = document.getElementById('gemini-api-key-input');
+  const statusEl = document.getElementById('api-key-status');
+  if (input) input.value = '';
+  if (statusEl) statusEl.innerHTML = '<span style="color: var(--warning);">🗑 API key cleared</span>';
+  setTimeout(() => {
+    if (statusEl) statusEl.innerHTML = '';
+  }, 2000);
+}
+
+// Toggle section visibility with localStorage persistence
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  const toggle = document.getElementById(sectionId + '-toggle');
+  
+  if (!section || !toggle) return;
+  
+  const isVisible = section.style.display !== 'none';
+  section.style.display = isVisible ? 'none' : 'block';
+  toggle.style.transform = isVisible ? 'rotate(-90deg)' : 'rotate(0deg)';
+  
+  // Save state to localStorage
+  localStorage.setItem('section_' + sectionId, isVisible ? 'collapsed' : 'expanded');
+}
+
+// Manually trigger advice generation with error handling
+async function generateAdviceManually() {
+  const container = document.getElementById('ai-advice-container');
+  const btn = document.getElementById('generate-advice-btn');
+  
+  if (!container || !btn || !window.currentPerformanceData) return;
+  
+  // Disable button and show loading state
+  btn.disabled = true;
+  container.innerHTML = `
+    <div style="color: var(--muted); text-align: center;">
+      <div style="font-size: 12px; margin-bottom: 8px;">Generating AI advice...</div>
+      <div style="width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--active); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto;"></div>
+    </div>
+  `;
+  
+  // Generate advice
+  const result = await generatePerformanceAdvice(window.currentPerformanceData);
+  
+  // Display result
+  if (result.success) {
+    container.innerHTML = `<div style="font-size: 13px; line-height: 1.6; color: var(--text);">${result.advice.replace(/\n/g, '<br>')}</div>`;
+  } else {
+    container.innerHTML = `
+      <div style="color: var(--danger); text-align: center;">
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">❌ Error Generating Advice</div>
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">${result.error}</div>
+        <div style="font-size: 11px; color: var(--muted2); margin-top: 8px;">Check your internet connection and try again.</div>
+      </div>
+    `;
+  }
+  
+  // Re-enable button
+  btn.disabled = false;
+}
+
 function renderReportsPage() {
   const page = document.getElementById('page-report');
   if (!page) return;
@@ -1649,6 +3367,71 @@ function renderReportsPage() {
         </div>
       </div>
 
+      <!-- ═══ BREAKS BREAKDOWN ═══ -->
+      <div style="margin-bottom: 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--break); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">☕ All Breaks Taken</div>`;
+    
+    // Collect all breaks from all tasks
+    let allBreaks = [];
+    flowTasks.forEach(t => {
+      t.segments.forEach((seg, segIdx) => {
+        if (seg.type === 'break') {
+          allBreaks.push({
+            taskName: t.name,
+            taskId: t.id,
+            breakNumber: t.segments.slice(0, segIdx + 1).filter(s => s.type === 'break').length,
+            duration: seg.secs,
+            reason: seg.note || '(no reason recorded)',
+            startTime: seg.startTs,
+            endTime: seg.endTs,
+            limitSecs: seg.breakLimitSecs,
+            overrun: seg.overrun || false
+          });
+        }
+      });
+    });
+    
+    if (allBreaks.length === 0) {
+      html += `<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; text-align: center; color: var(--muted);">
+        <div style="font-size: 14px;">No breaks recorded yet</div>
+      </div>`;
+    } else {
+      html += `<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
+        <div style="display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr; gap: 12px; padding: 14px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.05em;">
+          <div>Task</div>
+          <div>Reason</div>
+          <div>Duration</div>
+          <div>Time</div>
+          <div>Status</div>
+        </div>`;
+      
+      allBreaks.forEach((brk, idx) => {
+        const timeStr = brk.startTime ? new Date(brk.startTime).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) : '—';
+        const statusStr = brk.overrun ? '⚠ Overrun' : 'OK';
+        const statusColor = brk.overrun ? 'var(--danger)' : 'var(--active)';
+        
+        html += `<div style="display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); align-items: center; font-size: 11px;">
+          <div>
+            <div style="font-weight: 500; color: var(--text);">${brk.taskName}</div>
+            <div style="font-size: 9px; color: var(--muted); margin-top: 2px;">Break #${brk.breakNumber}</div>
+          </div>
+          <div style="color: var(--text); line-height: 1.4; word-break: break-word;">${brk.reason}</div>
+          <div style="color: var(--break); font-weight: 500;">${fmtDurF(brk.duration)}</div>
+          <div style="color: var(--muted2);">${timeStr}</div>
+          <div>
+            <span style="display: inline-block; padding: 2px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 3px; font-size: 9px; font-weight: 600; text-transform: uppercase;">${statusStr}</span>
+          </div>
+        </div>`;
+      });
+      
+      html += `</div>
+        <div style="background: var(--surface2); padding: 12px 16px; font-size: 11px; color: var(--muted);">
+          <strong style="color: var(--break);">${allBreaks.length}</strong> total breaks · <strong style="color: var(--break);">${fmtDurF(allBreaks.reduce((a, b) => a + b.duration, 0))}</strong> break time · <strong style="color: var(--active);">${Math.round(allBreaks.reduce((a, b) => a + (b.overrun ? 1 : 0), 0))} overruns</strong>
+        </div>`;
+    }
+    
+    html += `</div>
+
       <!-- ═══ PRODUCTIVITY INSIGHTS ═══ -->
       <div style="margin-bottom: 32px;">
         <div style="font-size: 13px; font-weight: 600; color: var(--active); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">💡 Insights & Analysis</div>
@@ -1693,6 +3476,51 @@ function renderReportsPage() {
         </div>
       </div>
 
+      <!-- ═══ AI PERFORMANCE ADVICE ═══ -->
+      <div style="margin-bottom: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; cursor: pointer;" onclick="toggleSection('ai-advice-section')">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="ai-advice-toggle" style="font-size: 18px; color: var(--active); transition: transform 0.2s; font-weight: bold; min-width: 20px;">▼</span>
+            <div style="font-size: 13px; font-weight: 600; color: var(--active); text-transform: uppercase; letter-spacing: 0.08em;">🤖 AI Performance Advice</div>
+          </div>
+          <button onclick="generateAdviceManually(); event.stopPropagation();" id="generate-advice-btn" style="padding: 6px 12px; background: var(--active); color: var(--bg); border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">↻ Generate</button>
+        </div>
+        <div id="ai-advice-section" style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; min-height: 100px; display: flex; align-items: center; justify-content: center;">
+          <div id="ai-advice-container" style="width: 100%;">
+            <div style="color: var(--muted); text-align: center; font-size: 12px;">Click "Generate" to analyze your performance with AI</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ GEMINI API CONFIGURATION ═══ -->
+      <div style="margin-bottom: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; cursor: pointer;" onclick="toggleSection('api-config-section')">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="api-config-toggle" style="font-size: 18px; color: var(--active); transition: transform 0.2s; font-weight: bold; min-width: 20px;">▼</span>
+            <div style="font-size: 13px; font-weight: 600; color: var(--active); text-transform: uppercase; letter-spacing: 0.08em;">🔑 API Configuration</div>
+          </div>
+        </div>
+        <div id="api-config-section" style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+          <div style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">Enter your Gemini API key to enable AI advice generation</div>
+          <div style="display: flex; gap: 8px; align-items: flex-start;">
+            <input type="password" id="gemini-api-key-input" placeholder="Paste your Gemini API key here..." style="flex: 1; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 12px; font-family: monospace;">
+            <button onclick="saveGeminiApiKey()" style="padding: 10px 16px; background: var(--done); color: var(--bg); border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; white-space: nowrap;">💾 Save</button>
+            <button onclick="clearGeminiApiKey()" style="padding: 10px 16px; background: var(--danger); color: var(--bg); border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; white-space: nowrap;">🗑 Clear</button>
+          </div>
+          <div id="api-key-status" style="font-size: 11px; color: var(--muted2); margin-top: 12px;"></div>
+        </div>
+      </div>
+
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        #generate-advice-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      </style>
+
       <!-- ═══ EXPORT OPTIONS ═══ -->
       <div style="padding-top: 20px; border-top: 1px solid var(--border);">
         <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; font-weight: 600;">📥 Export & Download</div>
@@ -1707,6 +3535,46 @@ function renderReportsPage() {
   
   html += `</div>`;
   page.innerHTML = html;
+  
+  // Store performance data globally for manual generation
+  window.currentPerformanceData = {
+    totalTasks: flowTasks.length,
+    completedTasks: doneTasks.length,
+    completionRate: completionRate,
+    totalWorkedHours: (totalWorked / 3600).toFixed(2),
+    totalBreakHours: (totalBreak / 3600).toFixed(2),
+    avgBreakDuration: ((totalBreak / Math.max(flowTasks.length, 1)) / 60).toFixed(1),
+    workBreakRatio: (totalWorked / Math.max(totalBreak, 1)).toFixed(2)
+  };
+  
+  // Load API key status on page render
+  const savedApiKey = localStorage.getItem('gemini_api_key');
+  const apiKeyInput = document.getElementById('gemini-api-key-input');
+  const apiKeyStatus = document.getElementById('api-key-status');
+  
+  if (apiKeyInput) {
+    apiKeyInput.placeholder = savedApiKey ? '••••••••••••••••••••••••••' : 'Paste your Gemini API key here...';
+  }
+  if (apiKeyStatus && savedApiKey) {
+    apiKeyStatus.innerHTML = '<span style="color: var(--done);">✓ API key configured</span>';
+  }
+  
+  // Restore section collapse/expand states
+  ['ai-advice-section', 'api-config-section'].forEach(sectionId => {
+    const state = localStorage.getItem('section_' + sectionId);
+    const section = document.getElementById(sectionId);
+    const toggle = document.getElementById(sectionId + '-toggle');
+    
+    if (section && toggle) {
+      if (state === 'collapsed') {
+        section.style.display = 'none';
+        toggle.style.transform = 'rotate(-90deg)';
+      } else {
+        section.style.display = 'block';
+        toggle.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
 }
 
 function exportReportJSON() {
@@ -1765,6 +3633,26 @@ function exportDetailedReport() {
   const totalBreak = flowTasks.reduce((a, t) => a + totalBreakSecs(t), 0);
   const totalAllocated = flowTasks.reduce((a, t) => a + t.allocSecs, 0);
   
+  // Collect all breaks for export
+  let allBreaks = [];
+  flowTasks.forEach(t => {
+    t.segments.forEach((seg, segIdx) => {
+      if (seg.type === 'break') {
+        allBreaks.push({
+          taskName: t.name,
+          taskId: t.id,
+          breakNumber: t.segments.slice(0, segIdx + 1).filter(s => s.type === 'break').length,
+          durationSecs: seg.secs,
+          reason: seg.note || '(no reason recorded)',
+          startTime: seg.startTs ? new Date(seg.startTs).toISOString() : null,
+          endTime: seg.endTs ? new Date(seg.endTs).toISOString() : null,
+          limitSecs: seg.breakLimitSecs,
+          overrun: seg.overrun || false
+        });
+      }
+    });
+  });
+  
   const report = {
     metadata: {
       generatedAt: new Date().toISOString(),
@@ -1781,15 +3669,18 @@ function exportDetailedReport() {
       totalWorkedSecs: totalWorked,
       totalBreakSecs: totalBreak,
       totalAllocatedSecs: totalAllocated,
-      totalBreaks: flowTasks.reduce((a, t) => a + t.segments.filter(s => s.type === 'break').length, 0)
+      totalBreaks: allBreaks.length,
+      totalBreaksDuration: allBreaks.reduce((a, b) => a + b.durationSecs, 0)
     },
     metrics: {
       completionRate: Math.round((flowTasks.filter(t => t.state === 'done').length / Math.max(flowTasks.length, 1)) * 100),
       efficiencyRate: Math.round((totalWorked / Math.max(totalAllocated, 1)) * 100),
       avgWorkedPerTask: flowTasks.length > 0 ? totalWorked / flowTasks.length : 0,
-      avgBreaksPerTask: flowTasks.length > 0 ? flowTasks.reduce((a, t) => a + t.segments.filter(s => s.type === 'break').length, 0) / flowTasks.length : 0,
+      avgBreaksPerTask: flowTasks.length > 0 ? allBreaks.length / flowTasks.length : 0,
+      avgBreakDuration: allBreaks.length > 0 ? allBreaks.reduce((a, b) => a + b.durationSecs, 0) / allBreaks.length : 0,
       workBreakRatio: (totalWorked / Math.max(totalBreak, 1)).toFixed(2),
-      avgSessionLength: flowTasks.length > 0 ? (totalWorked + totalBreak) / flowTasks.length : 0
+      avgSessionLength: flowTasks.length > 0 ? (totalWorked + totalBreak) / flowTasks.length : 0,
+      breakOverrunCount: allBreaks.filter(b => b.overrun).length
     },
     taskDetails: flowTasks.map(t => ({
       id: t.id,
@@ -1800,6 +3691,15 @@ function exportDetailedReport() {
       breakSecs: totalBreakSecs(t),
       breakCount: t.segments.filter(s => s.type === 'break').length,
       progressPercent: Math.round((totalWorkedSecs(t) / t.allocSecs) * 100),
+      breaks: t.segments.filter(s => s.type === 'break').map((seg, segIdx) => ({
+        breakNumber: t.segments.slice(0, segIdx + 1).filter(s => s.type === 'break').length,
+        durationSecs: seg.secs,
+        reason: seg.note,
+        startTime: seg.startTs ? new Date(seg.startTs).toISOString() : null,
+        endTime: seg.endTs ? new Date(seg.endTs).toISOString() : null,
+        limitSecs: seg.breakLimitSecs,
+        overrun: seg.overrun || false
+      })),
       segments: t.segments.map(s => ({
         type: s.type,
         durationSecs: s.secs,
@@ -1809,7 +3709,8 @@ function exportDetailedReport() {
         breakLimitSecs: s.breakLimitSecs,
         overrun: s.overrun || false
       }))
-    }))
+    })),
+    allBreaks: allBreaks
   };
   downloadJSON(report, 'tempow-detailed-report.json');
 }
@@ -1823,6 +3724,9 @@ function saveFlowData() {
   try {
     localStorage.setItem(FLOW_KEY, JSON.stringify({
       tasks: flowTasks,
+      discardedTasks: discardedTasks,
+      workStartTime: workStartTime,
+      workEndTime: workEndTime,
       savedAt: new Date().toISOString()
     }));
     flashSaveIndicator('flowSaveIndicator');
@@ -1835,6 +3739,24 @@ function loadFlowData() {
     const raw = localStorage.getItem(FLOW_KEY);
     if (!raw) return;
     const data = JSON.parse(raw);
+    
+    // Load work hours
+    if (data.workStartTime) {
+      workStartTime = data.workStartTime;
+      const startInput = document.getElementById('workStartTime');
+      if (startInput) startInput.value = String(workStartTime.h).padStart(2, '0') + ':' + String(workStartTime.m).padStart(2, '0');
+    }
+    if (data.workEndTime) {
+      workEndTime = data.workEndTime;
+      const endInput = document.getElementById('workEndTime');
+      if (endInput) endInput.value = String(workEndTime.h).padStart(2, '0') + ':' + String(workEndTime.m).padStart(2, '0');
+    }
+    
+    // Load discarded tasks
+    if (data.discardedTasks && Array.isArray(data.discardedTasks)) {
+      discardedTasks = data.discardedTasks;
+    }
+    
     if (data.tasks && Array.isArray(data.tasks)) {
       flowTasks = data.tasks.map(t => {
         if (!t.segments) {
@@ -2014,16 +3936,184 @@ function downloadReport() {
 }
 
 /* ═══════════════════════════════════════════
+   EXTEND TIME FUNCTIONALITY
+═══════════════════════════════════════════ */
+let extendTimeTaskId = null;
+
+function openExtendModal(taskId) {
+  extendTimeTaskId = taskId;
+  const t = flowTasks.find(x => x.id === taskId);
+  if (!t) return;
+  
+  const maxExtendSecs = Math.floor(t.allocSecs * 0.25);
+  const maxExtendMin = Math.ceil(maxExtendSecs / 60);
+  const currentMin = Math.round(t.allocSecs / 60);
+  
+  document.getElementById('extendTimeTaskName').textContent = `Extend "${t.name}"`;
+  document.getElementById('extendTimeCurrentAlloc').textContent = `${currentMin} minutes`;
+  document.getElementById('extendTimeMaxExt').textContent = `${maxExtendMin} minutes`;
+  document.getElementById('extendTimeInput').value = '';
+  document.getElementById('extendTimeInput').max = maxExtendMin;
+  document.getElementById('extendTimeInput').placeholder = `1 - ${maxExtendMin}`;
+  document.getElementById('extendConfirmBtn').disabled = true;
+  
+  updateExtendPreview();
+  document.getElementById('extendTimeModal').classList.add('open');
+  setTimeout(() => document.getElementById('extendTimeInput').focus(), 60);
+}
+
+function closeExtendModal() {
+  document.getElementById('extendTimeModal').classList.remove('open');
+  extendTimeTaskId = null;
+}
+
+document.getElementById('extendTimeInput').addEventListener('input', updateExtendPreview);
+
+function updateExtendPreview() {
+  const input = document.getElementById('extendTimeInput');
+  const t = flowTasks.find(x => x.id === extendTimeTaskId);
+  if (!t) return;
+  
+  const maxExtendMin = Math.ceil((t.allocSecs * 0.25) / 60);
+  const extraMin = parseInt(input.value) || 0;
+  
+  const isValid = extraMin > 0 && extraMin <= maxExtendMin;
+  document.getElementById('extendConfirmBtn').disabled = !isValid;
+  
+  if (isValid) {
+    const newTotal = Math.round(t.allocSecs / 60) + extraMin;
+    document.getElementById('extendTimePreview').textContent = `${newTotal} minutes total`;
+  } else {
+    document.getElementById('extendTimePreview').textContent = `—`;
+  }
+}
+
+function confirmExtendTime() {
+  if (!extendTimeTaskId) return;
+  const t = flowTasks.find(x => x.id === extendTimeTaskId);
+  if (!t) return;
+  
+  const input = document.getElementById('extendTimeInput');
+  const extraMin = parseInt(input.value) || 0;
+  const maxExtendMin = Math.ceil((t.allocSecs * 0.25) / 60);
+  
+  if (extraMin <= 0 || extraMin > maxExtendMin) {
+    alert(`Can only extend by 1-${maxExtendMin} minutes`);
+    return;
+  }
+  
+  const extraSecs = extraMin * 60;
+  t.allocSecs += extraSecs;
+  closeExtendModal();
+  renderFlowList();
+}
+
+/* ═══════════════════════════════════════════
+   DRAG AND DROP FUNCTIONALITY
+═══════════════════════════════════════════ */
+let draggedTask = null;
+let draggedIndex = null;
+
+function handleTaskDragStart(e, taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  draggedTask = task;
+  draggedIndex = flowTasks.indexOf(task);
+  
+  const card = e.target.closest('.task-card');
+  if (card) {
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget);
+  }
+}
+
+function handleTaskDragOver(e, index) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  
+  const card = e.currentTarget;
+  if (card && draggedIndex !== null && draggedIndex !== index) {
+    card.classList.add('drag-over');
+  }
+}
+
+function handleTaskDragLeave(e) {
+  const card = e.currentTarget;
+  if (card) card.classList.remove('drag-over');
+}
+
+function handleTaskDrop(e, targetId) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (!draggedTask || draggedIndex === null) return;
+  
+  const targetTask = flowTasks.find(t => t.id === targetId);
+  if (!targetTask || draggedTask.id === targetId) {
+    resetDragState();
+    return;
+  }
+  
+  const targetIndex = flowTasks.indexOf(targetTask);
+  
+  // Remove dragged task from old position
+  flowTasks.splice(draggedIndex, 1);
+  
+  // Insert it at new position
+  const newIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+  flowTasks.splice(newIndex, 0, draggedTask);
+  
+  resetDragState();
+  renderFlowList();
+}
+
+function resetDragState() {
+  draggedTask = null;
+  draggedIndex = null;
+  document.querySelectorAll('.task-card').forEach(card => {
+    card.classList.remove('dragging', 'drag-over');
+  });
+}
+
+document.addEventListener('dragend', resetDragState);
+document.addEventListener('dragenter', e => {
+  if (!draggedTask) return;
+  const card = e.target.closest('.task-card');
+  if (card) card.classList.add('drag-over');
+});
+
+/* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */
 loadFlowData();
+
+// Initialize work hour inputs
+const startInput = document.getElementById('workStartTime');
+const endInput = document.getElementById('workEndTime');
+if (startInput) startInput.value = String(workStartTime.h).padStart(2, '0') + ':' + String(workStartTime.m).padStart(2, '0');
+if (endInput) endInput.value = String(workEndTime.h).padStart(2, '0') + ':' + String(workEndTime.m).padStart(2, '0');
+
 document.getElementById('hdate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 renderFlowList();
 renderFlowInbox();
 updateBadges();
 updateFlowLastSaved();
+updateHoursTracker();
+
+// Update hours tracker every minute
+setInterval(() => {
+  updateHoursTracker();
+}, 60000);
 
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
