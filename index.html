@@ -831,16 +831,69 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .btn.discard.discarded { background: #ff9a9e20; border-color: #ff9a9e; color: #ff9a9e; }
 
 /* Discarded tasks panel */
-.discarded-tasks-panel {
-  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 12px;
-  padding: 12px; display: none;
-  max-width: 280px;
+.discarded-bubble {
   position: fixed;
-  right: 20px;
-  bottom: 100px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  z-index: 400;
+  right: 16px;
+  bottom: 90px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 154, 158, 0.2);
+  color: #ff9a9e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1);
+  cursor: grab;
+  z-index: 460;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+  transition: all 0.3s ease;
 }
+.discarded-bubble:hover { 
+  transform: scale(1.08);
+  background: rgba(255, 154, 158, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.discarded-bubble:active {
+  cursor: grabbing;
+}
+
+
+.discarded-tasks-panel {
+  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 10px;
+  padding: 8px; display: none;
+  width: auto; max-width: 220px;
+  position: fixed;
+  right: 16px;
+  bottom: 144px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  z-index: 450;
+  font-size: 11px;
+}
+.discarded-tasks-panel.visible { display: block; }
+.discarded-tasks-title {
+  font-size: 10px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
+  letter-spacing: 0.06em; margin-bottom: 8px;
+}
+.discarded-task-item {
+  display: flex; gap: 8px; align-items: center; padding: 6px; background: #0e0e11;
+  border: 1px solid #ff9a9e; border-radius: 6px; margin-bottom: 6px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.discarded-task-info {
+  flex: 1;
+  min-width: 100px;
+}
+.discarded-task-name { font-size: 10px; font-weight: 500; color: #ff9a9e; }
+.discarded-task-time { font-size: 9px; color: var(--muted); margin-top: 2px; }
+.btn.restore { border-color: #ff9a9e; color: #ff9a9e; padding: 3px 6px; font-size: 9px; white-space: nowrap; }
+.btn.restore:hover { background: #ff9a9e20; }
 .discarded-tasks-panel.visible { display: block; }
 .discarded-tasks-title {
   font-size: 11px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
@@ -901,13 +954,56 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 
 /* Responsive */
+@media (max-width:900px) {
+  .app-nav { padding: 0 12px; }
+  .nav-tabs { gap: 6px; }
+  .nav-tab { padding: 12px 10px; font-size: 12px; min-width: 90px; flex: 1; }
+  .flow-main { max-width: 100%; padding: 20px 16px 90px; }
+  .flow-header { padding: 16px 16px 12px; }
+  .flow-header-actions { gap: 8px; }
+  .stats-row .stat, .flow-stats .stat { padding: 10px 12px 10px 0; margin-right: 18px; }
+}
+
 @media (max-width:640px) {
-  .flow-main { padding:20px 16px 80px; }
-  .flow-header, .flow-stats, .data-bar { padding-left:16px; padding-right:16px; }
-  .tmpw-inbox { margin-left:16px; margin-right:16px; }
-  .app-nav { padding:0 14px; }
-  .nav-tab { padding:16px 14px; font-size:11px; }
+  .app-nav { padding: 0 8px; }
+  .nav-tabs { flex-wrap: wrap; gap: 5px; }
+  .nav-tab { font-size: 11px; padding: 10px 8px; min-width: 80px; }
+
+  .flow-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 12px 10px; }
+  .flow-header-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .btn-report, .btn-add { padding: 8px 12px; font-size: 12px; }
+
+  .flow-stats { flex-wrap: wrap; gap: 8px; padding: 0 12px 10px; }
+  .flow-stats .stat { width: calc(50% - 8px); margin-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding: 8px 0 8px 0; }
+  .flow-stats .stat:nth-child(odd) { margin-right: 8px; }
+  .flow-stats .stat:last-child { border-bottom: none; }
+
+  .hours-tracker { display: flex; flex-direction: column; gap: 10px; padding: 12px 12px; }
+  .hours-tracker-item { min-width: 100%; width: 100%; }
+  .hours-tracker-value { font-size: 18px; }
+  .hours-tracker-sub { font-size: 9px; }
+
+  .data-bar { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
+  .data-bar-label { margin-bottom: 4px; font-size: 10px; }
+  .data-btn { flex: 1 1 100%; min-width: calc(50% - 6px); padding: 8px; font-size: 11px; }
+  .data-sep { display: none; }
+
+  .task-card { padding: 10px; }
+  .task-card .task-row, .clock-window-item { flex-wrap: wrap; gap: 6px; }
+  .task-card .option-btn { font-size: 11px; padding: 6px 8px; }
+
+  .hours-tracker > div:last-child { margin-left: 0; }
+
+  .discarded-tasks-panel { right: 10px; bottom: 80px; max-width: calc(100% - 20px); }
+  .discarded-task-item { padding: 8px; }
+
+  .flow-main { padding-bottom: 120px; }
   .task-estimate { display: block; width: 100%; }
+
+  .tmpw-inbox { margin-left: 12px; margin-right: 12px; }
+  .clock-form-row { flex-direction: column; gap: 8px; align-items: stretch; }
+
+  .flow-header-date, .stat-label, .data-bar-label, .hours-tracker-label { font-size: 9px; }
 }
 
 </style>
@@ -1028,7 +1124,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div id="tmpwInboxItems"></div>
   </div>
 
-  <!-- Discarded tasks panel -->
+  <!-- Discarded tasks bubble + panel -->
+  <div class="discarded-bubble" id="discardedBubble" title="Show discarded tasks" style="display:none;">0</div>
   <div class="discarded-tasks-panel" id="discardedPanel">
     <div class="discarded-tasks-title">⚠ Discarded tasks</div>
     <div id="discardedTasksList"></div>
@@ -1290,6 +1387,7 @@ function switchPage(name) {
   if (name === 'flow') {
     document.querySelectorAll('.nav-tab')[0].classList.add('active');
     renderFlowInbox();
+    initDiscardedBubbleDrag();
   } else if (name === 'clock') {
     document.querySelectorAll('.nav-tab')[1].classList.add('active');
     renderClockPage();
@@ -2097,18 +2195,127 @@ function dismissFromFlow(id) {
   renderFlowInbox();
 }
 
+/* ── Discarded Tasks Bubble Drag ── */
+let bubbleDragState = {
+  isDragging: false,
+  hasMovedEnough: false,
+  offsetX: 0,
+  offsetY: 0,
+  startX: 0,
+  startY: 0,
+  initialized: false,
+  dragThreshold: 5 // pixels before considering it a drag
+};
+
+function initDiscardedBubbleDrag() {
+  if (bubbleDragState.initialized) return;
+  
+  const bubble = document.getElementById('discardedBubble');
+  if (!bubble) return;
+  
+  bubbleDragState.initialized = true;
+  
+  // Load saved position
+  const savedPos = localStorage.getItem('discarded_bubble_pos');
+  if (savedPos) {
+    try {
+      const pos = JSON.parse(savedPos);
+      bubble.style.right = 'auto';
+      bubble.style.bottom = 'auto';
+      bubble.style.left = pos.x + 'px';
+      bubble.style.top = pos.y + 'px';
+    } catch (e) {
+      console.error('Failed to load bubble position:', e);
+    }
+  }
+  
+  bubble.addEventListener('pointerdown', (e) => {
+    bubbleDragState.isDragging = true;
+    bubbleDragState.hasMovedEnough = false;
+    const rect = bubble.getBoundingClientRect();
+    bubbleDragState.offsetX = e.clientX - rect.left;
+    bubbleDragState.offsetY = e.clientY - rect.top;
+    bubbleDragState.startX = e.clientX;
+    bubbleDragState.startY = e.clientY;
+    bubble.style.cursor = 'grabbing';
+    bubble.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  
+  bubble.addEventListener('pointermove', (e) => {
+    if (!bubbleDragState.isDragging) return;
+    
+    // Check if movement exceeds threshold
+    const dx = Math.abs(e.clientX - bubbleDragState.startX);
+    const dy = Math.abs(e.clientY - bubbleDragState.startY);
+    
+    if (dx > bubbleDragState.dragThreshold || dy > bubbleDragState.dragThreshold) {
+      bubbleDragState.hasMovedEnough = true;
+    }
+    
+    if (!bubbleDragState.hasMovedEnough) return;
+    
+    let x = e.clientX - bubbleDragState.offsetX;
+    let y = e.clientY - bubbleDragState.offsetY;
+    
+    // Clamp to screen bounds
+    x = Math.max(0, Math.min(x, window.innerWidth - 48));
+    y = Math.max(0, Math.min(y, window.innerHeight - 48));
+    
+    bubble.style.left = x + 'px';
+    bubble.style.top = y + 'px';
+    bubble.style.right = 'auto';
+    bubble.style.bottom = 'auto';
+  });
+  
+  bubble.addEventListener('pointerup', (e) => {
+    if (!bubbleDragState.isDragging) return;
+    bubbleDragState.isDragging = false;
+    bubble.style.cursor = 'grab';
+    bubble.releasePointerCapture(e.pointerId);
+    
+    // If it didn't move enough, treat as a click
+    if (!bubbleDragState.hasMovedEnough) {
+      toggleDiscardedPanel();
+    } else {
+      // Save position after drag
+      const rect = bubble.getBoundingClientRect();
+      localStorage.setItem('discarded_bubble_pos', JSON.stringify({ x: rect.left, y: rect.top }));
+    }
+  });
+}
+
 /* ── Discarded Tasks Panel ── */
+function toggleDiscardedPanel() {
+  const panel = document.getElementById('discardedPanel');
+  if (!panel) return;
+  if (panel.style.display === 'block') {
+    panel.style.display = 'none';
+  } else {
+    panel.style.display = 'block';
+  }
+}
+
 function renderDiscardedTasks() {
+  const bubble = document.getElementById('discardedBubble');
   const panel = document.getElementById('discardedPanel');
   const list = document.getElementById('discardedTasksList');
   
+  if (!bubble || !panel || !list) return;
+  
   if (discardedTasks.length === 0) {
+    bubble.style.display = 'none';
     panel.style.display = 'none';
     return;
   }
   
-  panel.style.display = 'block';
+  bubble.style.display = 'flex';
+  bubble.textContent = discardedTasks.length;
   list.innerHTML = '';
+
+  if (panel.style.display !== 'block') {
+    panel.style.display = 'none';
+  }
   
   discardedTasks.forEach(t => {
     const worked = totalWorkedSecs(t);
@@ -4098,6 +4305,7 @@ if (endInput) endInput.value = String(workEndTime.h).padStart(2, '0') + ':' + St
 document.getElementById('hdate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 renderFlowList();
 renderFlowInbox();
+initDiscardedBubbleDrag();
 updateBadges();
 updateFlowLastSaved();
 updateHoursTracker();
