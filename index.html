@@ -82,6 +82,31 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .nav-tab.active { color: var(--active); border-bottom-color: var(--active); }
 .nav-tab.clock-tab.active { color: #7b9fff; border-bottom-color: #7b9fff; }
 
+/* Download Button */
+.download-btn {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 8px 16px; border: 1px solid var(--border2); background: rgba(93,224,168,0.1);
+  color: var(--active); cursor: pointer; border-radius: 6px;
+  transition: all 0.2s; white-space: nowrap; margin-left: auto; flex-shrink: 0;
+}
+.download-btn:hover {
+  background: rgba(93,224,168,0.2);
+  border-color: var(--active);
+  transform: translateY(-1px);
+}
+.download-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .download-btn { padding: 6px 12px; font-size: 11px; }
+}
+
+@media (max-width: 640px) {
+  .download-btn { padding: 6px 10px; font-size: 10px; }
+}
+
 /* transfer badge on nav */
 .transfer-badge {
   display: none; background: var(--break); color: #1a0a00;
@@ -1030,6 +1055,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       📊 Reports
     </button>
   </div>
+  <button class="download-btn" onclick="downloadHTML()" title="Download HTML file to run offline">
+    ⬇ Download
+  </button>
 </nav>
 
 <!-- ══ ALARM BANNERS ══ -->
@@ -1376,6 +1404,40 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 </div>
 
 <script>
+/* ═══════════════════════════════════════════
+   DOWNLOAD HTML FUNCTION
+═══════════════════════════════════════════ */
+function downloadHTML() {
+  try {
+    // Get the current HTML document
+    const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    
+    // Create a Blob from the HTML content
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    
+    // Create a temporary download link
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    // Set the download filename with timestamp
+    const timestamp = new Date().toISOString().split('T')[0];
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Tempow-TW-${timestamp}.html`);
+    link.style.display = 'none';
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading HTML:', error);
+    alert('Failed to download HTML file. Check console for details.');
+  }
+}
+
 /* ═══════════════════════════════════════════
    PAGE SWITCHING
 ═══════════════════════════════════════════ */
