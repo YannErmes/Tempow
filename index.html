@@ -464,7 +464,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 .btn-report:hover { border-color: var(--done); color: var(--done); background: var(--done-dim); }
 
-.flow-stats { display: flex; padding: 0 40px; border-bottom: 1px solid var(--border); align-items: center; }
+.flow-stats { display: flex; padding: 0 40px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; }
+.flow-stats-header { display: flex; flex: 1; gap: 0; }
 .stat { padding: 14px 28px 14px 0; margin-right: 28px; border-right: 1px solid var(--border); flex-shrink: 0; }
 .stat:last-child { border-right: none; }
 .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
@@ -588,17 +589,18 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 /* Card view */
 #task-list.card-view {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 #task-list.card-view .task-card {
   margin-bottom: 0;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
 }
 #task-list.card-view .task-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-  transform: translateY(-2px);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+  transition: all 0.15s ease;
 }
 
 /* Untimed task styling */
@@ -623,24 +625,74 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 
 /* Button groups in different views */
-#task-list.grid-view .controls,
-#task-list.card-view .controls {
+#task-list.grid-view .controls {
   flex-wrap: wrap;
   gap: 8px;
+}
+#task-list.card-view .btn {
+  padding: 4px 10px;
+  font-size: 10px;
 }
 
 #task-list.card-view .task-card {
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
 }
 #task-list.card-view .task-card .task-card-inner-clip {
   flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+#task-list.card-view .task-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+#task-list.card-view .task-name {
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 600;
+}
+#task-list.card-view .task-meta {
+  display: none;
+}
+#task-list.card-view .bar-outer {
+  display: none;
+}
+#task-list.card-view .timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+#task-list.card-view .timer-digits {
+  font-size: 28px;
+  font-weight: 600;
+}
+#task-list.card-view .timer-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+#task-list.card-view .task-estimate {
+  display: none;
 }
 #task-list.card-view .controls {
-  padding: 14px 20px;
+  padding: 10px 12px;
   border-top: 1px solid var(--border);
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
+  justify-content: center;
+  background: rgba(0,0,0,0.1);
 }
 
 /* controls */
@@ -1152,9 +1204,24 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   📡 OFFLINE MODE — Changes will sync when you're back online
 </div>
 
+<!-- ══ WELCOME MODAL (First-time users) ══ -->
+<div class="modal-bg" id="welcomeModal" style="z-index: 10000;">
+  <div class="modal" style="max-width: 380px;">
+    <h2>Welcome to Tempow!</h2>
+    <p style="color: var(--muted2); font-size: 13px; margin-bottom: 20px; line-height: 1.6;">Your personal task timer & scheduling assistant. Let's get started!</p>
+    <div class="field">
+      <label>What's your name?</label>
+      <input type="text" id="userName" placeholder="Your name" style="font-size: 14px;" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="saveUserName()" style="flex: 1;">Get started</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ NAV ══ -->
 <nav class="app-nav">
-  <div class="nav-logo">Tempow<span>TW</span></div>
+  <div class="nav-logo">Tempow<span>TW</span> <span style="font-size: 12px; color: var(--muted2); margin-left: 16px; font-weight: 400; font-family: var(--font-mono);" id="navUserName"></span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchPage('flow')">
       ⏱ Timer
@@ -1216,8 +1283,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
         <div class="stat"><div class="stat-label">Time worked</div><div class="stat-value green" id="s-worked">0:00</div></div>
         <div class="stat"><div class="stat-label">Break time</div><div class="stat-value amber" id="s-break">0:00</div></div>
         <div class="stat"><div class="stat-label">Completed</div><div class="stat-value" id="s-done">0</div></div>
+        <div class="stat"><div class="stat-label">Total gaps</div><div class="stat-value" id="s-gaps" style="color: var(--muted2);">0:00</div></div>
       </div>
-      <button class="section-toggle" onclick="toggleSection(this, 'hoursTrackerPanel')" title="Toggle hours tracker">▼</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
+        <button class="data-btn" id="dayStartBtn" onclick="toggleDayStart()" style="padding: 8px 14px; font-size: 11px; font-weight: 600;">🌅 START MY DAY</button>
+        <span id="dayStartedIndicator" style="font-size: 10px; color: var(--active); font-weight: 600; display: none;">Day started</span>
+        <button class="section-toggle" onclick="toggleSection(this, 'hoursTrackerPanel')" title="Toggle hours tracker">▼</button>
+      </div>
     </div>
   </div>
 
@@ -1239,9 +1311,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       <div class="hours-tracker-sub" id="timeStatusDetail"></div>
     </div>
     <div style="margin-left: auto; font-size: 11px; color: var(--muted); padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-      <div style="font-weight: 600; color: var(--muted2);">⚙ Set work hours</div>
-      <input type="time" id="workStartTime" value="09:00" style="width: 80px; padding: 4px; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 11px;" />
-      <input type="time" id="workEndTime" value="18:00" style="width: 80px; padding: 4px; margin-left: 4px; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 11px;" />
+      <div style="font-weight: 600; color: var(--muted2);">📅 Usual start time</div>
+      <input type="time" id="usualStartTimeInput" style="width: 80px; padding: 4px; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 11px;" />
+      <button onclick="saveUsualStartTime()" style="width: 80px; padding: 4px; margin-left: 4px; margin-top: 6px; background: var(--active); color: var(--bg); border: none; border-radius: 4px; font-size: 10px; font-weight: 600; cursor: pointer;">Save</button>
+      <div style="font-size: 9px; color: var(--muted2); margin-top: 4px;">Used if START MY DAY is forgotten</div>
     </div>
   </div>
 
@@ -1308,6 +1381,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
         <div id="discardedTasksList"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Trash panel (24-hour auto-delete) -->
+  <div id="trashPanel" style="display: none; border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 40px; background: var(--surface);">
+      <span style="font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">🗑 Trash (24h auto-delete)</span>
+      <button class="section-toggle" onclick="toggleSection(this, 'trashList')" title="Toggle trash">▼</button>
+    </div>
+    <div class="collapsible-section" id="trashList"></div>
   </div>
 
   <main class="flow-main">
@@ -1481,6 +1563,22 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-confirm" onclick="addFlowTask()">Add task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Notes Modal -->
+<div class="modal-bg" id="notesModal">
+  <div class="modal" style="max-width: 480px;">
+    <h2>Task Notes</h2>
+    <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;" id="notesTaskName"></p>
+    <div class="field">
+      <label>Quick notes for tomorrow</label>
+      <textarea id="notesInput" placeholder="Write notes about what to do next time with this task..." style="width: 100%; min-height: 120px; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 12px; font-family: var(--font-mono); resize: vertical;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNotesModal()">Cancel</button>
+      <button class="btn-confirm" onclick="saveTaskNotes()">Save notes</button>
     </div>
   </div>
 </div>
@@ -1721,6 +1819,9 @@ function updateBadges() {
 ═══════════════════════════════════════════ */
 let flowTasks = [];
 let discardedTasks = [];
+let trashedTasks = [];
+let dayStartTime = null; // Timestamp when user clicks "START MY DAY"
+let usualStartTime = null; // Usual start time (h, m) as fallback for auto-calculation
 let globalTick = null;
 let openTip = null;
 let breakModalTaskId = null;
@@ -1763,6 +1864,233 @@ function liveSegment(t) {
   if (!t.segments.length) return null;
   const last=t.segments[t.segments.length-1];
   return last.endTs ? null : last;
+}
+
+// ╔════════════════════════════════════════════════════════════════╗
+// ║ DAY START & GAP TRACKING                                       ║
+// ║ Track when user starts their day and gaps between tasks        ║
+// ╚════════════════════════════════════════════════════════════════╝
+function toggleDayStart() {
+  if (dayStartTime) {
+    // Day already started, reset it
+    if (confirm('Reset day start time? This will clear the current day session.')) {
+      dayStartTime = null;
+      saveDayStartTime();
+      updateDayStartUI();
+    }
+  } else {
+    // Start the day
+    dayStartTime = Date.now();
+    saveDayStartTime();
+    updateDayStartUI();
+  }
+}
+
+function saveDayStartTime() {
+  if (dayStartTime) {
+    localStorage.setItem('day_start_time', String(dayStartTime));
+  } else {
+    localStorage.removeItem('day_start_time');
+  }
+}
+
+function loadDayStartTime() {
+  const saved = localStorage.getItem('day_start_time');
+  if (saved) {
+    dayStartTime = parseInt(saved, 10);
+  }
+  updateDayStartUI();
+}
+
+function updateDayStartUI() {
+  const btn = document.getElementById('dayStartBtn');
+  const indicator = document.getElementById('dayStartedIndicator');
+  
+  if (dayStartTime) {
+    btn.textContent = '⏹ RESET DAY';
+    btn.style.color = 'var(--active)';
+    indicator.style.display = 'block';
+  } else {
+    btn.textContent = '🌅 START MY DAY';
+    btn.style.color = 'inherit';
+    indicator.style.display = 'none';
+  }
+}
+
+function saveUsualStartTime() {
+  const input = document.getElementById('usualStartTimeInput');
+  if (!input.value) {
+    alert('Please select a time');
+    return;
+  }
+  
+  const [h, m] = input.value.split(':').map(Number);
+  usualStartTime = { h, m };
+  
+  localStorage.setItem('usual_start_time', JSON.stringify(usualStartTime));
+  alert(`Usual start time set to ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+}
+
+function loadUsualStartTime() {
+  const saved = localStorage.getItem('usual_start_time');
+  if (saved) {
+    usualStartTime = JSON.parse(saved);
+    const input = document.getElementById('usualStartTimeInput');
+    if (input) {
+      input.value = `${String(usualStartTime.h).padStart(2, '0')}:${String(usualStartTime.m).padStart(2, '0')}`;
+    }
+  }
+}
+
+function getEffectiveDayStartTime() {
+  // Returns the timestamp to use for gap calculations
+  // Priority: 1. dayStartTime (manually clicked), 2. earliest task start, 3. usualStartTime, 4. null
+  
+  if (dayStartTime) {
+    return dayStartTime;
+  }
+  
+  // Find the earliest task start time across all tasks
+  let earliestTaskStart = null;
+  flowTasks.forEach(task => {
+    task.segments.forEach(seg => {
+      if (seg.type === 'work' && seg.startTs) {
+        if (!earliestTaskStart || seg.startTs < earliestTaskStart) {
+          earliestTaskStart = seg.startTs;
+        }
+      }
+    });
+  });
+  
+  // If a task was started before usual start time, use the task start as day start
+  if (earliestTaskStart && usualStartTime) {
+    const today = new Date();
+    today.setHours(usualStartTime.h, usualStartTime.m, 0, 0);
+    const usualStartTs = today.getTime();
+    
+    if (earliestTaskStart < usualStartTs) {
+      return earliestTaskStart; // Task started before usual time, use task start
+    }
+  }
+  
+  // Fall back to usual start time
+  if (usualStartTime) {
+    const today = new Date();
+    today.setHours(usualStartTime.h, usualStartTime.m, 0, 0);
+    const effectiveTime = today.getTime();
+    
+    if (effectiveTime <= Date.now()) {
+      return effectiveTime;
+    }
+  }
+  
+  // If only tasks exist (no manual click, no usual time), use earliest task start
+  if (earliestTaskStart) {
+    return earliestTaskStart;
+  }
+  
+  return null;
+}
+
+function getDayStartSource() {
+  // Returns the source/reason for the effective day start time
+  if (dayStartTime) {
+    return { source: 'manual', label: '● MANUAL (clicked button)', color: 'var(--active)' };
+  }
+  
+  // Check if earliest task was before usual time
+  let earliestTaskStart = null;
+  flowTasks.forEach(task => {
+    task.segments.forEach(seg => {
+      if (seg.type === 'work' && seg.startTs) {
+        if (!earliestTaskStart || seg.startTs < earliestTaskStart) {
+          earliestTaskStart = seg.startTs;
+        }
+      }
+    });
+  });
+  
+  if (earliestTaskStart && usualStartTime) {
+    const today = new Date();
+    today.setHours(usualStartTime.h, usualStartTime.m, 0, 0);
+    const usualStartTs = today.getTime();
+    
+    if (earliestTaskStart < usualStartTs) {
+      return { source: 'earliest-task', label: '● EARLIEST TASK (started before preset)', color: '#ffa500' };
+    }
+  }
+  
+  if (usualStartTime) {
+    return { source: 'preset', label: '● PRESET TIME', color: 'var(--break)' };
+  }
+  
+  if (earliestTaskStart) {
+    return { source: 'earliest-task', label: '● EARLIEST TASK', color: '#ffa500' };
+  }
+  
+  return { source: 'unknown', label: '● UNKNOWN', color: 'var(--muted)' };
+}
+
+function calculateTaskGaps() {
+  // Returns array of gaps between tasks and day start
+  const effectiveStartTime = getEffectiveDayStartTime();
+  if (!effectiveStartTime) return [];
+  
+  const gaps = [];
+  const allSegments = [];
+  
+  // Collect all work segments from all tasks with task metadata
+  flowTasks.forEach(task => {
+    task.segments.forEach(seg => {
+      if (seg.type === 'work' && seg.startTs && seg.endTs) {
+        allSegments.push({
+          taskId: task.id,
+          taskName: task.name,
+          startTs: seg.startTs,
+          endTs: seg.endTs,
+          duration: seg.secs
+        });
+      }
+    });
+  });
+  
+  // Sort segments by start time
+  allSegments.sort((a, b) => a.startTs - b.startTs);
+  
+  if (allSegments.length === 0) return gaps;
+  
+  // Gap between day start and first task
+  const firstTaskStart = allSegments[0].startTs;
+  const dayStartGap = Math.floor((firstTaskStart - effectiveStartTime) / 1000);
+  
+  gaps.push({
+    type: 'day-to-first',
+    label: 'Day start → First task',
+    gapSecs: dayStartGap,
+    startTime: effectiveStartTime,
+    endTime: firstTaskStart,
+    taskName: allSegments[0].taskName,
+    isAutomatic: !dayStartTime && usualStartTime // Mark if using automatic preset
+  });
+  
+  // Gaps between task end and next task start
+  for (let i = 0; i < allSegments.length - 1; i++) {
+    const currentEnd = allSegments[i].endTs;
+    const nextStart = allSegments[i + 1].startTs;
+    const gapSecs = Math.floor((nextStart - currentEnd) / 1000);
+    
+    gaps.push({
+      type: 'between-tasks',
+      label: `${allSegments[i].taskName} → ${allSegments[i + 1].taskName}`,
+      gapSecs: gapSecs,
+      startTime: currentEnd,
+      endTime: nextStart,
+      fromTask: allSegments[i].taskName,
+      toTask: allSegments[i + 1].taskName
+    });
+  }
+  
+  return gaps;
 }
 
 // ╔════════════════════════════════════════════════════════════════╗
@@ -1893,6 +2221,44 @@ function getEstimatedEndTime(t) {
   return endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
+// ══ USER NAME PERSISTENCE ══
+function saveUserName() {
+  const userName = document.getElementById('userName')?.value?.trim();
+  if (!userName) {
+    alert('Please enter your name to continue.');
+    return;
+  }
+  localStorage.setItem('tempow_user_name', userName);
+  document.getElementById('welcomeModal').classList.remove('open');
+  displayUserName();
+}
+
+function displayUserName() {
+  const userName = localStorage.getItem('tempow_user_name');
+  const navSpan = document.getElementById('navUserName');
+  if (navSpan) {
+    navSpan.textContent = userName ? '👋 ' + userName : '';
+  }
+}
+
+function checkFirstVisit() {
+  const hasVisited = localStorage.getItem('tempow_user_name');
+  if (!hasVisited) {
+    const modal = document.getElementById('welcomeModal');
+    if (modal) {
+      modal.classList.add('open');
+      document.getElementById('userName')?.focus();
+    }
+  } else {
+    displayUserName();
+  }
+}
+
+// Handle Enter key in name input
+document.getElementById('userName')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveUserName();
+});
+
 // date header
 document.getElementById('hdate').textContent =
   new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
@@ -1954,7 +2320,8 @@ function addFlowTask() {
     state: 'idle', 
     segments: [], 
     dateAdded: Date.now(),
-    isUntimed: isUntimed
+    isUntimed: isUntimed,
+    notes: ''
   };
   
   flowTasks.push(taskObj);
@@ -2074,6 +2441,53 @@ document.getElementById('breakModalStop').addEventListener('click', () => {
   breakModalTaskId = null;
 });
 
+// ── Task Notes Modal ──────────────────────────────────
+let notesModalTaskId = null;
+
+function openNotesModal(taskId) {
+  notesModalTaskId = taskId;
+  const t = flowTasks.find(x => x.id === taskId);
+  if (!t) return;
+  
+  document.getElementById('notesTaskName').textContent = `Task: ${t.name}`;
+  document.getElementById('notesInput').value = t.notes || '';
+  document.getElementById('notesModal').classList.add('open');
+  setTimeout(() => document.getElementById('notesInput').focus(), 60);
+}
+
+function closeNotesModal() {
+  document.getElementById('notesModal').classList.remove('open');
+  notesModalTaskId = null;
+  document.getElementById('notesInput').value = '';
+}
+
+function saveTaskNotes() {
+  if (!notesModalTaskId) return;
+  const t = flowTasks.find(x => x.id === notesModalTaskId);
+  if (!t) return;
+  
+  const notes = document.getElementById('notesInput').value.trim();
+  t.notes = notes;
+  
+  saveFlowData();
+  closeNotesModal();
+  
+  // Show confirmation
+  const btn = document.querySelector('#notesModal .btn-confirm');
+  if (btn) {
+    const originalText = btn.textContent;
+    btn.textContent = '✓ Saved';
+    setTimeout(() => { btn.textContent = originalText; }, 1200);
+  }
+}
+
+// Handle Enter+Ctrl to save notes
+document.getElementById('notesInput')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    saveTaskNotes();
+  }
+});
+
 // ── Task controls ────────────────────────────────────
 function startTask(id) {
   flowTasks.forEach(t => { if (t.state==='running') openBreakModal(t.id); });
@@ -2181,9 +2595,55 @@ function markUntimeTaskDone(id) {
 }
 
 function deleteFlowTask(id) {
-  flowTasks = flowTasks.filter(x => x.id!==id);
-  tray = tray.filter(x => x.id!==id);
-  renderTray(); renderFlowList();
+  const t = flowTasks.find(x => x.id === id);
+  if (!t) return;
+  
+  // Move to trash with deletion timestamp
+  trashedTasks.push({
+    ...t,
+    deletedAt: Date.now()
+  });
+  
+  // Remove from active tasks
+  flowTasks = flowTasks.filter(x => x.id !== id);
+  tray = tray.filter(x => x.id !== id);
+  
+  saveFlowData();
+  renderTray();
+  renderFlowList();
+  renderTrash();
+}
+
+function restoreFromTrash(id) {
+  const t = trashedTasks.find(x => x.id === id);
+  if (!t) return;
+  
+  const restored = { ...t };
+  delete restored.deletedAt;
+  flowTasks.push(restored);
+  
+  trashedTasks = trashedTasks.filter(x => x.id !== id);
+  
+  saveFlowData();
+  renderFlowList();
+  renderTrash();
+}
+
+function permanentlyDeleteFromTrash(id) {
+  if (!confirm('Permanently delete this task? This cannot be undone.')) return;
+  
+  trashedTasks = trashedTasks.filter(x => x.id !== id);
+  saveFlowData();
+  renderTrash();
+}
+
+function cleanupExpiredTrash() {
+  const now = Date.now();
+  const twentyFourHours = 24 * 60 * 60 * 1000;
+  
+  trashedTasks = trashedTasks.filter(t => {
+    return (now - t.deletedAt) < twentyFourHours;
+  });
 }
 
 // ── Tick ─────────────────────────────────────────────
@@ -2418,13 +2878,52 @@ function updateLiveFlow() {
   });
 }
 
+function getCurrentGapTime() {
+  // Returns the current ongoing gap time (time since last task ended)
+  let lastTaskEnd = null;
+  let isAnyTaskRunning = false;
+  
+  flowTasks.forEach(task => {
+    if (task.state === 'running') {
+      isAnyTaskRunning = true;
+    }
+    
+    // Find last completed segment end time
+    task.segments.forEach(seg => {
+      if (seg.endTs && (!lastTaskEnd || seg.endTs > lastTaskEnd)) {
+        lastTaskEnd = seg.endTs;
+      }
+    });
+  });
+  
+  // If a task is currently running, gap is 0
+  if (isAnyTaskRunning) {
+    return 0;
+  }
+  
+  // If we have a last task end time, calculate gap from then to now
+  if (lastTaskEnd) {
+    return Math.floor((Date.now() - lastTaskEnd) / 1000);
+  }
+  
+  return 0;
+}
+
 function updateFlowStats() {
   let worked=0, brk=0;
   flowTasks.forEach(t=>{ worked+=totalWorkedSecs(t); brk+=totalBreakSecs(t); });
+  
+  // Calculate total gaps (completed gaps + current ongoing gap)
+  const gaps = calculateTaskGaps();
+  const completedGapsSecs = gaps.reduce((a, g) => a + g.gapSecs, 0);
+  const currentGapSecs = getCurrentGapTime();
+  const totalGapsSecs = completedGapsSecs + currentGapSecs;
+  
   document.getElementById('s-total').textContent = flowTasks.length;
   document.getElementById('s-done').textContent = flowTasks.filter(t=>t.state==='done').length;
   document.getElementById('s-worked').textContent = fmtF(worked);
   document.getElementById('s-break').textContent = fmtF(brk);
+  document.getElementById('s-gaps').textContent = fmtF(totalGapsSecs);
 }
 
 function renderFlowList() {
@@ -2502,9 +3001,9 @@ function renderFlowList() {
     }
     
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock">⇄ Clock</button>`;
+    ctrl += `<button class="btn" onclick="openNotesModal(${t.id})" title="Add/edit quick notes for tomorrow">📝 Notes</button>`;
     ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON">↓ JSON</button>`;
     ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others">⊘ Discard</button>`;
-    ctrl += `<button class="btn del" onclick="deleteFlowTask(${t.id})">✕</button>`;
 
     // Apply view mode styling
     const card = document.createElement('div');
@@ -2533,6 +3032,9 @@ function renderFlowList() {
     } else {
       metaHTML = `<span style="color: var(--muted); font-size: 11px;">No time limit • Checklist item</span>`;
     }
+    if (t.notes) {
+      metaHTML += `<span style="color: var(--active); font-size: 11px; margin-left: 8px;">📝 Has notes</span>`;
+    }
     
     card.innerHTML = `
       <div class="task-card-inner-clip">
@@ -2560,6 +3062,7 @@ function renderFlowList() {
   updateFlowStats();
   updateHoursTracker();
   renderDiscardedTasks();
+  renderTrash();
   if (flowTasks.some(t=>t.state==='running'||t.state==='paused')) ensureTick();
   if (typeof saveFlowData === 'function') saveFlowData();
 }
@@ -2623,6 +3126,53 @@ function renderDiscardedTasks() {
         <div class="discarded-task-time">${timeStr}</div>
       </div>
       <button class="btn restore" onclick="restoreTask(${t.id})">↻ Restore</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function renderTrash() {
+  const panel = document.getElementById('trashPanel');
+  const list = document.getElementById('trashList');
+  
+  if (!panel || !list) return; // Panel may not exist yet
+  
+  // Clean expired tasks
+  cleanupExpiredTrash();
+  
+  if (trashedTasks.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+  
+  panel.style.display = 'block';
+  list.innerHTML = '';
+  
+  const now = Date.now();
+  const twentyFourHours = 24 * 60 * 60 * 1000;
+  
+  trashedTasks.forEach(t => {
+    const deletedAt = new Date(t.deletedAt);
+    const expiresAt = new Date(t.deletedAt + twentyFourHours);
+    const timeLeft = Math.ceil((expiresAt - now) / (60 * 1000)); // Minutes left
+    
+    let timeLeftText = '';
+    if (timeLeft > 60) {
+      timeLeftText = `${Math.floor(timeLeft / 60)}h ${timeLeft % 60}m left`;
+    } else {
+      timeLeftText = `${Math.max(1, timeLeft)}m left`;
+    }
+    
+    const item = document.createElement('div');
+    item.className = 'trash-item';
+    item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; gap: 12px;';
+    item.innerHTML = `
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 500; color: var(--text);">${t.name}</div>
+        <div style="font-size: 10px; color: var(--muted); margin-top: 4px;">Deleted ${deletedAt.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})} • ${timeLeftText}</div>
+      </div>
+      <button class="btn" onclick="restoreFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; margin-right: 6px;">↻ Restore</button>
+      <button class="btn" onclick="permanentlyDeleteFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; color: var(--danger); border-color: var(--danger);">✕ Delete</button>
     `;
     list.appendChild(item);
   });
@@ -4019,6 +4569,50 @@ function renderReportsPage() {
     
     html += `</div>
 
+      <!-- ═══ DAY GAPS & IDLE TIME ═══ -->
+      <div style="margin-bottom: 32px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">⏳ Time Gaps & Idle Periods</div>`;
+    
+    const gaps = calculateTaskGaps();
+    if (gaps.length === 0) {
+      html += `<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; text-align: center; color: var(--muted);">
+        <div style="font-size: 14px;">No gaps recorded yet. Click "START MY DAY" or set your usual start time to begin tracking.</div>
+      </div>`;
+    } else {
+      const totalIdleTime = gaps.reduce((a, g) => a + g.gapSecs, 0);
+      const effectiveStartTime = getEffectiveDayStartTime();
+      
+      html += `<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
+        <div style="background: var(--surface2); padding: 14px 16px; border-bottom: 1px solid var(--border);">
+          ${(() => {
+            const source = getDayStartSource();
+            return `<div style="font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Day started at ${new Date(effectiveStartTime).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})} <span style="color: ${source.color}; margin-left: 8px;">${source.label}</span></div>`;
+          })()}
+          <div style="font-size: 14px; font-weight: 700; color: var(--muted2);">Total idle time: <span style="color: var(--active);">${fmtDurF(totalIdleTime)}</span></div>
+        </div>`;
+      
+      gaps.forEach((gap, idx) => {
+        const startTime = new Date(gap.startTime).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        const endTime = new Date(gap.endTime).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        
+        html += `<div style="padding: 12px 16px; border-bottom: ${idx === gaps.length - 1 ? 'none' : '1px solid var(--border)'}; display: grid; grid-template-columns: 200px 1fr 120px 80px; gap: 12px; align-items: center; font-size: 11px;">
+          <div>
+            <div style="font-weight: 500; color: var(--text);">${gap.label}</div>
+            <div style="font-size: 9px; color: var(--muted); margin-top: 2px;">${startTime} → ${endTime}</div>
+          </div>
+          <div style="color: var(--muted2); line-height: 1.3;">
+            ${gap.type === 'day-to-first' ? `Started day · Waited before starting <strong>${gap.taskName}</strong>` : `Finished <strong>${gap.fromTask}</strong> · Paused before <strong>${gap.toTask}</strong>`}
+          </div>
+          <div style="text-align: right; font-weight: 600; color: var(--active);">${fmtDurF(gap.gapSecs)}</div>
+          <div style="text-align: right; color: var(--muted);">${Math.round((gap.gapSecs / totalIdleTime) * 100)}%</div>
+        </div>`;
+      });
+      
+      html += `</div>`;
+    }
+    
+    html += `</div>
+
       <!-- ═══ PRODUCTIVITY INSIGHTS ═══ -->
       <div style="margin-bottom: 32px;">
         <div style="font-size: 13px; font-weight: 600; color: var(--active); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">💡 Insights & Analysis</div>
@@ -4312,6 +4906,8 @@ function saveFlowData() {
     const dataToSave = {
       tasks: flowTasks,
       discardedTasks: discardedTasks,
+      trashedTasks: trashedTasks,
+      dayStartTime: dayStartTime,
       workStartTime: workStartTime,
       workEndTime: workEndTime,
       savedAt: new Date().toISOString()
@@ -4409,6 +5005,16 @@ async function loadFlowData() {
     // Load discarded tasks
     if (data.discardedTasks && Array.isArray(data.discardedTasks)) {
       discardedTasks = data.discardedTasks;
+    }
+    
+    // Load trashed tasks
+    if (data.trashedTasks && Array.isArray(data.trashedTasks)) {
+      trashedTasks = data.trashedTasks;
+    }
+    
+    // Load day start time
+    if (data.dayStartTime) {
+      dayStartTime = data.dayStartTime;
     }
     
     if (data.tasks && Array.isArray(data.tasks)) {
@@ -5029,6 +5635,9 @@ function restoreCollapsibleStates() {
    INIT
 ═══════════════════════════════════════════ */
 (async function initApp() {
+  checkFirstVisit();
+  loadDayStartTime();
+  loadUsualStartTime();
   await loadFlowData();
   renderFlowList();
   restoreCollapsibleStates();
@@ -5037,6 +5646,13 @@ function restoreCollapsibleStates() {
   setInterval(() => {
     saveFlowData();
   }, 5000);
+  
+  // Clean up expired trash every hour
+  setInterval(() => {
+    cleanupExpiredTrash();
+    renderTrash();
+    saveFlowData();
+  }, 60 * 60 * 1000);
 })();
 
 // Initialize work hour inputs
