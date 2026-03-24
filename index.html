@@ -478,7 +478,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .collapsible-section {
   overflow: hidden;
   transition: max-height 0.3s ease, opacity 0.3s ease;
-  max-height: 500px;
+  max-height: 600px;
   opacity: 1;
 }
 
@@ -574,6 +574,75 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .tip-note:focus { border-color:var(--break); }
 .tip-note::placeholder { color:var(--muted); }
 
+/* ── View Mode Styles ── */
+/* Grid view */
+#task-list.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+#task-list.grid-view .task-card {
+  margin-bottom: 0;
+}
+
+/* Card view */
+#task-list.card-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+#task-list.card-view .task-card {
+  margin-bottom: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+#task-list.card-view .task-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+/* Untimed task styling */
+.task-card.untimed-task .timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+}
+.task-card.untimed-task .timer-digits {
+  font-size: 32px;
+  min-width: 50px;
+  text-align: center;
+}
+.task-card.untimed-task.done .timer-digits {
+  color: var(--done);
+}
+.task-card.untimed-task .timer-label {
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+/* Button groups in different views */
+#task-list.grid-view .controls,
+#task-list.card-view .controls {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#task-list.card-view .task-card {
+  display: flex;
+  flex-direction: column;
+}
+#task-list.card-view .task-card .task-card-inner-clip {
+  flex: 1;
+}
+#task-list.card-view .controls {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 /* controls */
 .controls { display:flex; gap:8px; padding:10px 20px 14px; align-items:center; flex-wrap:wrap; }
 .btn {
@@ -648,6 +717,103 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .data-btn.dl:hover  { background: var(--active-dim); }
 .data-btn.ul  { border-color: rgba(74,140,255,0.4); color: var(--done); }
 .data-btn.ul:hover  { background: var(--done-dim); }
+
+/* ── Task type toggle ── */
+.task-type-toggle {
+  display: flex;
+  gap: 6px;
+}
+.task-type-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border2);
+  background: var(--bg);
+  color: var(--muted2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.task-type-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.task-type-btn.active {
+  background: var(--active);
+  border-color: var(--active);
+  color: #0a1f16;
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 40px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+.filter-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: var(--font-mono);
+}
+.filter-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.filter-btn.active {
+  background: var(--active);
+  border-color: var(--active);
+  color: #0a1f16;
+}
+
+.view-mode-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: var(--font-mono);
+}
+.view-mode-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.view-mode-btn.active {
+  background: var(--done);
+  border-color: var(--done);
+  color: #fff;
+}
 .data-btn.clr { border-color: transparent; color: var(--muted); }
 .data-btn.clr:hover { color: var(--danger); border-color: var(--danger); }
 .data-sep { width: 1px; height: 18px; background: var(--border2); margin: 0 4px; flex-shrink: 0; }
@@ -904,23 +1070,18 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 
 /* Discarded tasks panel */
 .discarded-tasks-panel {
-  background: #1a0a00; border: 1px solid #ff9a9e; border-radius: 12px;
-  padding: 12px; display: none;
-  max-width: 280px;
-  position: fixed;
-  right: 20px;
-  bottom: 100px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  z-index: 400;
+  background: var(--surface); 
+  border-top: 1px solid var(--border);
+  padding: 12px 40px;
+  display: block;
 }
-.discarded-tasks-panel.visible { display: block; }
 .discarded-tasks-title {
-  font-size: 11px; font-weight: 600; color: #ff9a9e; text-transform: uppercase;
+  font-size: 11px; font-weight: 600; color: var(--danger); text-transform: uppercase;
   letter-spacing: 0.06em; margin-bottom: 10px;
 }
 .discarded-task-item {
-  display: flex; gap: 8px; align-items: center; padding: 8px; background: #0e0e11;
-  border: 1px solid #ff9a9e; border-radius: 6px; margin-bottom: 6px;
+  display: flex; gap: 8px; align-items: center; padding: 10px; background: var(--bg);
+  border: 1px solid var(--border2); border-radius: 6px; margin-bottom: 8px;
   justify-content: space-between;
   flex-wrap: wrap;
 }
@@ -929,19 +1090,17 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   min-width: 120px;
 }
 .discarded-task-name {
-  font-size: 11px; font-weight: 500; color: #ff9a9e;
+  font-size: 12px; font-weight: 500; color: var(--text);
 }
 .discarded-task-time {
-  font-size: 9px; color: var(--muted); margin-top: 2px;
+  font-size: 10px; color: var(--muted); margin-top: 2px;
 }
-.btn.restore { border-color: #ff9a9e; color: #ff9a9e; padding: 4px 8px; font-size: 9px; white-space: nowrap; }
-.btn.restore:hover { background: #ff9a9e20; }
+.btn.restore { border-color: var(--danger); color: var(--danger); padding: 4px 8px; font-size: 10px; white-space: nowrap; }
+.btn.restore:hover { background: rgba(255, 74, 87, 0.1); }
 
 @media (max-width: 640px) {
   .discarded-tasks-panel {
-    max-width: 240px;
-    right: 10px;
-    bottom: 80px;
+    padding: 12px 16px;
   }
 }
 
@@ -975,11 +1134,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 /* Responsive */
 @media (max-width:640px) {
   .flow-main { padding:20px 16px 80px; }
-  .flow-header, .flow-stats, .data-bar { padding-left:16px; padding-right:16px; }
+  .flow-header, .flow-stats, .data-bar, .filter-bar { padding-left:16px; padding-right:16px; }
   .tmpw-inbox { margin-left:16px; margin-right:16px; }
   .app-nav { padding:0 14px; }
   .nav-tab { padding:16px 14px; font-size:11px; }
   .task-estimate { display: block; width: 100%; }
+  .filter-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .filter-section { width: 100%; }
 }
 
 </style>
@@ -1098,20 +1259,54 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
       <button class="data-btn clr" onclick="clearAllFlowTasks()">✕ Clear all</button>
     </div>
-    <button class="section-toggle" onclick="toggleSection(this, 'inboxPanel')" title="Toggle inbox and discarded">▼</button>
+    <button class="section-toggle" onclick="toggleSection(this, 'toolsPanel')" title="Toggle filters and view modes">▼</button>
+  </div>
+
+  <!-- Filters and View Mode Panel (Collapsible) -->
+  <div class="collapsible-section" id="toolsPanel">
+    <div class="filter-bar">
+      <div class="filter-section">
+        <span class="filter-label">Filter</span>
+        <button class="filter-btn active" data-filter="all" onclick="toggleFilter('all')">All</button>
+        <button class="filter-btn" data-filter="running" onclick="toggleFilter('running')">Running</button>
+        <button class="filter-btn" data-filter="paused" onclick="toggleFilter('paused')">Paused</button>
+        <button class="filter-btn" data-filter="done" onclick="toggleFilter('done')">Done</button>
+        <button class="filter-btn" data-filter="idle" onclick="toggleFilter('idle')">Idle</button>
+        <button class="filter-btn" data-filter="timed" onclick="toggleFilter('timed')">⏱ Timed</button>
+        <button class="filter-btn" data-filter="untimed" onclick="toggleFilter('untimed')">☐ Untimed</button>
+      </div>
+      <div class="filter-section">
+        <span class="filter-label">View</span>
+        <button class="view-mode-btn active" data-mode="list" onclick="setViewMode('list')">≡ List</button>
+        <button class="view-mode-btn" data-mode="grid" onclick="setViewMode('grid')">⊞ Grid</button>
+        <button class="view-mode-btn" data-mode="card" onclick="setViewMode('card')">◻ Card</button>
+      </div>
+    </div>
   </div>
 
   <!-- Tempow incoming inbox (tasks from clock) -->
-  <div class="collapsible-section" id="inboxPanel">
-    <div class="tmpw-inbox" id="tmpwInbox">
-      <div class="tmpw-inbox-title">↙ Incoming from 24h Clock</div>
-      <div id="tmpwInboxItems"></div>
+  <div style="border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 40px; background: var(--surface);">
+      <span style="font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">↙ Incoming from 24h Clock</span>
+      <button class="section-toggle" onclick="toggleSection(this, 'inboxPanel')" title="Toggle inbox">▼</button>
     </div>
+    <div class="collapsible-section" id="inboxPanel">
+      <div class="tmpw-inbox" id="tmpwInbox">
+        <div id="tmpwInboxItems"></div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Discarded tasks panel -->
-    <div class="discarded-tasks-panel" id="discardedPanel">
-      <div class="discarded-tasks-title">⚠ Discarded tasks</div>
-      <div id="discardedTasksList"></div>
+  <!-- Discarded tasks panel (Collapsible) -->
+  <div id="discardedPanelContainer" style="display: none; border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 40px; background: var(--surface);">
+      <span style="font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">⚠ Discarded tasks</span>
+      <button class="section-toggle" onclick="toggleSection(this, 'discardedPanel')" title="Toggle discarded tasks">▼</button>
+    </div>
+    <div class="collapsible-section" id="discardedPanel">
+      <div class="discarded-tasks-panel">
+        <div id="discardedTasksList"></div>
+      </div>
     </div>
   </div>
 
@@ -1265,6 +1460,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <h2>New task</h2>
     <div class="field"><label>Task name</label><input type="text" id="inp-name" placeholder="e.g. Write project brief" /></div>
     <div class="field">
+      <label>Task type</label>
+      <div class="task-type-toggle">
+        <button class="task-type-btn timed-btn active" data-type="timed" onclick="switchTaskType('timed')">⏱ Timed</button>
+        <button class="task-type-btn untimed-btn" data-type="untimed" onclick="switchTaskType('untimed')">☐ Untimed</button>
+      </div>
+    </div>
+    <div class="field" id="timed-options">
       <label>Allocated time (Max 4 hours)</label>
       <select id="inp-dur">
         <option value="5">5 minutes</option><option value="10">10 minutes</option>
@@ -1525,6 +1727,18 @@ let breakModalTaskId = null;
 let workStartTime = { h: 9, m: 0 };
 let workEndTime = { h: 18, m: 0 };
 
+// Filter and view mode settings
+let currentViewMode = 'list'; // 'list', 'grid', 'card'
+let activeFilters = {
+  all: true,
+  running: false,
+  paused: false,
+  done: false,
+  idle: false,
+  timed: false,
+  untimed: false
+};
+
 function fmtF(s) {
   const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
   return h>0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
@@ -1684,8 +1898,22 @@ document.getElementById('hdate').textContent =
   new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 
 // ── Add task modal ──
-function openModal() { document.getElementById('addTaskModal').classList.add('open'); document.getElementById('inp-name').focus(); }
-function closeModal() { document.getElementById('addTaskModal').classList.remove('open'); document.getElementById('inp-name').value=''; }
+function openModal() { 
+  document.getElementById('addTaskModal').classList.add('open'); 
+  document.getElementById('inp-name').focus();
+  switchTaskType('timed');
+}
+function closeModal() { 
+  document.getElementById('addTaskModal').classList.remove('open'); 
+  document.getElementById('inp-name').value=''; 
+}
+function switchTaskType(type) {
+  document.querySelectorAll('.task-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+  const timedOptions = document.getElementById('timed-options');
+  timedOptions.style.display = type === 'timed' ? 'block' : 'none';
+}
 document.getElementById('addTaskModal').addEventListener('click', e=>{ if(e.target===document.getElementById('addTaskModal')) closeModal(); });
 document.getElementById('inp-name').addEventListener('keydown', e=>{ if(e.key==='Enter') addFlowTask(); });
 
@@ -1708,17 +1936,90 @@ document.addEventListener('click', e=>{
 
 function addFlowTask() {
   const name=document.getElementById('inp-name').value.trim();
-  const dur=parseInt(document.getElementById('inp-dur').value);
+  const isUntimed = document.querySelector('.task-type-btn.active').dataset.type === 'untimed';
+  const dur = isUntimed ? 0 : parseInt(document.getElementById('inp-dur').value);
+  
   if (!name) { document.getElementById('inp-name').focus(); return; }
   
-  // Validate max 4 hours (240 minutes)
-  if (dur > 240) {
+  // Validate max 4 hours (240 minutes) for timed tasks
+  if (!isUntimed && dur > 240) {
     alert('Maximum task duration is 4 hours (240 minutes)');
     return;
   }
   
-  flowTasks.push({ id: Date.now(), name, allocSecs: dur*60, state:'idle', segments:[], dateAdded: Date.now() });
-  closeModal(); renderFlowList();
+  const taskObj = { 
+    id: Date.now() + Math.random(),
+    name, 
+    allocSecs: dur * 60, 
+    state: 'idle', 
+    segments: [], 
+    dateAdded: Date.now(),
+    isUntimed: isUntimed
+  };
+  
+  flowTasks.push(taskObj);
+  closeModal(); 
+  renderFlowList();
+}
+
+// ── Filter and View Mode ──────────────────────────────────────
+function toggleFilter(filterType) {
+  if (filterType === 'all') {
+    // If clicking 'all', toggle all filters
+    const allCurrentlyActive = activeFilters.all;
+    Object.keys(activeFilters).forEach(key => activeFilters[key] = false);
+    if (!allCurrentlyActive) {
+      activeFilters.all = true;
+    }
+  } else {
+    // If clicking a specific filter
+    activeFilters.all = false;
+    activeFilters[filterType] = !activeFilters[filterType];
+    // If no specific filter is selected, show all
+    const anySpecificFilterActive = ['running', 'paused', 'done', 'idle', 'timed', 'untimed'].some(f => activeFilters[f]);
+    if (!anySpecificFilterActive) {
+      activeFilters.all = true;
+    }
+  }
+  updateFilterButtons();
+  renderFlowList();
+}
+
+function updateFilterButtons() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    const filterType = btn.dataset.filter;
+    btn.classList.toggle('active', activeFilters[filterType]);
+  });
+}
+
+function setViewMode(mode) {
+  currentViewMode = mode;
+  document.querySelectorAll('.view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  // Update task list display based on new rendering mode
+  const list = document.getElementById('task-list');
+  if (mode === 'grid') {
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+    list.style.gap = '16px';
+  } else if (mode === 'card') {
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+    list.style.gap = '20px';
+  } else {
+    list.style.display = 'block';
+  }
+  renderFlowList();
+}
+
+function shouldShowTask(task) {
+  if (activeFilters.all) return true;
+  
+  const stateMatch = activeFilters[task.state] || false;
+  const typeMatch = (task.isUntimed && activeFilters.untimed) || (!task.isUntimed && activeFilters.timed) || false;
+  
+  return stateMatch || typeMatch;
 }
 
 // ── Break modal ──────────────────────────────────────
@@ -1861,6 +2162,17 @@ function markDone(id) {
   }
   const live = liveSegment(t);
   if (live) live.endTs = Date.now();
+  t.state = 'done';
+  stopRepeatingAlarm();
+  playDing();
+  showDoneBanner(t.name);
+  renderFlowList();
+}
+
+function markUntimeTaskDone(id) {
+  const t = flowTasks.find(x => x.id===id);
+  if (!t || !t.isUntimed) return;
+  
   t.state = 'done';
   stopRepeatingAlarm();
   playDing();
@@ -2121,8 +2433,11 @@ function renderFlowList() {
   document.getElementById('empty-state').style.display = flowTasks.length===0 ? 'block' : 'none';
   list.innerHTML = '';
   
+  // Filter tasks based on active filters
+  const filteredTasks = flowTasks.filter(shouldShowTask);
+  
   // Sort tasks: active tasks first (running, paused, idle), then done tasks at bottom
-  const sortedTasks = [...flowTasks].sort((a, b) => {
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
     // Done tasks go to the bottom
     if (a.state === 'done' && b.state !== 'done') return 1;
     if (a.state !== 'done' && b.state === 'done') return -1;
@@ -2138,7 +2453,11 @@ function renderFlowList() {
     const isOverrun = t.state==='paused' && live && live.overrun;
 
     let digsText, labelText;
-    if (t.state==='paused' && live) {
+    if (t.isUntimed) {
+      // For untimed tasks, show completion state
+      digsText = t.state === 'done' ? '✓' : '☐';
+      labelText = t.state === 'done' ? 'complete' : 'pending';
+    } else if (t.state==='paused' && live) {
       if (live.breakLimitSecs>0 && !live.overrun) {
         digsText = fmtF(Math.max(live.breakLimitSecs-live.secs,0)); labelText = 'break left';
       } else if (live.overrun) {
@@ -2157,18 +2476,29 @@ function renderFlowList() {
     const canDone = (t.state==='running'||t.state==='paused') && worked >= t.allocSecs*0.5;
 
     let ctrl = '';
-    if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})">▶ Start</button>`;
-    if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})">⏸ Pause</button>`;
-    if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})">▶ Resume</button>`;
-    if (t.state==='done')    ctrl += `<button class="btn" disabled>✓ Complete</button>`;
-    if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)">✓ Done</button>`;
-    ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)">⏱ Extend</button>`;
     
-    // Show merge or unmerge button based on status
-    if (t.isMerged) {
-      ctrl += `<button class="btn" onclick="unmergeTask(${t.id})" title="Split this merged task back into original tasks" style="color:var(--break);">⤴ Unmerge</button>`;
+    // For untimed tasks, show different control buttons
+    if (t.isUntimed) {
+      if (t.state !== 'done') {
+        ctrl += `<button class="btn done-early" onclick="markUntimeTaskDone(${t.id})" title="Mark task as complete">✓ Done</button>`;
+      } else {
+        ctrl += `<button class="btn" disabled>✓ Complete</button>`;
+      }
     } else {
-      ctrl += `<button class="btn" onclick="openMergeModal(${t.id})" title="Merge with another task">🔀 Merge</button>`;
+      // Regular timed task controls
+      if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})">▶ Start</button>`;
+      if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})">⏸ Pause</button>`;
+      if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})">▶ Resume</button>`;
+      if (t.state==='done')    ctrl += `<button class="btn" disabled>✓ Complete</button>`;
+      if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)">✓ Done</button>`;
+      ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)">⏱ Extend</button>`;
+      
+      // Show merge or unmerge button based on status
+      if (t.isMerged) {
+        ctrl += `<button class="btn" onclick="unmergeTask(${t.id})" title="Split this merged task back into original tasks" style="color:var(--break);">⤴ Unmerge</button>`;
+      } else {
+        ctrl += `<button class="btn" onclick="openMergeModal(${t.id})" title="Merge with another task">🔀 Merge</button>`;
+      }
     }
     
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock">⇄ Clock</button>`;
@@ -2176,11 +2506,17 @@ function renderFlowList() {
     ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others">⊘ Discard</button>`;
     ctrl += `<button class="btn del" onclick="deleteFlowTask(${t.id})">✕</button>`;
 
+    // Apply view mode styling
     const card = document.createElement('div');
-    card.className = 'task-card'
-      + (t.state==='running'?' running':t.state==='paused'?' on-break':t.state==='done'?' done':'')
-      + (inTray?' in-tray':'')
-      + (isOverrun?' break-overrun':'');
+    let cardClass = 'task-card';
+    cardClass += currentViewMode === 'card' ? ' card-view' : '';
+    cardClass += currentViewMode === 'grid' ? ' grid-view' : '';
+    cardClass += t.isUntimed ? ' untimed-task' : '';
+    cardClass += (t.state==='running'?' running':t.state==='paused'?' on-break':t.state==='done'?' done':'');
+    cardClass += (inTray?' in-tray':'');
+    cardClass += (isOverrun?' break-overrun':'');
+    
+    card.className = cardClass;
     card.id = 'flow-card-'+t.id;
     card.draggable = true;
     card.addEventListener('dragstart', (e) => handleTaskDragStart(e, t.id));
@@ -2188,10 +2524,16 @@ function renderFlowList() {
     card.addEventListener('dragleave', handleTaskDragLeave);
     card.addEventListener('drop', (e) => handleTaskDrop(e, t.id));
     
-    // ╔════════════════════════════════════════════════════════════════╗
-    // ║ NEW: ADD ESTIMATED END TIME BADGE TO RUNNING TASKS            ║
-    // ║ Shows: "Est. done: 3:45 PM" below the task name              ║
-    // ╚════════════════════════════════════════════════════════════════╝
+    // Generate task metadata
+    let metaHTML = '';
+    if (!t.isUntimed) {
+      metaHTML = `<span>⏱ ${t.allocSecs/60}m allocated</span>`;
+      if (breakCount > 0) metaHTML += `<span>${breakCount} break${breakCount>1?'s':''}</span>`;
+      metaHTML += `<span class="break-info">${brk>0 ? `· <span class="b-time">${fmtShortF(brk)}</span> break` : ''}</span>`;
+    } else {
+      metaHTML = `<span style="color: var(--muted); font-size: 11px;">No time limit • Checklist item</span>`;
+    }
+    
     card.innerHTML = `
       <div class="task-card-inner-clip">
         <div class="task-inner">
@@ -2200,22 +2542,18 @@ function renderFlowList() {
             <div style="flex: 1;">
               <div class="task-name">${t.name}</div>
               <div class="task-meta">
-                <span>⏱ ${t.allocSecs/60}m allocated</span>
-                ${breakCount>0 ? `<span>${breakCount} break${breakCount>1?'s':''}</span>` : ''}
-                <span class="break-info">${brk>0 ? `· <span class="b-time">${fmtShortF(brk)}</span> break` : ''}</span>
+                ${metaHTML}
               </div>
             </div>
           </div>
           <div class="timer-block">
             <div class="timer-digits">${digsText}</div>
             <div class="timer-label">${labelText}</div>
-            ${t.state === 'running' && getEstimatedEndTime(t) ? `<div class="task-estimate">Done at <strong class="task-estimate-time">${getEstimatedEndTime(t)}</strong></div>` : ''}
+            ${!t.isUntimed && t.state === 'running' && getEstimatedEndTime(t) ? `<div class="task-estimate">Done at <strong class="task-estimate-time">${getEstimatedEndTime(t)}</strong></div>` : ''}
           </div>
         </div>
       </div>
-      <div class="bar-outer">
-        <div class="bar-track" style="position:relative;height:100%;overflow:hidden;">${buildBarHTML(t)}</div>
-      </div>
+      ${!t.isUntimed ? `<div class="bar-outer"><div class="bar-track" style="position:relative;height:100%;overflow:hidden;">${buildBarHTML(t)}</div></div>` : ''}
       <div class="controls"><span class="status-pill ${pillClass}">${pillText}</span>${ctrl}</div>`;
     list.appendChild(card);
   });
@@ -2249,7 +2587,7 @@ function renderFlowInbox() {
 function acceptToFlow(id) {
   const item=pendingToFlow.find(x=>x.id===id);
   if(!item) return;
-  flowTasks.push({ id:Date.now(), name:item.name, allocSecs:item.allocSecs, state:'idle', segments:[] });
+  flowTasks.push({ id:Date.now() + Math.random(), name:item.name, allocSecs:item.allocSecs, state:'idle', segments:[], isUntimed: false });
   pendingToFlow=pendingToFlow.filter(x=>x.id!==id);
   renderFlowList(); renderFlowInbox();
 }
@@ -2260,15 +2598,16 @@ function dismissFromFlow(id) {
 
 /* ── Discarded Tasks Panel ── */
 function renderDiscardedTasks() {
+  const container = document.getElementById('discardedPanelContainer');
   const panel = document.getElementById('discardedPanel');
   const list = document.getElementById('discardedTasksList');
   
   if (discardedTasks.length === 0) {
-    panel.style.display = 'none';
+    container.style.display = 'none';
     return;
   }
   
-  panel.style.display = 'block';
+  container.style.display = 'block';
   list.innerHTML = '';
   
   discardedTasks.forEach(t => {
@@ -4670,16 +5009,18 @@ function toggleSection(btn, sectionId) {
 }
 
 function restoreCollapsibleStates() {
-  const sections = ['hoursTrackerPanel', 'inboxPanel'];
+  const sections = ['hoursTrackerPanel', 'toolsPanel', 'inboxPanel', 'discardedPanel'];
   sections.forEach(sectionId => {
     const stateKey = 'section_collapsed_' + sectionId;
     const isCollapsed = localStorage.getItem(stateKey) === 'true';
     const section = document.getElementById(sectionId);
-    const button = section ? section.parentElement.querySelector('.section-toggle') : null;
     
     if (section && isCollapsed) {
       section.classList.add('collapsed');
-      if (button) button.classList.add('collapsed');
+      // Find the toggle button (it's the one right before the section)
+      const toggleBtn = section.previousElementSibling?.querySelector('.section-toggle') || 
+                       document.querySelector(`[onclick="toggleSection(this, '${sectionId}')"]`);
+      if (toggleBtn) toggleBtn.classList.add('collapsed');
     }
   });
 }
@@ -4838,7 +5179,7 @@ setInterval(() => {
   opacity: 1;
 }
 </style>
-<div class="app-footer">Created by YANN — Tempow v1.0.0</div>
+<div class="app-footer">Created by YANN KOFFI — Tempow v1.0.0</div>
 
 </body>
 </html>
