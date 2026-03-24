@@ -131,6 +131,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   border-radius: 8px;
   background: transparent;
   touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: filter 0.1s ease, box-shadow 0.1s ease;
+}
+
+#clock:active {
+  cursor: grabbing;
 }
 
 .clock-form-section {
@@ -1084,6 +1093,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       <button class="data-btn ul" onclick="openImportModal('flow')">↑ Import JSON</button>
       <div class="data-sep"></div>
       <button class="data-btn" onclick="exportFlowJSON('done')">↓ Completed only</button>
+      <button class="data-btn" onclick="syncElapsedTime()">↻ Sync elapsed</button>
       <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
       <button class="data-btn clr" onclick="clearAllFlowTasks()">✕ Clear all</button>
@@ -1255,13 +1265,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <h2>New task</h2>
     <div class="field"><label>Task name</label><input type="text" id="inp-name" placeholder="e.g. Write project brief" /></div>
     <div class="field">
-      <label>Allocated time</label>
+      <label>Allocated time (Max 4 hours)</label>
       <select id="inp-dur">
         <option value="5">5 minutes</option><option value="10">10 minutes</option>
         <option value="15">15 minutes</option><option value="20">20 minutes</option>
         <option value="25" selected>25 minutes</option><option value="30">30 minutes</option>
         <option value="45">45 minutes</option><option value="60">1 hour</option>
         <option value="90">1.5 hours</option><option value="120">2 hours</option>
+        <option value="150">2.5 hours</option><option value="180">3 hours</option>
+        <option value="210">3.5 hours</option><option value="240">4 hours</option>
       </select>
     </div>
     <div class="modal-actions">
@@ -1346,6 +1358,37 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div class="extend-time-modal-actions">
       <button class="extend-btn-cancel" onclick="closeExtendModal()">Cancel</button>
       <button class="extend-btn-confirm" id="extendConfirmBtn" onclick="confirmExtendTime()">Extend time</button>
+    </div>
+  </div>
+</div>
+
+<!-- Merge tasks modal -->
+<div class="extend-time-modal-bg" id="mergeTasksModal">
+  <div class="extend-time-modal">
+    <h2>Merge tasks</h2>
+    <div class="extend-time-modal-sub" id="mergeTaskPrimary"></div>
+    
+    <div style="font-size: 11px; color: var(--muted); margin-bottom: 16px; line-height: 1.6;">
+      <strong style="color: var(--text);">Select a task to merge with:</strong>
+    </div>
+
+    <div id="mergeTaskList" style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+      <!-- Task list will be populated here -->
+    </div>
+
+    <div class="extend-time-info">
+      <div style="margin-bottom: 8px;">Primary task: <strong id="mergeTaskInfoPrimary"></strong></div>
+      <div style="margin-bottom: 8px;">Secondary task: <strong id="mergeTaskInfoSecondary">—</strong></div>
+      <div>New duration: <strong style="color: var(--active);" id="mergeNewDuration">—</strong></div>
+    </div>
+
+    <div style="background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px; color: var(--muted);">
+      <div style="margin-bottom: 6px;">📌 Result: <strong style="color: var(--text);" id="mergePreview">Select a task to merge</strong></div>
+    </div>
+
+    <div class="extend-time-modal-actions">
+      <button class="extend-btn-cancel" onclick="closeMergeModal()">Cancel</button>
+      <button class="extend-btn-confirm" id="mergeConfirmBtn" disabled onclick="confirmMergeTasks()">Merge tasks</button>
     </div>
   </div>
 </div>
@@ -1667,6 +1710,13 @@ function addFlowTask() {
   const name=document.getElementById('inp-name').value.trim();
   const dur=parseInt(document.getElementById('inp-dur').value);
   if (!name) { document.getElementById('inp-name').focus(); return; }
+  
+  // Validate max 4 hours (240 minutes)
+  if (dur > 240) {
+    alert('Maximum task duration is 4 hours (240 minutes)');
+    return;
+  }
+  
   flowTasks.push({ id: Date.now(), name, allocSecs: dur*60, state:'idle', segments:[], dateAdded: Date.now() });
   closeModal(); renderFlowList();
 }
@@ -2070,7 +2120,17 @@ function renderFlowList() {
   const list = document.getElementById('task-list');
   document.getElementById('empty-state').style.display = flowTasks.length===0 ? 'block' : 'none';
   list.innerHTML = '';
-  flowTasks.forEach(t => {
+  
+  // Sort tasks: active tasks first (running, paused, idle), then done tasks at bottom
+  const sortedTasks = [...flowTasks].sort((a, b) => {
+    // Done tasks go to the bottom
+    if (a.state === 'done' && b.state !== 'done') return 1;
+    if (a.state !== 'done' && b.state === 'done') return -1;
+    // Keep original order for other tasks
+    return 0;
+  });
+  
+  sortedTasks.forEach(t => {
     const worked = totalWorkedSecs(t), brk = totalBreakSecs(t);
     const live = liveSegment(t);
     const breakCount = t.segments.filter(s=>s.type==='break').length;
@@ -2103,6 +2163,14 @@ function renderFlowList() {
     if (t.state==='done')    ctrl += `<button class="btn" disabled>✓ Complete</button>`;
     if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)">✓ Done</button>`;
     ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)">⏱ Extend</button>`;
+    
+    // Show merge or unmerge button based on status
+    if (t.isMerged) {
+      ctrl += `<button class="btn" onclick="unmergeTask(${t.id})" title="Split this merged task back into original tasks" style="color:var(--break);">⤴ Unmerge</button>`;
+    } else {
+      ctrl += `<button class="btn" onclick="openMergeModal(${t.id})" title="Merge with another task">🔀 Merge</button>`;
+    }
+    
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock">⇄ Clock</button>`;
     ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON">↓ JSON</button>`;
     ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others">⊘ Discard</button>`;
@@ -2239,6 +2307,7 @@ let draggingClock = null;
 let dragPreviewClock = null;
 let pendingTaskToAdd = null;
 let selectedWindowForTask = null;
+let draggingtaskStyleAdded = false; // Flag to avoid duplicate styles
 
 function clockTimeToSecs(h, m = 0, s = 0) { return h * 3600 + m * 60 + s; }
 function clockSecsToTime(secs) {
@@ -2940,17 +3009,37 @@ function setupClockDragHandlers() {
   const cy = CANVAS_SIZE / 2;
   const R = 200;
   const innerR = 120;
+  
+  // Increased touch detection area (thicker ring for easier touch)
+  const TOUCH_MARGIN = 40; // 40px margin for touch targets
+  const DETECT_INNER = innerR - 6 - TOUCH_MARGIN;
+  const DETECT_OUTER = R + 6 + TOUCH_MARGIN;
 
-  canvas.addEventListener('mousedown', (e) => {
+  // Helper function to get coordinates from mouse or touch event
+  function getCoordinates(e) {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    let clientX, clientY;
     
-    // Check if click is on a task (on the ring)
-    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
-    if (dist < innerR - 6 || dist > R + 6) return; // Not on task ring
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
     
-    // Find which task was clicked
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+      rect: rect
+    };
+  }
+
+  // Helper function to find task at position
+  function findTaskAtPosition(x, y) {
     const angle = Math.atan2(y - cy, x - cx);
     const normalizedAngle = angle + Math.PI / 2;
     const timeFromAngle = (normalizedAngle / (2 * Math.PI)) * DAY_SEC;
@@ -2960,26 +3049,54 @@ function setupClockDragHandlers() {
       const parts = clockSplitInterval(t.start, t.duration);
       for (const p of parts) {
         if (normalizedTime >= p[0] && normalizedTime <= p[1]) {
-          draggingClock = t;
-          return;
+          return t;
         }
+      }
+    }
+    return null;
+  }
+
+  // Helper function to check if position is on ring
+  function isOnRing(x, y, allowTouchMargin = false) {
+    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+    if (allowTouchMargin) {
+      return dist >= DETECT_INNER && dist <= DETECT_OUTER;
+    } else {
+      return dist >= innerR - 6 && dist <= R + 6;
+    }
+  }
+
+  // Pointer events (works for both mouse and touch)
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const coords = getCoordinates(e);
+    
+    if (isOnRing(coords.x, coords.y, true)) { // Allow touch margin
+      const task = findTaskAtPosition(coords.x, coords.y);
+      if (task) {
+        draggingClock = task;
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = 'grabbing';
+        
+        // Visual feedback: add a highlight class
+        canvas.classList.add('dragging-task');
+        
+        console.log(`👆 Started dragging: ${task.name}`);
       }
     }
   });
 
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  canvas.addEventListener('pointermove', (e) => {
+    const coords = getCoordinates(e);
     
-    // Calculate angle and time from mouse position
-    const angle = Math.atan2(y - cy, x - cx);
-    const normalizedAngle = angle + Math.PI / 2;
-    const timeFromAngle = (normalizedAngle / (2 * Math.PI)) * DAY_SEC;
-    const normalizedTime = ((timeFromAngle % DAY_SEC) + DAY_SEC) % DAY_SEC;
-    
-    // Handle dragging
     if (draggingClock) {
+      e.preventDefault();
+      
+      const angle = Math.atan2(coords.y - cy, coords.x - cx);
+      const normalizedAngle = angle + Math.PI / 2;
+      const timeFromAngle = (normalizedAngle / (2 * Math.PI)) * DAY_SEC;
+      const normalizedTime = ((timeFromAngle % DAY_SEC) + DAY_SEC) % DAY_SEC;
+      
       let newStart = clockSnapToSeconds(normalizedTime);
       // Keep task duration, just move start time
       if (newStart + draggingClock.duration <= DAY_SEC) {
@@ -3009,53 +3126,91 @@ function setupClockDragHandlers() {
       const tooltip = document.getElementById('clock-tooltip');
       if (tooltip) {
         tooltip.style.display = 'block';
-        tooltip.style.left = (e.clientX - rect.left) + 'px';
-        tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+        tooltip.style.left = coords.x + 'px';
+        tooltip.style.top = (coords.y - 30) + 'px';
         tooltip.textContent = clockFormatHMS(draggingClock.start) + ' → ' + clockFormatHMS(draggingClock.start + draggingClock.duration);
       }
-      
-      canvas.style.cursor = 'grabbing';
     } else {
-      // Hide tooltip
+      // Hide tooltip when not dragging
       const tooltip = document.getElementById('clock-tooltip');
       if (tooltip) {
         tooltip.style.display = 'none';
       }
       
-      // Cursor feedback - check if hovering over a task
-      const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
-      const isOnRing = dist >= innerR - 6 && dist <= R + 6;
-      
-      if (isOnRing) {
-        for (const t of clockTasks) {
-          const parts = clockSplitInterval(t.start, t.duration);
-          for (const p of parts) {
-            if (normalizedTime >= p[0] && normalizedTime <= p[1]) {
-              canvas.style.cursor = 'grab';
-              return;
-            }
-          }
+      // Cursor feedback - check if hovering over a task (with touch margin)
+      if (isOnRing(coords.x, coords.y, true)) {
+        const task = findTaskAtPosition(coords.x, coords.y);
+        if (task) {
+          canvas.style.cursor = 'grab';
+        } else {
+          canvas.style.cursor = 'default';
         }
+      } else {
+        canvas.style.cursor = 'default';
       }
+    }
+  });
+
+  canvas.addEventListener('pointerup', (e) => {
+    if (draggingClock) {
+      e.preventDefault();
+      draggingClock = null;
+      canvas.classList.remove('dragging-task');
       canvas.style.cursor = 'default';
+      
+      // Release pointer capture
+      if (canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+      
+      clockRefreshUI();
+      drawClock();
+      console.log(`✓ Finished dragging`);
     }
   });
 
-  canvas.addEventListener('mouseup', () => {
+  canvas.addEventListener('pointercancel', (e) => {
     if (draggingClock) {
       draggingClock = null;
+      canvas.classList.remove('dragging-task');
+      canvas.style.cursor = 'default';
       clockRefreshUI();
       drawClock();
+      console.log(`✗ Drag cancelled`);
     }
   });
 
-  canvas.addEventListener('mouseleave', () => {
-    if (draggingClock) {
-      draggingClock = null;
-      clockRefreshUI();
-      drawClock();
+  // Prevent default touch behaviors (scrolling, zooming)
+  canvas.addEventListener('touchstart', (e) => {
+    if (draggingClock || isOnRing(getCoordinates(e).x, getCoordinates(e).y, true)) {
+      e.preventDefault();
     }
   });
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (draggingClock) {
+      e.preventDefault();
+    }
+  });
+
+  canvas.addEventListener('touchend', (e) => {
+    if (draggingClock) {
+      e.preventDefault();
+    }
+  });
+
+  // Add style for dragging state
+  if (!draggingtaskStyleAdded) {
+    const style = document.createElement('style');
+    style.textContent = `
+      canvas.dragging-task {
+        filter: brightness(1.1);
+        box-shadow: 0 0 20px rgba(93, 224, 168, 0.4);
+      }
+    `;
+    document.head.appendChild(style);
+    draggingtaskStyleAdded = true;
+  }
 }
 
 // Override renderClockPage with new function
@@ -3839,6 +3994,42 @@ function saveFlowData() {
   } catch(e) {}
 }
 
+async function syncElapsedTime(overrideElapsedSeconds) {
+  let updated = false;
+
+  // For each running or paused task, recalculate elapsed based on real-world time
+  flowTasks.forEach(t => {
+    if (t.state === 'running' || t.state === 'paused') {
+      const live = liveSegment(t);
+      if (live && live.startTs) {
+        // Calculate real elapsed time in seconds from the actual start timestamp
+        const realElapsedMs = Date.now() - live.startTs;
+        const realElapsedSecs = Math.floor(realElapsedMs / 1000);
+        
+        // Set secs to the real elapsed time (not additive, absolute)
+        if (realElapsedSecs > live.secs) {
+          live.secs = realElapsedSecs;
+          updated = true;
+        }
+      }
+    }
+  });
+
+  if (!updated) return;
+
+  updateFlowStats();
+  updateHoursTracker();
+  updateLiveFlow();
+  renderFlowList();
+  saveFlowData();
+
+  const syncButton = document.querySelector('.data-bar .data-btn[onclick="syncElapsedTime()"]');
+  if (syncButton) {
+    syncButton.textContent = '↻ Synced';
+    setTimeout(() => { if (syncButton) syncButton.textContent = '↻ Sync elapsed'; }, 1600);
+  }
+}
+
 async function loadFlowData() {
   try {
     let data = null;
@@ -3889,27 +4080,16 @@ async function loadFlowData() {
           (t.breaks||[]).forEach(b => t.segments.push({type:'break',secs:b.secs,startTs:b.startTs,endTs:b.endTs,note:b.note||'',breakLimitSecs:0,overrun:false}));
           delete t.breaks; delete t.currentBreak; delete t.workedSecs;
         }
-        if (t.state === 'running') t.state = 'paused';
-        t.segments.forEach(s => { if (!s.endTs) s.endTs = Date.now(); });
         if (!t.dateAdded) t.dateAdded = Date.now();
         return t;
       });
     }
-    
-    // Handle elapsed time for running tasks
+
     if (window.api && window.api.getElapsedTime) {
       const timeResult = await window.api.getElapsedTime();
       if (timeResult.success && timeResult.elapsedSeconds > 0) {
-        const elapsedSecs = timeResult.elapsedSeconds;
-        flowTasks.forEach(t => {
-          if (t.state === 'paused' || t.state === 'running') {
-            const live = liveSegment(t);
-            if (live) {
-              // Add elapsed time to the live segment
-              live.secs += elapsedSecs;
-            }
-          }
-        });
+        // App was closed; recalculate all segment times based on their saved startTs
+        await syncElapsedTime();
       }
     }
     
@@ -4089,11 +4269,21 @@ function openExtendModal(taskId) {
   const t = flowTasks.find(x => x.id === taskId);
   if (!t) return;
   
+  if (!t.extensionCount) t.extensionCount = 0;
+  if (!t.extensions) t.extensions = [];
+  
+  // Check if max extensions reached
+  if (t.extensionCount >= 2) {
+    alert('Maximum 2 extensions of 25% already used for this task.');
+    return;
+  }
+  
   const maxExtendSecs = Math.floor(t.allocSecs * 0.25);
   const maxExtendMin = Math.ceil(maxExtendSecs / 60);
   const currentMin = Math.round(t.allocSecs / 60);
+  const extensionsLeft = 2 - t.extensionCount;
   
-  document.getElementById('extendTimeTaskName').textContent = `Extend "${t.name}"`;
+  document.getElementById('extendTimeTaskName').textContent = `Extend "${t.name}" (${extensionsLeft}/2 left)`;
   document.getElementById('extendTimeCurrentAlloc').textContent = `${currentMin} minutes`;
   document.getElementById('extendTimeMaxExt').textContent = `${maxExtendMin} minutes`;
   document.getElementById('extendTimeInput').value = '';
@@ -4137,6 +4327,15 @@ function confirmExtendTime() {
   const t = flowTasks.find(x => x.id === extendTimeTaskId);
   if (!t) return;
   
+  if (!t.extensionCount) t.extensionCount = 0;
+  if (!t.extensions) t.extensions = [];
+  
+  // Check if max extensions reached (2 total)
+  if (t.extensionCount >= 2) {
+    alert('Maximum 2 extensions of 25% already used for this task.');
+    return;
+  }
+  
   const input = document.getElementById('extendTimeInput');
   const extraMin = parseInt(input.value) || 0;
   const maxExtendMin = Math.ceil((t.allocSecs * 0.25) / 60);
@@ -4148,8 +4347,235 @@ function confirmExtendTime() {
   
   const extraSecs = extraMin * 60;
   t.allocSecs += extraSecs;
+  t.extensionCount += 1;
+  t.extensions.push({
+    extendedAt: Date.now(),
+    addedMinutes: extraMin,
+    addedSecs: extraSecs
+  });
   closeExtendModal();
   renderFlowList();
+}
+
+/* ═══════════════════════════════════════════
+   MERGE TASKS FUNCTIONALITY
+═══════════════════════════════════════════ */
+let mergeTaskPrimaryId = null;
+let mergeTaskSecondaryId = null;
+
+function openMergeModal(taskId) {
+  const primaryTask = flowTasks.find(t => t.id === taskId);
+  if (!primaryTask) return;
+  if (flowTasks.filter(t => t.id !== taskId).length === 0) {
+    alert('Need at least 2 tasks to merge. Create another task first.');
+    return;
+  }
+
+  mergeTaskPrimaryId = taskId;
+  mergeTaskSecondaryId = null;
+  
+  // Show primary task info
+  document.getElementById('mergeTaskPrimary').innerHTML = `
+    <div style="font-size: 12px; color: var(--text);">
+      <strong>${primaryTask.name}</strong><br/>
+      <span style="color: var(--muted); font-size: 11px;">${fmtDurF(primaryTask.allocSecs)} allocated</span>
+    </div>
+  `;
+  
+  document.getElementById('mergeTaskInfoPrimary').textContent = `${primaryTask.name} (${fmtDurF(primaryTask.allocSecs)})`;
+  document.getElementById('mergeNewDuration').textContent = '—';
+  document.getElementById('mergePreview').textContent = 'Select a task to merge';
+  document.getElementById('mergeConfirmBtn').disabled = true;
+  
+  // Populate list of available tasks to merge with
+  const mergeTaskList = document.getElementById('mergeTaskList');
+  mergeTaskList.innerHTML = '';
+  
+  flowTasks.filter(t => t.id !== taskId).forEach(t => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.2s;';
+    item.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:500;color:var(--text);font-size:12px;">${t.name}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;">${fmtDurF(t.allocSecs)} allocated · ${t.state}</div>
+        </div>
+        <div style="font-size:10px;color:var(--active);font-weight:600;">+${fmtDurF(t.allocSecs)}</div>
+      </div>
+    `;
+    item.addEventListener('hover', function() {
+      this.style.background = 'var(--surface2)';
+    });
+    item.addEventListener('click', () => selectTaskToMerge(t.id));
+    mergeTaskList.appendChild(item);
+  });
+  
+  document.getElementById('mergeTasksModal').classList.add('open');
+}
+
+function selectTaskToMerge(taskId) {
+  mergeTaskSecondaryId = taskId;
+  const secondaryTask = flowTasks.find(t => t.id === taskId);
+  const primaryTask = flowTasks.find(t => t.id === mergeTaskPrimaryId);
+  
+  if (!secondaryTask || !primaryTask) return;
+  
+  // Update UI with selection
+  document.getElementById('mergeTaskInfoSecondary').textContent = `${secondaryTask.name} (${fmtDurF(secondaryTask.allocSecs)})`;
+  const newDuration = primaryTask.allocSecs + secondaryTask.allocSecs;
+  document.getElementById('mergeNewDuration').textContent = fmtDurF(newDuration);
+  document.getElementById('mergePreview').textContent = `${primaryTask.name} + ${secondaryTask.name} = ${fmtDurF(newDuration)} total`;
+  document.getElementById('mergeConfirmBtn').disabled = false;
+  
+  // Highlight selected item in list
+  const items = document.getElementById('mergeTaskList').children;
+  for (let item of items) {
+    item.style.background = 'transparent';
+  }
+  for (let item of items) {
+    if (item.textContent.includes(secondaryTask.name)) {
+      item.style.background = 'var(--active-dim)';
+      item.style.borderLeft = '3px solid var(--active)';
+    }
+  }
+}
+
+function closeMergeModal() {
+  document.getElementById('mergeTasksModal').classList.remove('open');
+  mergeTaskPrimaryId = null;
+  mergeTaskSecondaryId = null;
+}
+
+function confirmMergeTasks() {
+  if (!mergeTaskPrimaryId || !mergeTaskSecondaryId) return;
+  
+  const primaryTask = flowTasks.find(t => t.id === mergeTaskPrimaryId);
+  const secondaryTask = flowTasks.find(t => t.id === mergeTaskSecondaryId);
+  
+  if (!primaryTask || !secondaryTask) {
+    alert('Error: Tasks not found.');
+    return;
+  }
+  
+  // Check if either task would exceed 4 hours max
+  const newDuration = primaryTask.allocSecs + secondaryTask.allocSecs;
+  const maxDuration = 4 * 3600; // 4 hours
+  
+  if (newDuration > maxDuration) {
+    alert(`⚠ Merged task would be ${fmtDurF(newDuration)}, exceeding the 4-hour limit. Merge not allowed.`);
+    return;
+  }
+  
+  // Merge tasks
+  const mergedName = `${primaryTask.name} + ${secondaryTask.name}`;
+  
+  // Create confirmation message
+  const confirmed = confirm(
+    `Merge these tasks?\n\n` +
+    `Primary: ${primaryTask.name} (${fmtDurF(primaryTask.allocSecs)})\n` +
+    `Secondary: ${secondaryTask.name} (${fmtDurF(secondaryTask.allocSecs)})\n\n` +
+    `Result: ${mergedName} (${fmtDurF(newDuration)})\n\n` +
+    `The secondary task will be merged into the primary.`
+  );
+  
+  if (!confirmed) return;
+  
+  // Merge segments from secondary into primary
+  if (secondaryTask.segments && secondaryTask.segments.length > 0) {
+    primaryTask.segments = primaryTask.segments.concat(secondaryTask.segments);
+  }
+  
+  // Store merge history for unmerge functionality
+  primaryTask.isMerged = true;
+  primaryTask.mergeHistory = {
+    mergedAt: Date.now(),
+    originalTasks: [
+      {
+        id: primaryTask.id,
+        name: primaryTask.name,
+        allocSecs: primaryTask.allocSecs,
+        state: primaryTask.state,
+        segments: [...(primaryTask.segments || [])]
+      },
+      {
+        name: secondaryTask.name,
+        allocSecs: secondaryTask.allocSecs,
+        state: secondaryTask.state,
+        segments: [...(secondaryTask.segments || [])]
+      }
+    ]
+  };
+  
+  // Update primary task
+  primaryTask.name = mergedName;
+  primaryTask.allocSecs = newDuration;
+  
+  // Remove secondary task
+  flowTasks = flowTasks.filter(t => t.id !== secondaryTask.id);
+  
+  // Close modal and re-render
+  closeMergeModal();
+  renderFlowList();
+  
+  console.log(`✓ Merged: "${primaryTask.name}" (${fmtDurF(newDuration)} total)`);
+}
+
+function unmergeTask(taskId) {
+  const mergedTask = flowTasks.find(t => t.id === taskId);
+  if (!mergedTask || !mergedTask.isMerged || !mergedTask.mergeHistory) {
+    alert('Error: This is not a merged task or merge history is missing.');
+    return;
+  }
+  
+  const history = mergedTask.mergeHistory;
+  const originalTasks = history.originalTasks;
+  
+  if (!originalTasks || originalTasks.length < 2) {
+    alert('Error: Merge history is corrupted.');
+    return;
+  }
+  
+  // Get original task info
+  const task1Info = originalTasks[0];
+  const task2Info = originalTasks[1];
+  
+  // Create confirmation message
+  const confirmed = confirm(
+    `Unmerge this task?\n\n` +
+    `Current: ${mergedTask.name}\n\n` +
+    `Will restore to:\n` +
+    `• ${task1Info.name} (${fmtDurF(task1Info.allocSecs)})\n` +
+    `• ${task2Info.name} (${fmtDurF(task2Info.allocSecs)})\n\n` +
+    `Segments will be redistributed to original tasks.`
+  );
+  
+  if (!confirmed) return;
+  
+  // Restore the merged task to its original state
+  mergedTask.name = task1Info.name;
+  mergedTask.allocSecs = task1Info.allocSecs;
+  mergedTask.state = task1Info.state;
+  mergedTask.segments = task1Info.segments || [];
+  mergedTask.isMerged = false;
+  delete mergedTask.mergeHistory;
+  
+  // Create a new task for the second original task
+  const newTask2 = {
+    id: Date.now() + Math.random(),
+    name: task2Info.name,
+    allocSecs: task2Info.allocSecs,
+    state: task2Info.state,
+    segments: task2Info.segments || [],
+    dateAdded: Date.now()
+  };
+  
+  // Add the restored task to the list
+  flowTasks.push(newTask2);
+  
+  // Re-render
+  renderFlowList();
+  
+  console.log(`✓ Unmerged: "${task1Info.name}" and "${task2Info.name}"`);
 }
 
 /* ═══════════════════════════════════════════
@@ -4285,10 +4711,107 @@ renderFlowList();
 window.addEventListener('beforeunload', () => {
   saveFlowData();
 });
+
+/* ═══════════════════════════════════════════
+   USER ACTIVITY DETECTION (Auto-Sync on Return)
+═══════════════════════════════════════════ */
+let lastActivityTime = Date.now();
+let isAppActive = true;
+let userActivityDebounceTimer = null;
+let hasCheckedActivityOnLoad = false;
+
+// Detect when user returns to the app (Electron window focus)
+if (window.api && window.api.onWindowFocused) {
+  window.api.onWindowFocused(() => {
+    if (!isAppActive) {
+      isAppActive = true;
+      const idleTimeSecs = Math.floor((Date.now() - lastActivityTime) / 1000);
+      
+      console.log(`📱 Window focused. Idle time: ${idleTimeSecs}s`);
+      
+      // If app was idle for more than 10 seconds, automatically sync elapsed time
+      if (idleTimeSecs > 10) {
+        console.log(`🔄 Auto-syncing elapsed time on window focus...`);
+        syncElapsedTime();
+      }
+    }
+    lastActivityTime = Date.now();
+  });
+  
+  window.api.onWindowBlurred(() => {
+    isAppActive = false;
+    lastActivityTime = Date.now();
+    console.log(`📴 Window blurred. Sync will trigger on next focus if idle > 10s`);
+  });
+}
+
+// Detect when user returns to the browser (browser tab/window focus)
+window.addEventListener('focus', () => {
+  if (!isAppActive) {
+    isAppActive = true;
+    const idleTimeSecs = Math.floor((Date.now() - lastActivityTime) / 1000);
+    
+    // If app was idle for more than 10 seconds, automatically sync elapsed time
+    if (idleTimeSecs > 10) {
+      console.log(`🔄 App returned from idle (${idleTimeSecs}s). Auto-syncing elapsed time...`);
+      syncElapsedTime();
+    }
+  }
+  lastActivityTime = Date.now();
+});
+
+window.addEventListener('blur', () => {
+  isAppActive = false;
+  lastActivityTime = Date.now();
+});
+
+// Detect user mouse movement (returns from inactivity)
+document.addEventListener('mousemove', () => {
+  const now = Date.now();
+  const timeSinceLastActivity = now - lastActivityTime;
+  
+  // If more than 5 seconds since last activity, user was idle
+  if (timeSinceLastActivity > 5000) {
+    console.log(`🖱 User active again (was idle ${Math.floor(timeSinceLastActivity / 1000)}s). Syncing...`);
+    
+    // Debounce the sync call to avoid too many syncs in quick succession
+    clearTimeout(userActivityDebounceTimer);
+    userActivityDebounceTimer = setTimeout(() => {
+      syncElapsedTime();
+    }, 300);
+  }
+  
+  lastActivityTime = now;
+});
+
+// Detect keyboard activity
+document.addEventListener('keydown', () => {
+  lastActivityTime = Date.now();
+});
+
+// Detect clicks anywhere on the page
+document.addEventListener('click', () => {
+  lastActivityTime = Date.now();
+});
+
 renderFlowInbox();
 updateBadges();
 updateFlowLastSaved();
 updateHoursTracker();
+
+// Check for elapsed time on initial load (if app was closed)
+if (!hasCheckedActivityOnLoad && window.api && window.api.getElapsedTime) {
+  window.api.getElapsedTime().then(timeResult => {
+    if (timeResult.success && timeResult.elapsedSeconds > 0) {
+      console.log(`⏸ App was closed for ${timeResult.elapsedSeconds}s. Auto-syncing on load...`);
+      syncElapsedTime();
+    }
+    hasCheckedActivityOnLoad = true;
+  }).catch(err => {
+    console.error('Error checking elapsed time:', err);
+    hasCheckedActivityOnLoad = true;
+  });
+}
 
 // Update hours tracker every minute
 setInterval(() => {
@@ -4315,7 +4838,7 @@ setInterval(() => {
   opacity: 1;
 }
 </style>
-<div class="app-footer">Created by YANN KOFFI — Tempow v1.0.0</div>
+<div class="app-footer">Created by YANN — Tempow v1.0.0</div>
 
 </body>
 </html>
