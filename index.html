@@ -1328,6 +1328,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
       <div class="data-sep"></div>
       <button class="data-btn" onclick="exportFlowJSON('done')">↓ Completed only</button>
       <button class="data-btn" onclick="syncElapsedTime()">↻ Sync elapsed</button>
+      <div class="data-sep"></div>
+      <button class="data-btn" onclick="openSyncModal()" style="color: var(--active);">☁ Sync to cloud</button>
+      <button class="data-btn" onclick="openLoadFromCloudModal()" style="color: var(--active);">☁ Load from cloud</button>
+      <span id="syncStatus" style="font-size:10px;color:var(--muted);"></span>
       <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
       <button class="data-btn clr" onclick="clearAllFlowTasks()">✕ Clear all</button>
@@ -1689,6 +1693,80 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <div class="extend-time-modal-actions">
       <button class="extend-btn-cancel" onclick="closeMergeModal()">Cancel</button>
       <button class="extend-btn-confirm" id="mergeConfirmBtn" disabled onclick="confirmMergeTasks()">Merge tasks</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+<div class="modal-bg" id="syncModal">
+  <div class="modal" style="max-width: 400px;">
+    <h2>☁ Sync to Cloud</h2>
+    <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Save your tasks to Google Sheets and access them from any device.</p>
+    
+    <div id="syncContent">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="syncEmail" placeholder="you@example.com" />
+        <div style="font-size: 9px; color: var(--muted2); margin-top: 4px;">Your unique identifier</div>
+      </div>
+
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="syncUsername" placeholder="e.g. john_doe" />
+        <div style="font-size: 9px; color: var(--muted2); margin-top: 4px;">Alphanumeric, no spaces</div>
+      </div>
+
+      <div id="syncStatus" style="background: var(--surface2); border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 11px; color: var(--muted); display: none;">
+        <span id="syncStatusText"></span>
+      </div>
+
+      <div id="syncExistingInfo" style="background: var(--active-dim); border: 1px solid var(--active); border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 11px; color: var(--text); display: none;">
+        <div style="margin-bottom: 6px;"><strong>✓ You've synced before</strong></div>
+        <div style="color: var(--muted2);" id="syncExistingText"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSyncModal()">Cancel</button>
+      <button class="btn-confirm" id="syncConfirmBtn" onclick="confirmSync()">☁ Sync now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Load from Cloud Modal -->
+<div class="modal-bg" id="loadFromCloudModal">
+  <div class="modal" style="max-width: 400px;">
+    <h2>☁ Load from Cloud</h2>
+    <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Retrieve your tasks using your email and username.</p>
+    
+    <div id="loadCloudContent">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="loadEmail" placeholder="you@example.com" />
+        <div style="font-size: 9px; color: var(--muted2); margin-top: 4px;">Same email as when you synced</div>
+      </div>
+
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loadUsername" placeholder="e.g. john_doe" />
+        <div style="font-size: 9px; color: var(--muted2); margin-top: 4px;">Same username as when you synced</div>
+      </div>
+
+      <div id="loadStatus" style="background: var(--surface2); border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 11px; color: var(--muted); display: none;">
+        <span id="loadStatusText"></span>
+      </div>
+
+      <div id="loadPreview" style="background: var(--surface2); border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 10px; color: var(--muted); display: none;">
+        <div style="margin-bottom: 6px;"><strong style="color: var(--text);">Preview:</strong></div>
+        <div style="color: var(--text);" id="loadPreviewText"></div>
+        <div style="color: var(--muted2); font-size: 9px; margin-top: 6px;"><span id="loadTaskCount">0</span> tasks found</div>
+        <div style="color: var(--muted2); font-size: 9px;">Last synced: <span id="loadLastSync">—</span></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLoadFromCloudModal()">Cancel</button>
+      <button class="btn-confirm" id="loadConfirmBtn" onclick="handleLoadButtonClick()">↓ Load tasks</button>
     </div>
   </div>
 </div>
@@ -5774,6 +5852,326 @@ if (!hasCheckedActivityOnLoad && window.api && window.api.getElapsedTime) {
 setInterval(() => {
   updateHoursTracker();
 }, 60000);
+
+/* ═══════════════════════════════════════════
+   CLOUD SYNC FUNCTIONS
+═══════════════════════════════════════════ */
+
+// Global AppScript URL - all users use the same backend
+const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz_CptcxE2YyH_zc-FDr-VVHPrQv0M2B1wsAXDIbLV9BWChmbZpJ-jps3-5YwYDmOR2/exec';
+
+// Simple hash function for generating sync ID
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    h = ((h << 5) - h) + char;
+    h = h & h;
+  }
+  return Math.abs(h).toString(36).substring(0, 8);
+}
+
+function generateSyncId(email, username) {
+  const emailHash = simpleHash(email.toLowerCase());
+  const usernameHash = simpleHash(username.toLowerCase());
+  return `${emailHash}_${usernameHash}`;
+}
+
+function openSyncModal() {
+  const modal = document.getElementById('syncModal');
+  
+  // Load saved settings if they exist
+  const savedSettings = localStorage.getItem('cloudSyncSettings');
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    document.getElementById('syncEmail').value = settings.email || '';
+    document.getElementById('syncUsername').value = settings.username || '';
+    
+    // Show existing sync info
+    const syncId = generateSyncId(settings.email, settings.username);
+    const lastSync = settings.lastSync ? new Date(settings.lastSync).toLocaleString() : 'Never';
+    document.getElementById('syncExistingInfo').style.display = 'block';
+    document.getElementById('syncExistingText').textContent = `ID: ${syncId} • Last synced: ${lastSync}`;
+  }
+  
+  document.getElementById('syncStatus').style.display = 'none';
+  modal.classList.add('open');
+}
+
+function closeSyncModal() {
+  const modal = document.getElementById('syncModal');
+  modal.classList.remove('open');
+}
+
+async function confirmSync() {
+  const email = document.getElementById('syncEmail').value.trim();
+  const username = document.getElementById('syncUsername').value.trim();
+  
+  // Validate inputs
+  if (!email || !email.includes('@')) {
+    showSyncStatus('Please enter a valid email address', 'error');
+    return;
+  }
+  if (!username || username.length < 2) {
+    showSyncStatus('Please enter a username (at least 2 characters)', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('syncConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Syncing...';
+  
+  try {
+    // Get current tasks from flowTasks
+    const tasksToSync = JSON.stringify(flowTasks, null, 2);
+    
+    // Send to Google Sheets
+    const response = await fetch(CLOUD_SYNC_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        username: username,
+        jsonData: tasksToSync
+      })
+    });
+    
+    // Note: With no-cors mode, we can't read response, so we assume success
+    
+    const syncSettings = {
+      email: email,
+      username: username,
+      lastSync: new Date().toISOString(),
+      syncId: generateSyncId(email, username)
+    };
+    
+    localStorage.setItem('cloudSyncSettings', JSON.stringify(syncSettings));
+    
+    showSyncStatus('✓ Synced! ID: ' + syncSettings.syncId, 'success');
+    
+    setTimeout(() => {
+      closeSyncModal();
+    }, 1500);
+  } catch (err) {
+    console.error('Sync error:', err);
+    showSyncStatus('Error syncing tasks: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '☁ Sync now';
+  }
+}
+
+function showSyncStatus(message, type) {
+  const statusDiv = document.getElementById('syncStatus');
+  const statusText = document.getElementById('syncStatusText');
+  statusText.textContent = message;
+  statusDiv.style.display = 'block';
+  
+  if (type === 'success') {
+    statusDiv.style.background = 'rgba(93, 224, 168, 0.15)';
+    statusDiv.style.color = 'var(--active)';
+  } else if (type === 'error') {
+    statusDiv.style.background = 'rgba(255, 94, 108, 0.15)';
+    statusDiv.style.color = 'var(--danger)';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   LOAD FROM CLOUD FUNCTIONS
+═══════════════════════════════════════════ */
+
+// Track which stage we're in for the load modal
+let loadModalStage = 'input'; // 'input' or 'confirm'
+
+function openLoadFromCloudModal() {
+  const modal = document.getElementById('loadFromCloudModal');
+  
+  // Reset state
+  loadModalStage = 'input';
+  
+  // Load saved settings if they exist
+  const savedSettings = localStorage.getItem('cloudSyncSettings');
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    document.getElementById('loadEmail').value = settings.email || '';
+    document.getElementById('loadUsername').value = settings.username || '';
+  }
+  
+  document.getElementById('loadStatus').style.display = 'none';
+  document.getElementById('loadPreview').style.display = 'none';
+  
+  const btn = document.getElementById('loadConfirmBtn');
+  btn.textContent = '↓ Load tasks';
+  btn.disabled = false;
+  
+  modal.classList.add('open');
+}
+
+function closeLoadFromCloudModal() {
+  const modal = document.getElementById('loadFromCloudModal');
+  modal.classList.remove('open');
+  loadModalStage = 'input';
+}
+
+// Single handler for the load button - behavior changes based on stage
+async function handleLoadButtonClick() {
+  if (loadModalStage === 'input') {
+    await confirmLoadFromCloud();
+  } else if (loadModalStage === 'confirm') {
+    doLoadTasks();
+  }
+}
+
+async function confirmLoadFromCloud() {
+  const email = document.getElementById('loadEmail').value.trim();
+  const username = document.getElementById('loadUsername').value.trim();
+  
+  // Validate inputs
+  if (!email || !email.includes('@')) {
+    showLoadStatus('Please enter a valid email address', 'error');
+    return;
+  }
+  
+  if (!username || username.length < 2) {
+    showLoadStatus('Please enter a username (at least 2 characters)', 'error');
+    return;
+  }
+  
+  // Reconstruct sync ID from credentials
+  const reconstructedSyncId = generateSyncId(email, username);
+  
+  const btn = document.getElementById('loadConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading...';
+  
+  try {
+    // Build URL with email + username (backend will regenerate same ID to match)
+    let url = CLOUD_SYNC_URL + '?action=fetch';
+    url += '&email=' + encodeURIComponent(email);
+    url += '&username=' + encodeURIComponent(username);
+    
+    console.log('Fetching from:', url);
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    console.log('Response:', data);
+    
+    if (!data.success) {
+      showLoadStatus('Error: ' + (data.error || 'Not found'), 'error');
+      btn.disabled = false;
+      btn.textContent = '↓ Load tasks';
+      return;
+    }
+    
+    // Show preview with reconstructed sync ID
+    const tasksData = JSON.parse(data.jsonData);
+    const taskCount = Array.isArray(tasksData) ? tasksData.length : 0;
+    
+    document.getElementById('loadPreviewText').textContent = 
+      `ID: ${data.syncId}\n${taskCount} task${taskCount !== 1 ? 's' : ''} ready to restore`;
+    document.getElementById('loadTaskCount').textContent = taskCount;
+    document.getElementById('loadLastSync').textContent = new Date(data.lastSyncTime).toLocaleString();
+    document.getElementById('loadPreview').style.display = 'block';
+    
+    // Store the data for import
+    window.pendingLoadData = tasksData;
+    window.pendingLoadSyncInfo = {
+      email: data.email,
+      username: data.username,
+      syncId: data.syncId,
+      reconstructedSyncId: reconstructedSyncId,
+      lastSyncTime: data.lastSyncTime
+    };
+    
+    showLoadStatus(`✓ Found! Sync ID: ${data.syncId}`, 'success');
+    btn.textContent = '↓ Confirm load';
+    btn.disabled = false;
+    loadModalStage = 'confirm';
+    
+  } catch (err) {
+    console.error('Load error:', err);
+    showLoadStatus('Error loading tasks: ' + err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '↓ Load tasks';
+    loadModalStage = 'input';
+  }
+}
+
+function doLoadTasks() {
+  if (!window.pendingLoadData) {
+    showLoadStatus('No data to load', 'error');
+    return;
+  }
+  
+  const tasksData = window.pendingLoadData;
+  const syncInfo = window.pendingLoadSyncInfo;
+  
+  console.log('Loading tasks from cloud:', tasksData);
+  
+  // Replace current tasks with loaded data
+  flowTasks = Array.isArray(tasksData) ? tasksData : [];
+  
+  // Save to local storage via Electron if available
+  if (window.electron && window.electron.invoke) {
+    window.electron.invoke('save-tasks', flowTasks).then(() => {
+      console.log('Tasks saved successfully');
+      showLoadStatus(`✓ Loaded ${flowTasks.length} tasks from cloud!`, 'success');
+      
+      // Update UI
+      renderFlowList();
+      updateStats();
+      
+      setTimeout(() => {
+        closeLoadFromCloudModal();
+        window.pendingLoadData = null;
+        window.pendingLoadSyncInfo = null;
+        loadModalStage = 'input';
+      }, 1500);
+    }).catch(err => {
+      console.error('Error saving tasks:', err);
+      showLoadStatus('Error saving loaded tasks: ' + err.message, 'error');
+    });
+  } else {
+    // Fallback for browser or offline - just save to localStorage
+    try {
+      saveFlowData();
+      console.log('Tasks saved to local storage');
+      showLoadStatus(`✓ Loaded ${flowTasks.length} tasks from cloud!`, 'success');
+      
+      // Update UI
+      renderFlowList();
+      updateStats();
+      
+      setTimeout(() => {
+        closeLoadFromCloudModal();
+        window.pendingLoadData = null;
+        window.pendingLoadSyncInfo = null;
+        loadModalStage = 'input';
+      }, 1500);
+    } catch (err) {
+      console.error('Error:', err);
+      showLoadStatus('Error loading tasks: ' + err.message, 'error');
+    }
+  }
+}
+
+function showLoadStatus(message, type) {
+  const statusDiv = document.getElementById('loadStatus');
+  const statusText = document.getElementById('loadStatusText');
+  statusText.textContent = message;
+  statusDiv.style.display = 'block';
+  
+  if (type === 'success') {
+    statusDiv.style.background = 'rgba(93, 224, 168, 0.15)';
+    statusDiv.style.color = 'var(--active)';
+  } else if (type === 'error') {
+    statusDiv.style.background = 'rgba(255, 94, 108, 0.15)';
+    statusDiv.style.color = 'var(--danger)';
+  }
+}
 
 </script>
 
