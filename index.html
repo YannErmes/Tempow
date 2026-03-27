@@ -557,6 +557,249 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .brk-seg.live { animation: pulse 1.4s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
 
+/* ══════════════════════════════════════════
+   2D SYNC ANIMATION & BUTTON MODE STYLES
+══════════════════════════════════════════ */
+@keyframes sync-orbit-1 {
+  0% { transform: rotate(0deg) translateX(25px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(25px) rotate(-360deg); }
+}
+
+@keyframes sync-orbit-2 {
+  0% { transform: rotate(0deg) translateX(40px) rotate(0deg); }
+  100% { transform: rotate(-360deg) translateX(40px) rotate(360deg); }
+}
+
+@keyframes sync-orbit-3 {
+  0% { transform: rotate(0deg) translateX(55px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(55px) rotate(-360deg); }
+}
+
+@keyframes sync-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.modal-loading-container {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.modal-loading-container.active {
+  display: flex;
+}
+
+.sync-spinner {
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+.sync-spinner-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-spinner-center::before {
+  content: '☁';
+  font-size: 48px;
+  animation: sync-pulse 1.5s ease-in-out infinite;
+  color: var(--active);
+}
+
+.sync-orb {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--active);
+  opacity: 0.8;
+  top: 50%;
+  left: 50%;
+  margin-left: -4px;
+  margin-top: -4px;
+}
+
+.sync-orb:nth-child(1) {
+  animation: sync-orbit-1 2s linear infinite;
+  opacity: 1;
+}
+
+.sync-orb:nth-child(2) {
+  animation: sync-orbit-2 3s linear infinite;
+  opacity: 0.7;
+}
+
+.sync-orb:nth-child(3) {
+  animation: sync-orbit-3 2.5s linear infinite;
+  opacity: 0.5;
+}
+
+.sync-status-text {
+  font-size: 13px;
+  color: var(--active);
+  font-weight: 500;
+  text-align: center;
+  animation: sync-pulse 1.5s ease-in-out infinite;
+}
+
+/* Button Mode Toggle Styles */
+.data-btn.icon-only {
+  padding: 5px 8px;
+  font-size: 14px;
+}
+
+.data-btn.icon-only .btn-text {
+  display: none;
+}
+
+.data-btn.text-mode .btn-text {
+  display: inline;
+}
+
+body.icon-only-mode .data-btn {
+  padding: 5px 8px;
+  font-size: 14px;
+  min-width: auto;
+}
+
+body.icon-only-mode .data-btn .btn-text {
+  display: none;
+}
+
+body.text-mode .data-btn .btn-text {
+  display: inline;
+}
+
+/* Settings button */
+.settings-btn {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  padding: 6px 10px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+  background: var(--surface2);
+}
+
+/* Settings modal */
+.settings-modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-modal-bg.open {
+  display: flex;
+}
+
+.settings-modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 28px;
+  width: 400px;
+  max-width: 90vw;
+}
+
+.settings-modal h2 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text);
+}
+
+.settings-group {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.settings-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.settings-description {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.button-mode-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.mode-option {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border2);
+  background: var(--bg);
+  color: var(--muted2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mode-option:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.mode-option.active {
+  background: var(--active);
+  border-color: var(--active);
+  color: #0a1f16;
+  font-weight: 600;
+}
+
+.settings-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
 /* break tooltip */
 .brk-tip {
   position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
@@ -700,7 +943,205 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .btn {
   font-family:var(--font-mono); font-size:11px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase;
   padding:6px 14px; border-radius:6px; border:1px solid var(--border2); background:transparent; color:var(--muted2); cursor:pointer; transition:all 0.15s;
+  display: flex; align-items: center; gap: 4px;
 }
+
+.btn .btn-icon {
+  display: inline;
+  font-size: 13px;
+}
+
+.btn .btn-text {
+  display: inline;
+}
+
+body.icon-only-mode .btn {
+  padding: 6px 8px;
+  min-width: auto;
+}
+
+body.icon-only-mode .btn .btn-text {
+  display: none;
+}
+
+body.text-mode .btn .btn-text {
+  display: inline;
+}
+
+/* ══════════════════════════════════════════
+   HELP PAGE STYLES
+══════════════════════════════════════════ */
+.help-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.help-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+}
+
+.help-header h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.help-header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.help-search {
+  margin-bottom: 32px;
+}
+
+.help-search input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.help-search input::placeholder {
+  color: var(--muted2);
+}
+
+.help-search input:focus {
+  outline: none;
+  border-color: var(--active);
+  background: var(--surface2);
+}
+
+.help-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.help-section {
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.help-section h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--active);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.help-subsection {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.help-subsection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.help-subsection h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.help-subsection p {
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.help-subsection ol, .help-subsection ul {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+
+.help-subsection li {
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.help-subsection strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.screenshot-placeholder {
+  background: var(--bg);
+  border: 2px dashed var(--break);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--break);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.help-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.help-row {
+  background: var(--bg);
+  border-left: 3px solid var(--active);
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+
+.help-row strong {
+  color: var(--active);
+  font-size: 14px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.controls-list {
+  color: var(--text);
+  font-size: 12px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border2);
+  font-family: var(--font-mono);
+}
+
+.help-section.hidden {
+  display: none;
+}
+
 .btn:hover { background:var(--surface2); color:var(--text); }
 .btn.start  { border-color:var(--active); color:var(--active); }
 .btn.start:hover  { background:var(--active-dim); }
@@ -710,6 +1151,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .btn.resume:hover { background:var(--active-dim); }
 .btn.del    { border-color:transparent; color:var(--muted); margin-left:auto; }
 .btn.del:hover    { color:var(--danger); border-color:var(--danger); }
+.btn.discard { border-color:transparent; color:var(--muted); }
+.btn.discard:hover { color:var(--danger); border-color:var(--danger); }
 .btn.transfer-btn { border-color:rgba(245,166,35,0.4); color:var(--break); }
 .btn.transfer-btn:hover { background:var(--break-dim); }
 .btn.transfer-btn.in-tray { background:var(--break-dim); border-color:var(--break); }
@@ -1196,6 +1639,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -1232,6 +1676,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     </button>
     <button class="nav-tab" onclick="switchPage('report')">
       📊 Reports
+    </button>
+    <button class="nav-tab" onclick="switchPage('help')">
+      ❓ Help
     </button>
   </div>
 </nav>
@@ -1322,20 +1769,21 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   <div class="data-bar" style="display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap;">
       <span class="data-bar-label">Data</span>
-      <button class="data-btn dl" onclick="exportFlowJSON('all')">↓ All tasks JSON</button>
+      <button class="data-btn dl" onclick="exportFlowJSON('all')"><span class="btn-icon">↓</span> <span class="btn-text">All tasks JSON</span></button>
       <div class="data-sep"></div>
-      <button class="data-btn ul" onclick="openImportModal('flow')">↑ Import JSON</button>
+      <button class="data-btn ul" onclick="openImportModal('flow')"><span class="btn-icon">↑</span> <span class="btn-text">Import JSON</span></button>
       <div class="data-sep"></div>
-      <button class="data-btn" onclick="exportFlowJSON('done')">↓ Completed only</button>
-      <button class="data-btn" onclick="syncElapsedTime()">↻ Sync elapsed</button>
+      <button class="data-btn" onclick="exportFlowJSON('done')"><span class="btn-icon">↓</span> <span class="btn-text">Completed only</span></button>
+      <button class="data-btn" onclick="syncElapsedTime()"><span class="btn-icon">↻</span> <span class="btn-text">Sync elapsed</span></button>
       <div class="data-sep"></div>
-      <button class="data-btn" onclick="openSyncModal()" style="color: var(--active);">☁ Sync to cloud</button>
-      <button class="data-btn" onclick="openLoadFromCloudModal()" style="color: var(--active);">☁ Load from cloud</button>
+      <button class="data-btn" onclick="openSyncModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Sync to cloud</span></button>
+      <button class="data-btn" onclick="openLoadFromCloudModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Load from cloud</span></button>
       <span id="syncStatus" style="font-size:10px;color:var(--muted);"></span>
       <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
-      <button class="data-btn clr" onclick="clearAllFlowTasks()">✕ Clear all</button>
+      <button class="data-btn clr" onclick="clearAllFlowTasks()"><span class="btn-icon">✕</span> <span class="btn-text">Clear all</span></button>
     </div>
+    <button class="settings-btn" onclick="openSettingsModal()" title="Display settings">⚙</button>
     <button class="section-toggle" onclick="toggleSection(this, 'toolsPanel')" title="Toggle filters and view modes">▼</button>
   </div>
 
@@ -1540,6 +1988,328 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 ══════════════════════════════════════════ -->
 <div class="page" id="page-report"></div>
 
+<!-- ══════════════════════════════════════════
+     PAGE 4 — HELP & GUIDES
+══════════════════════════════════════════ -->
+<div class="page" id="page-help">
+  <div class="help-container">
+    <div class="help-header">
+      <h1>⚡ Tempow Help & User Guide</h1>
+      <p>Master task timing, planning, and cloud sync</p>
+    </div>
+
+    <div class="help-search">
+      <input type="text" id="helpSearch" placeholder="Search guides..." onkeyup="filterHelpGuides()">
+    </div>
+
+    <div class="help-sections">
+      <!-- FLOW TAB GUIDE -->
+      <div class="help-section" data-section="flow">
+        <h2>⏱ Timer Tab — Task Management</h2>
+        
+        <div class="help-subsection">
+          <h3>Getting Started</h3>
+          <p>The Timer tab is where you manage your daily tasks with precise time allocation.</p>
+          
+          <!-- SCREENSHOT PLACEHOLDER: timer-overview -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: timer-overview.png - Main timer interface with task list and controls</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Creating a Task</h3>
+          <ol>
+            <li>Click the <strong>+ Add Task</strong> button in the toolbar</li>
+            <li>Enter task name (e.g., "Write project brief")</li>
+            <li>Choose task type:
+              <ul>
+                <li><strong>⏱ Timed</strong> - Tasks with a time limit (recommended)</li>
+                <li><strong>☐ Untimed</strong> - Checklist items without time tracking</li>
+              </ul>
+            </li>
+            <li>For timed tasks, set allocated time (max 4 hours)</li>
+            <li>Optional: Add break time (how long you can pause)</li>
+            <li>Click <strong>Create Task</strong></li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: add-task-modal -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: add-task-modal.png - "New Task" modal showing name, type, and time inputs</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Task States & Controls</h3>
+          <p>Each task has 4 states with different controls:</p>
+          
+          <div class="help-table">
+            <div class="help-row">
+              <strong>Idle</strong> → <span class="muted">Task not started</span>
+              <div class="controls-list">▶ Start button</div>
+            </div>
+            <div class="help-row">
+              <strong>Running</strong> → <span class="muted">Timer is counting down</span>
+              <div class="controls-list">⏸ Pause | ✓ Done (early)</div>
+            </div>
+            <div class="help-row">
+              <strong>Paused</strong> → <span class="muted">On break or manually paused</span>
+              <div class="controls-list">▶ Resume | ⏱ Extend</div>
+            </div>
+            <div class="help-row">
+              <strong>Done</strong> → <span class="muted">Task completed</span>
+              <div class="controls-list">✓ Complete (view only)</div>
+            </div>
+          </div>
+
+          <!-- SCREENSHOT PLACEHOLDER: task-card-states -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: task-card-states.png - Show Running, Paused, and Done task cards</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Progress Bar & Timer Display</h3>
+          <p>Each task card shows:</p>
+          <ul>
+            <li><strong>Progress bar</strong> - Visual representation of time spent vs. allocated</li>
+            <li><strong>Timer digits</strong> - Time remaining (or time on break if paused)</li>
+            <li><strong>Status pill</strong> - Running/Break/Done/Idle indicator</li>
+            <li><strong>Estimated end time</strong> - When you'll finish at current pace (only when running)</li>
+          </ul>
+
+          <!-- SCREENSHOT PLACEHOLDER: task-progress-details -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: task-progress-details.png - Close-up of running task with timer, progress bar, and estimated time</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Task Actions</h3>
+          <p><strong>All buttons toggle between text and icons:</strong> Use ⚙ Settings to choose display mode</p>
+          
+          <ul>
+            <li><strong>⏱ Extend</strong> - Add up to 25% more time to a paused task</li>
+            <li><strong>🔀 Merge</strong> - Combine this task with another when priorities change</li>
+            <li><strong>⇄ Clock</strong> - Send task to 24h Clock for scheduling</li>
+            <li><strong>📝 Notes</strong> - Add quick reminders for tomorrow</li>
+            <li><strong>↓ JSON</strong> - Export task as backup</li>
+            <li><strong>⊘ Discard</strong> - Temporarily hide to focus on critical tasks</li>
+          </ul>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Filtering & View Modes</h3>
+          <p>Click the <strong>▼</strong> button to expand filters:</p>
+          <ul>
+            <li><strong>Filter by state:</strong> All, Running, Paused, Done, Idle, Timed, Untimed</li>
+            <li><strong>View modes:</strong> List (default), Grid, Card - Pick what works for you!</li>
+          </ul>
+
+          <!-- SCREENSHOT PLACEHOLDER: filter-bar-expanded -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: filter-bar-expanded.png - Expanded filter/view mode panel</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Discarded Tasks & Trash</h3>
+          <p><strong>Discard</strong> temporarily hides tasks (visible in Discarded section)</p>
+          <p><strong>Delete</strong> moves tasks to Trash (auto-purged after 24 hours)</p>
+          <p>You can <strong>Restore</strong> from either at any time</p>
+        </div>
+      </div>
+
+      <!-- CLOCK TAB GUIDE -->
+      <div class="help-section" data-section="clock">
+        <h2>◕ 24h Clock — Timeline Planning</h2>
+        
+        <div class="help-subsection">
+          <h3>What is the 24h Clock?</h3>
+          <p>A visual timeline of your entire day (24 hours). Plan when you'll work on tasks, when you'll take breaks, and optimize your schedule.</p>
+
+          <!-- SCREENSHOT PLACEHOLDER: clock-overview -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: clock-overview.png - Full 24h clock view with example tasks</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Adding & Scheduling Tasks</h3>
+          <ol>
+            <li>Click <strong>+ Add Task</strong> in the Clock tab</li>
+            <li>Fill in task details (name, duration, optional break time, color)</li>
+            <li>On the 24h clock, select a time window where you want to work on it</li>
+            <li>The system will show you how much time is available in that slot</li>
+            <li>Click <strong>Add Task</strong> to schedule it</li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: clock-add-task -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: clock-add-task.png - Add Task modal and clock selection interface</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Color Coding</h3>
+          <p>Tasks have different colors for easy visual separation. Click <strong>Random</strong> to auto-assign, or manually pick colors that match your priorities.</p>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Sending to Timer Tab</h3>
+          <p>Once you've scheduled tasks on the clock:</p>
+          <ol>
+            <li>Start your day (click <strong>START MY DAY</strong>)</li>
+            <li>The system automatically creates a task in the Timer tab</li>
+            <li>Begin working with full time tracking</li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: inbox-preview -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: inbox-preview.png - Timer tab showing incoming tasks from clock with preview</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Importing & Exporting Schedules</h3>
+          <p><strong>Import CSV:</strong> Bulk-load tasks from a spreadsheet</p>
+          <p><strong>Export CSV:</strong> Save your schedule for backup or sharing</p>
+          <p><strong>Save Session:</strong> Store your current plan for tomorrow</p>
+        </div>
+      </div>
+
+      <!-- CLOUD SYNC GUIDE -->
+      <div class="help-section" data-section="sync">
+        <h2>☁ Cloud Sync — Backup & Restore</h2>
+        
+        <div class="help-subsection">
+          <h3>Why Sync to Cloud?</h3>
+          <p>Backup all your tasks to Google Sheets and access them from any device. Your data is secure and always recoverable.</p>
+        </div>
+
+        <div class="help-subsection">
+          <h3>First-Time Sync Setup</h3>
+          <ol>
+            <li>Go to <strong>Data</strong> section and click <strong>☁ Sync to cloud</strong></li>
+            <li>Enter your email address (your unique identifier)</li>
+            <li>Enter a username (alphanumeric, no spaces)</li>
+            <li>Click <strong>☁ Sync now</strong></li>
+            <li>Watch the 2D animation while your tasks upload 🌀</li>
+            <li>You'll get a unique <strong>Sync ID</strong> - save this!</li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: sync-modal -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: sync-modal.png - Sync to Cloud modal with email/username fields</div>
+
+          <!-- SCREENSHOT PLACEHOLDER: sync-animation -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: sync-animation.png - 2D orbital loading animation during sync</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Loading from Cloud</h3>
+          <ol>
+            <li>Click <strong>☁ Load from cloud</strong> in the Data section</li>
+            <li>Enter the <strong>same email and username</strong> you used to sync</li>
+            <li>Click the button to fetch your tasks</li>
+            <li>You'll see a preview of how many tasks are ready to load</li>
+            <li>Click <strong>Confirm load</strong> to restore them</li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: load-modal-preview -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: load-modal-preview.png - Load from Cloud showing preview of tasks to restore</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Pro Tips</h3>
+          <ul>
+            <li>💾 Sync regularly to keep backups fresh</li>
+            <li>⚠️ Loading will <strong>replace</strong> your current tasks, not merge them</li>
+            <li>🌍 Works offline - syncs when you reconnect</li>
+            <li>🔐 Your email+username combination is encrypted</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- DATA & EXPORT GUIDE -->
+      <div class="help-section" data-section="data">
+        <h2>📥 Data Management</h2>
+        
+        <div class="help-subsection">
+          <h3>Exporting Tasks</h3>
+          <ul>
+            <li><strong>↓ All tasks JSON</strong> - Download your entire task database</li>
+            <li><strong>↓ Completed only</strong> - Export just finished tasks for record-keeping</li>
+            <li><strong>↓ JSON per task</strong> - Right-click > JSON to export single task</li>
+          </ul>
+          <p>Great for backups, sharing, or importing into other tools!</p>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Importing Tasks</h3>
+          <ol>
+            <li>Click <strong>↑ Import JSON</strong></li>
+            <li>Drag & drop your JSON file or click to browse</li>
+            <li>Preview the tasks to be imported</li>
+            <li>Click <strong>Import</strong> to add them</li>
+          </ol>
+
+          <!-- SCREENSHOT PLACEHOLDER: import-modal -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: import-modal.png - Import JSON modal with drag-drop zone</div>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Sync Elapsed Time</h3>
+          <p>If the app crashes or closes:</p>
+          <ul>
+            <li>Click <strong>↻ Sync elapsed</strong> to automatically add lost time to running tasks</li>
+            <li>The system calculates time passed since your last activity</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SETTINGS GUIDE -->
+      <div class="help-section" data-section="settings">
+        <h2>⚙ Display Settings</h2>
+        
+        <div class="help-subsection">
+          <h3>Button Display Modes</h3>
+          <p>Click the <strong>⚙ Settings</strong> button (top right) to toggle:</p>
+          <ul>
+            <li><strong>📋 Text + Icons</strong> (default) - Full button labels for clarity</li>
+            <li><strong>📦 Icons Only</strong> - Compact view, shows only icons with tooltips</li>
+          </ul>
+          <p>Your choice saves automatically and applies everywhere!</p>
+
+          <!-- SCREENSHOT PLACEHOLDER: settings-modal -->
+          <div class="screenshot-placeholder">📸 SCREENSHOT: settings-modal.png - Settings modal showing button mode toggle</div>
+        </div>
+      </div>
+
+      <!-- TIPS & TRICKS -->
+      <div class="help-section" data-section="tips">
+        <h2>✨ Tips & Tricks</h2>
+        
+        <div class="help-subsection">
+          <h3>Productivity Hacks</h3>
+          <ul>
+            <li>📌 <strong>Use the Clock tab first</strong> - Plan your day, then execute in Timer</li>
+            <li>⏸ <strong>Pause for breathing</strong> - Use break time to prevent burnout</li>
+            <li>🔄 <strong>Merge tasks strategically</strong> - Combine related work to maintain flow</li>
+            <li>📝 <strong>Add tomorrow's notes</strong> - Prep context for the next day</li>
+            <li>☁ <strong>Sync before bed</strong> - Always have a backup of today's work</li>
+            <li>📊 <strong>Check Reports weekly</strong> - See patterns in your productivity</li>
+          </ul>
+        </div>
+
+        <div class="help-subsection">
+          <h3>Common Issues</h3>
+          <p><strong>Q: Timer jumped ahead after closing the app</strong></p>
+          <p>A: Click <strong>↻ Sync elapsed</strong> to account for missed time automatically</p>
+
+          <p><strong>Q: I can't find a task I discarded</strong></p>
+          <p>A: Scroll to the <strong>Discarded Tasks</strong> section at the bottom of Timer tab</p>
+
+          <p><strong>Q: Cloud sync says "Not found"</strong></p>
+          <p>A: Double-check your email and username match exactly what you used during first sync</p>
+
+          <p><strong>Q: How long do tasks stay in Trash?</strong></p>
+          <p>A: 24 hours. After that, they're permanently deleted. Restore them anytime before that!</p>
+        </div>
+      </div>
+
+      <!-- KEYBOARD SHORTCUTS -->
+      <div class="help-section" data-section="shortcuts">
+        <h2>⌨️ Keyboard Shortcuts (Coming Soon)</h2>
+        <p>Shortcuts for power users will be added in the next update. For now, use the button interface!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Tempow add-task modal -->
 <div class="modal-bg" id="addTaskModal">
   <div class="modal">
@@ -1703,6 +2473,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <h2>☁ Sync to Cloud</h2>
     <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Save your tasks to Google Sheets and access them from any device.</p>
     
+    <div class="modal-loading-container" id="syncLoadingContainer">
+      <div class="sync-spinner">
+        <div class="sync-spinner-center"></div>
+        <div class="sync-orb"></div>
+        <div class="sync-orb"></div>
+        <div class="sync-orb"></div>
+      </div>
+      <div class="sync-status-text">Syncing your tasks...</div>
+    </div>
+
     <div id="syncContent">
       <div class="field">
         <label>Email</label>
@@ -1739,6 +2519,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
     <h2>☁ Load from Cloud</h2>
     <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Retrieve your tasks using your email and username.</p>
     
+    <div class="modal-loading-container" id="loadLoadingContainer">
+      <div class="sync-spinner">
+        <div class="sync-spinner-center"></div>
+        <div class="sync-orb"></div>
+        <div class="sync-orb"></div>
+        <div class="sync-orb"></div>
+      </div>
+      <div class="sync-status-text">Loading your tasks...</div>
+    </div>
+
     <div id="loadCloudContent">
       <div class="field">
         <label>Email</label>
@@ -1771,6 +2561,31 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   </div>
 </div>
 
+<!-- Settings Modal -->
+<div class="settings-modal-bg" id="settingsModal">
+  <div class="settings-modal">
+    <h2>⚙ Display Settings</h2>
+    
+    <div class="settings-group">
+      <label class="settings-label">Button Display Mode</label>
+      <div class="settings-description">Choose how to display buttons in the toolbar</div>
+      <div class="button-mode-toggle">
+        <button class="mode-option active" data-mode="text" onclick="setButtonMode('text')">📋 Text + Icons</button>
+        <button class="mode-option" data-mode="icon" onclick="setButtonMode('icon')">📦 Icons Only</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="settings-label">About</label>
+      <div class="settings-description">Tempow v1.0.0 - Task Timer & Cloud Sync</div>
+    </div>
+
+    <div class="settings-modal-actions">
+      <button class="btn-confirm" onclick="closeSettingsModal()" style="background: var(--active);">Done</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════
    PAGE SWITCHING
@@ -1789,6 +2604,8 @@ function switchPage(name) {
   } else if (name === 'report') {
     document.querySelectorAll('.nav-tab')[2].classList.add('active');
     renderReportsPage();
+  } else if (name === 'help') {
+    document.querySelectorAll('.nav-tab')[3].classList.add('active');
   }
 }
 
@@ -3057,31 +3874,31 @@ function renderFlowList() {
     // For untimed tasks, show different control buttons
     if (t.isUntimed) {
       if (t.state !== 'done') {
-        ctrl += `<button class="btn done-early" onclick="markUntimeTaskDone(${t.id})" title="Mark task as complete">✓ Done</button>`;
+        ctrl += `<button class="btn done-early" onclick="markUntimeTaskDone(${t.id})" title="Mark task as complete"><span class="btn-icon">✓</span> <span class="btn-text">Done</span></button>`;
       } else {
-        ctrl += `<button class="btn" disabled>✓ Complete</button>`;
+        ctrl += `<button class="btn" disabled><span class="btn-icon">✓</span> <span class="btn-text">Complete</span></button>`;
       }
     } else {
       // Regular timed task controls
-      if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})">▶ Start</button>`;
-      if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})">⏸ Pause</button>`;
-      if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})">▶ Resume</button>`;
-      if (t.state==='done')    ctrl += `<button class="btn" disabled>✓ Complete</button>`;
-      if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)">✓ Done</button>`;
-      ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)">⏱ Extend</button>`;
+      if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Start</span></button>`;
+      if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})"><span class="btn-icon">⏸</span> <span class="btn-text">Pause</span></button>`;
+      if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Resume</span></button>`;
+      if (t.state==='done')    ctrl += `<button class="btn" disabled><span class="btn-icon">✓</span> <span class="btn-text">Complete</span></button>`;
+      if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)"><span class="btn-icon">✓</span> <span class="btn-text">Done</span></button>`;
+      ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)"><span class="btn-icon">⏱</span> <span class="btn-text">Extend</span></button>`;
       
       // Show merge or unmerge button based on status
       if (t.isMerged) {
-        ctrl += `<button class="btn" onclick="unmergeTask(${t.id})" title="Split this merged task back into original tasks" style="color:var(--break);">⤴ Unmerge</button>`;
+        ctrl += `<button class="btn" onclick="unmergeTask(${t.id})" title="Split this merged task back into original tasks" style="color:var(--break);"><span class="btn-icon">⤴</span> <span class="btn-text">Unmerge</span></button>`;
       } else {
-        ctrl += `<button class="btn" onclick="openMergeModal(${t.id})" title="Merge with another task">🔀 Merge</button>`;
+        ctrl += `<button class="btn" onclick="openMergeModal(${t.id})" title="Merge with another task"><span class="btn-icon">🔀</span> <span class="btn-text">Merge</span></button>`;
       }
     }
     
-    ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock">⇄ Clock</button>`;
-    ctrl += `<button class="btn" onclick="openNotesModal(${t.id})" title="Add/edit quick notes for tomorrow">📝 Notes</button>`;
-    ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON">↓ JSON</button>`;
-    ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others">⊘ Discard</button>`;
+    ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock"><span class="btn-icon">⇄</span> <span class="btn-text">Clock</span></button>`;
+    ctrl += `<button class="btn" onclick="openNotesModal(${t.id})" title="Add/edit quick notes for tomorrow"><span class="btn-icon">📝</span> <span class="btn-text">Notes</span></button>`;
+    ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON"><span class="btn-icon">↓</span> <span class="btn-text">JSON</span></button>`;
+    ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others"><span class="btn-icon">⊘</span> <span class="btn-text">Discard</span></button>`;
 
     // Apply view mode styling
     const card = document.createElement('div');
@@ -3203,7 +4020,7 @@ function renderDiscardedTasks() {
         <div class="discarded-task-name">${t.name}</div>
         <div class="discarded-task-time">${timeStr}</div>
       </div>
-      <button class="btn restore" onclick="restoreTask(${t.id})">↻ Restore</button>
+      <button class="btn restore" onclick="restoreTask(${t.id})"><span class="btn-icon">↻</span> <span class="btn-text">Restore</span></button>
     `;
     list.appendChild(item);
   });
@@ -3249,8 +4066,8 @@ function renderTrash() {
         <div style="font-size: 12px; font-weight: 500; color: var(--text);">${t.name}</div>
         <div style="font-size: 10px; color: var(--muted); margin-top: 4px;">Deleted ${deletedAt.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})} • ${timeLeftText}</div>
       </div>
-      <button class="btn" onclick="restoreFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; margin-right: 6px;">↻ Restore</button>
-      <button class="btn" onclick="permanentlyDeleteFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; color: var(--danger); border-color: var(--danger);">✕ Delete</button>
+      <button class="btn" onclick="restoreFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; margin-right: 6px;"><span class="btn-icon">↻</span> <span class="btn-text">Restore</span></button>
+      <button class="btn" onclick="permanentlyDeleteFromTrash(${t.id})" style="padding: 6px 12px; font-size: 10px; color: var(--danger); border-color: var(--danger);"><span class="btn-icon">✕</span> <span class="btn-text">Delete</span></button>
     `;
     list.appendChild(item);
   });
@@ -4417,6 +5234,7 @@ function renderReportsPage() {
       <div style="display: flex; gap: 8px;">
         <button class="data-btn dl" onclick="exportReportJSON()" style="padding: 9px 18px;">↓ JSON</button>
         <button class="data-btn dl" onclick="exportReportCSV()" style="padding: 9px 18px;">↓ CSV</button>
+        <button class="data-btn dl" onclick="exportReportPDF()" style="padding: 9px 18px;">📄 PDF</button>
         <button class="data-btn dl" onclick="window.print()" style="padding: 9px 18px;">🖨 Print</button>
       </div>
     </div>
@@ -4885,6 +5703,39 @@ function exportReportCSV() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function exportReportPDF() {
+  // Get username from localStorage
+  const userName = localStorage.getItem('tempow_user_name') || 'Report';
+  
+  // Get current date in YYYY-MM-DD format
+  const today = new Date();
+  const dateStr = today.getFullYear() + '-' + 
+                  String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(today.getDate()).padStart(2, '0');
+  
+  // Create filename
+  const filename = userName + '_' + dateStr + '.pdf';
+  
+  // Get the report page element
+  const reportPage = document.getElementById('page-report');
+  if (!reportPage) {
+    alert('Report not found');
+    return;
+  }
+  
+  // Configure html2pdf options
+  const opt = {
+    margin: 10,
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  };
+  
+  // Generate and download PDF
+  html2pdf().set(opt).from(reportPage).save();
 }
 
 function exportDetailedReport() {
@@ -5833,6 +6684,7 @@ renderFlowInbox();
 updateBadges();
 updateFlowLastSaved();
 updateHoursTracker();
+initializeButtonMode();
 
 // Check for elapsed time on initial load (if app was closed)
 if (!hasCheckedActivityOnLoad && window.api && window.api.getElapsedTime) {
@@ -5880,6 +6732,16 @@ function generateSyncId(email, username) {
 function openSyncModal() {
   const modal = document.getElementById('syncModal');
   
+  // Reset to show content, hide loading animation
+  document.getElementById('syncContent').style.display = 'block';
+  document.getElementById('syncLoadingContainer').classList.remove('active');
+  document.getElementById('syncStatus').style.display = 'none';
+  document.getElementById('syncExistingInfo').style.display = 'none';
+  
+  const btn = document.getElementById('syncConfirmBtn');
+  btn.textContent = '☁ Sync now';
+  btn.disabled = false;
+  
   // Load saved settings if they exist
   const savedSettings = localStorage.getItem('cloudSyncSettings');
   if (savedSettings) {
@@ -5921,6 +6783,9 @@ async function confirmSync() {
   btn.disabled = true;
   btn.textContent = '⏳ Syncing...';
   
+  // Show loading animation
+  showSyncLoadingAnimation();
+  
   try {
     // Get current tasks from flowTasks
     const tasksToSync = JSON.stringify(flowTasks, null, 2);
@@ -5950,6 +6815,8 @@ async function confirmSync() {
     
     localStorage.setItem('cloudSyncSettings', JSON.stringify(syncSettings));
     
+    // Hide loading animation and show status
+    hideSyncLoadingAnimation();
     showSyncStatus('✓ Synced! ID: ' + syncSettings.syncId, 'success');
     
     setTimeout(() => {
@@ -5957,6 +6824,8 @@ async function confirmSync() {
     }, 1500);
   } catch (err) {
     console.error('Sync error:', err);
+    hideSyncLoadingAnimation();
+    restoreSyncContent();
     showSyncStatus('Error syncing tasks: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
@@ -5989,6 +6858,17 @@ let loadModalStage = 'input'; // 'input' or 'confirm'
 function openLoadFromCloudModal() {
   const modal = document.getElementById('loadFromCloudModal');
   
+  // Reset to show content, hide loading animation
+  document.getElementById('loadCloudContent').style.display = 'block';
+  document.getElementById('loadLoadingContainer').classList.remove('active');
+  document.getElementById('loadStatus').style.display = 'none';
+  document.getElementById('loadPreview').style.display = 'none';
+  
+  // Reset button
+  const btn = document.getElementById('loadConfirmBtn');
+  btn.textContent = '↓ Load tasks';
+  btn.disabled = false;
+  
   // Reset state
   loadModalStage = 'input';
   
@@ -5999,13 +6879,6 @@ function openLoadFromCloudModal() {
     document.getElementById('loadEmail').value = settings.email || '';
     document.getElementById('loadUsername').value = settings.username || '';
   }
-  
-  document.getElementById('loadStatus').style.display = 'none';
-  document.getElementById('loadPreview').style.display = 'none';
-  
-  const btn = document.getElementById('loadConfirmBtn');
-  btn.textContent = '↓ Load tasks';
-  btn.disabled = false;
   
   modal.classList.add('open');
 }
@@ -6047,6 +6920,9 @@ async function confirmLoadFromCloud() {
   btn.disabled = true;
   btn.textContent = '⏳ Loading...';
   
+  // Show loading animation
+  showLoadLoadingAnimation();
+  
   try {
     // Build URL with email + username (backend will regenerate same ID to match)
     let url = CLOUD_SYNC_URL + '?action=fetch';
@@ -6060,6 +6936,8 @@ async function confirmLoadFromCloud() {
     console.log('Response:', data);
     
     if (!data.success) {
+      hideLoadLoadingAnimation();
+      restoreLoadContent();
       showLoadStatus('Error: ' + (data.error || 'Not found'), 'error');
       btn.disabled = false;
       btn.textContent = '↓ Load tasks';
@@ -6074,6 +6952,10 @@ async function confirmLoadFromCloud() {
       `ID: ${data.syncId}\n${taskCount} task${taskCount !== 1 ? 's' : ''} ready to restore`;
     document.getElementById('loadTaskCount').textContent = taskCount;
     document.getElementById('loadLastSync').textContent = new Date(data.lastSyncTime).toLocaleString();
+    
+    // Hide loading animation and restore content
+    hideLoadLoadingAnimation();
+    restoreLoadContent();
     document.getElementById('loadPreview').style.display = 'block';
     
     // Store the data for import
@@ -6093,6 +6975,8 @@ async function confirmLoadFromCloud() {
     
   } catch (err) {
     console.error('Load error:', err);
+    hideLoadLoadingAnimation();
+    restoreLoadContent();
     showLoadStatus('Error loading tasks: ' + err.message, 'error');
     btn.disabled = false;
     btn.textContent = '↓ Load tasks';
@@ -6171,6 +7055,124 @@ function showLoadStatus(message, type) {
     statusDiv.style.background = 'rgba(255, 94, 108, 0.15)';
     statusDiv.style.color = 'var(--danger)';
   }
+}
+
+/* ═══════════════════════════════════════════
+   SETTINGS MODAL & BUTTON MODE FUNCTIONS
+═══════════════════════════════════════════ */
+
+function openSettingsModal() {
+  const modal = document.getElementById('settingsModal');
+  const currentMode = localStorage.getItem('buttonMode') || 'text';
+  
+  // Update button states
+  document.querySelectorAll('.mode-option').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`.mode-option[data-mode="${currentMode}"]`).classList.add('active');
+  
+  modal.classList.add('open');
+}
+
+function closeSettingsModal() {
+  const modal = document.getElementById('settingsModal');
+  modal.classList.remove('open');
+}
+
+function setButtonMode(mode) {
+  // Update button states in modal
+  document.querySelectorAll('.mode-option').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`.mode-option[data-mode="${mode}"]`).classList.add('active');
+  
+  // Save preference
+  localStorage.setItem('buttonMode', mode);
+  
+  // Update page
+  applyButtonMode(mode);
+}
+
+function applyButtonMode(mode) {
+  if (mode === 'icon') {
+    document.body.classList.add('icon-only-mode');
+    document.body.classList.remove('text-mode');
+  } else {
+    document.body.classList.add('text-mode');
+    document.body.classList.remove('icon-only-mode');
+  }
+}
+
+// Initialize button mode on page load
+function initializeButtonMode() {
+  const savedMode = localStorage.getItem('buttonMode') || 'text';
+  applyButtonMode(savedMode);
+}
+
+/* ═══════════════════════════════════════════
+   HELP PAGE FUNCTIONS
+═══════════════════════════════════════════ */
+
+function filterHelpGuides() {
+  const searchInput = document.getElementById('helpSearch');
+  const query = searchInput.value.toLowerCase();
+  const sections = document.querySelectorAll('.help-section');
+  
+  sections.forEach(section => {
+    const text = section.textContent.toLowerCase();
+    if (query === '' || text.includes(query)) {
+      section.classList.remove('hidden');
+    } else {
+      section.classList.add('hidden');
+    }
+  });
+}
+
+// Show loading animation during sync
+function showSyncLoadingAnimation() {
+  const syncContent = document.getElementById('syncContent');
+  const loadingContainer = document.getElementById('syncLoadingContainer');
+  const syncStatus = document.getElementById('syncStatus');
+  const syncExistingInfo = document.getElementById('syncExistingInfo');
+  
+  syncContent.style.display = 'none';
+  syncStatus.style.display = 'none';
+  syncExistingInfo.style.display = 'none';
+  loadingContainer.classList.add('active');
+}
+
+function hideSyncLoadingAnimation() {
+  const loadingContainer = document.getElementById('syncLoadingContainer');
+  loadingContainer.classList.remove('active');
+}
+
+// Show loading animation during load
+function showLoadLoadingAnimation() {
+  const loadContent = document.getElementById('loadCloudContent');
+  const loadingContainer = document.getElementById('loadLoadingContainer');
+  const loadStatus = document.getElementById('loadStatus');
+  const loadPreview = document.getElementById('loadPreview');
+  
+  loadContent.style.display = 'none';
+  loadStatus.style.display = 'none';
+  loadPreview.style.display = 'none';
+  loadingContainer.classList.add('active');
+}
+
+function hideLoadLoadingAnimation() {
+  const loadingContainer = document.getElementById('loadLoadingContainer');
+  loadingContainer.classList.remove('active');
+}
+
+// Restore content after animation
+function restoreSyncContent() {
+  const syncContent = document.getElementById('syncContent');
+  syncContent.style.display = 'block';
+}
+
+function restoreLoadContent() {
+  const loadContent = document.getElementById('loadCloudContent');
+  loadContent.style.display = 'block';
 }
 
 </script>
