@@ -6801,7 +6801,7 @@ async function loadWorkspaceMembers(showLoading = true) {
     
   } catch (err) {
     if (showLoading) {
-      floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">Connection error: ${err.message}</div>`;
+      floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">Connection ...</div>`;
     }
     console.error('Workspace member refresh error:', err);
   }
