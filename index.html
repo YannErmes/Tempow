@@ -28,7 +28,6 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #0e0e11; --surface: #16161a; --surface2: #1e1e24;
-  --bg-rgb: 14, 14, 17;
   --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
   --text: #f0eff5; --muted: #6b6a75; --muted2: #9998a5;
   --active: #5de0a8; --active-dim: rgba(93,224,168,0.12);
@@ -521,7 +520,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   width: 100%;
 }
 
-.flow-main { padding: 28px 40px 120px; max-width: 900px; transition: padding-bottom 0.3s ease; }
+.flow-main { padding: 28px 40px 80px; max-width: 900px; }
 
 /* Task cards */
 .task-card {
@@ -557,26 +556,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .brk-seg:hover { filter: brightness(1.3); }
 .brk-seg.live { animation: pulse 1.4s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
-
-/* Split point styles - draggable cursors on progress bar */
-.split-point { 
-  position: absolute; top: -2px; width: 14px; height: 14px; 
-  background: var(--active); border: 2px solid #0e0e11; border-radius: 50%;
-  cursor: grab; z-index: 15; transition: filter 0.15s, box-shadow 0.15s;
-  transform: translateX(-50%); user-select: none;
-  pointer-events: auto; /* Ensure it captures mouse events */
-}
-.split-point:hover { filter: brightness(1.4); box-shadow: 0 0 8px rgba(93,224,168,0.5); }
-.split-point:active { cursor: grabbing; }
-.split-point.dragging { filter: brightness(1.6); box-shadow: 0 0 12px rgba(93,224,168,0.8); }
-.split-tooltip {
-  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-  background: var(--surface2); border: 1px solid var(--active); border-radius: 4px;
-  padding: 4px 8px; font-size: 9px; color: var(--active); white-space: nowrap;
-  margin-bottom: 4px; z-index: 16; opacity: 0; pointer-events: none;
-  transition: opacity 0.15s;
-}
-.split-point:hover .split-tooltip { opacity: 1; }
 
 /* ══════════════════════════════════════════
    2D SYNC ANIMATION & BUTTON MODE STYLES
@@ -974,24 +953,6 @@ body.text-mode .data-btn .btn-text {
 
 .btn .btn-text {
   display: inline;
-}
-
-/* Split button - prominent styling */
-.btn.split-btn {
-  background: var(--active-dim);
-  border-color: var(--active);
-  color: var(--active);
-  font-weight: 600;
-}
-
-.btn.split-btn:hover {
-  background: var(--active);
-  color: #0a1f16;
-  box-shadow: 0 0 12px rgba(93,224,168,0.3);
-}
-
-.btn.split-btn:active {
-  transform: scale(0.95);
 }
 
 body.icon-only-mode .btn {
@@ -1526,146 +1487,6 @@ body.text-mode .btn .btn-text {
 }
 
 /* ══════════════════════════════════════════
-   SPLIT TIMING MODAL
-══════════════════════════════════════════ */
-#splitModal .modal {
-  border-color: var(--active);
-}
-#splitModal .modal h2 {
-  color: var(--active);
-}
-.split-method-btn {
-  flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border2);
-  background: transparent; color: var(--muted2); font-family: var(--font-mono);
-  font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
-}
-.split-method-btn:hover {
-  border-color: var(--active); color: var(--active);
-}
-.split-method-btn.active {
-  background: var(--active-dim); border-color: var(--active); color: var(--active);
-}
-.split-preset {
-  padding: 8px; border-radius: 6px; border: 1px solid var(--border2);
-  background: transparent; color: var(--muted2); font-family: var(--font-mono);
-  font-size: 11px; font-weight: 500; cursor: pointer;
-  transition: all 0.15s;
-}
-.split-preset:hover {
-  border-color: var(--active); color: var(--active); background: var(--active-dim);
-}
-#splitModal input[type="number"] {
-  background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
-  color: var(--text); font-family: var(--font-mono); font-size: 13px;
-  transition: border-color 0.15s;
-}
-#splitModal input[type="number"]:focus {
-  border-color: var(--active);
-}
-.split-time-inputs input {
-  padding: 8px;
-}
-.split-percent-input input {
-  padding: 8px;
-}
-.split-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 8px; margin-bottom: 6px; background: var(--bg);
-  border-radius: 4px; font-size: 12px; color: var(--text);
-}
-.split-item:last-child {
-  margin-bottom: 0;
-}
-.split-item-time {
-  font-family: var(--font-mono); font-weight: 500;
-}
-.split-item-delete {
-  background: transparent; border: 1px solid var(--muted2);
-  color: var(--muted2); padding: 4px 8px; border-radius: 4px;
-  cursor: pointer; font-size: 11px; transition: all 0.15s;
-}
-.split-item-delete:hover {
-  border-color: var(--warn); color: var(--warn); background: rgba(255,100,0,0.1);
-}
-.split-item-delete:active {
-  transform: scale(0.95);
-}
-
-/* ══════════════════════════════════════════
-   MINIMIZED TASKS PANEL
-══════════════════════════════════════════ */
-.minimized-panel {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 100px;
-  background: rgba(var(--bg-rgb), 0.7);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex; flex-direction: row; z-index: 100;
-  padding-left: 12px; transition: height 0.3s ease;
-}
-.minimized-panel.collapsed {
-  height: 40px;
-}
-.minimized-panel.collapsed .minimized-title {
-  display: none;
-}
-.minimized-panel.collapsed .minimized-list {
-  display: none;
-}
-.minimized-header {
-  padding: 8px 6px; color: var(--muted); text-align: center;
-  border-bottom: 1px solid var(--border2); margin-bottom: 8px;
-  display: flex; align-items: center; justify-content: center; gap: 4px;
-}
-.minimized-collapse-btn {
-  background: transparent; border: none; color: var(--muted2);
-  font-size: 14px; font-weight: 700; cursor: pointer; padding: 2px 4px;
-  transition: all 0.2s; flex-shrink: 0; width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 4px;
-}
-.minimized-collapse-btn:hover {
-  color: var(--active); background: var(--surface2);
-}
-.minimized-panel.collapsed .minimized-collapse-btn {
-  width: 100%; height: auto;
-}
-.minimized-title {
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  flex: 1; transition: opacity 0.3s ease;
-}
-.minimized-list {
-  flex: 1; overflow-x: auto; display: flex; flex-direction: row;
-  gap: 6px; padding: 8px; align-items: center; justify-content: flex-start; transition: display 0.3s ease;
-}
-.minimized-task {
-  width: 64px; height: 64px; border-radius: 12px; display: flex;
-  align-items: center; justify-content: center; cursor: pointer;
-  font-size: 22px; font-weight: 700; color: white; transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative;
-  text-indent: 0; line-height: 1; letter-spacing: normal;
-}
-.minimized-task::before {
-  content: attr(data-letter);
-}
-.minimized-task::after {
-  content: none;
-}
-.minimized-task:hover {
-  transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-.minimized-task-tooltip {
-  position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-  background: var(--surface); color: var(--text); padding: 6px 10px;
-  border-radius: 6px; font-size: 10px; white-space: nowrap;
-  border: 1px solid var(--border); opacity: 0; pointer-events: none;
-  transition: opacity 0.15s; z-index: 200;
-}
-.minimized-task:hover .minimized-task-tooltip {
-  opacity: 1;
-}
-
-/* ══════════════════════════════════════════
    EXTEND TIME MODAL
 ══════════════════════════════════════════ */
 .extend-time-modal-bg {
@@ -1715,150 +1536,8 @@ body.text-mode .btn .btn-text {
 .extend-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ══════════════════════════════════════════
-   WORKSPACE FEATURE
-══════════════════════════════════════════ */
-.workspace-container { padding: 28px 40px 120px; max-width: 1200px; }
-.workspace-header { margin-bottom: 40px; }
-.workspace-header h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.workspace-header p { color: var(--muted); font-size: 14px; }
-
-.workspace-entry {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 40px; text-align: center;
-}
-.workspace-entry-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
-.btn-primary, .btn-secondary, .btn-small {
-  font-family: var(--font-mono); font-size: 13px; padding: 12px 24px;
-  border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s;
-  font-weight: 500;
-}
-.btn-primary {
-  background: var(--active); color: #0a1f16;
-}
-.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-.btn-secondary {
-  background: transparent; border: 1px solid var(--active); color: var(--active);
-}
-.btn-secondary:hover { background: var(--active-dim); }
-.btn-small {
-  background: var(--surface2); border: 1px solid var(--border2); color: var(--muted2);
-  padding: 6px 12px; font-size: 11px;
-}
-.btn-small:hover { background: var(--border); color: var(--text); }
-.workspace-entry-hint { color: var(--muted2); font-size: 12px; }
-
-.workspace-active { display: flex; gap: 24px; }
-.workspace-sidebar {
-  width: 240px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px; height: fit-content;
-}
-.workspace-info { display: flex; flex-direction: column; gap: 12px; }
-.ws-name { font-size: 16px; font-weight: 600; color: var(--text); }
-.ws-members-count { font-size: 12px; color: var(--muted); }
-
-.playground {
-  flex: 1; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 24px;
-}
-.playground-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 24px; }
-.playground-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-
-.playground-tier {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px; min-height: 200px;
-}
-.tier-top {
-  background: rgba(93, 224, 168, 0.08);
-  border-color: rgba(93, 224, 168, 0.2);
-}
-.tier-mid {
-  background: rgba(245, 166, 35, 0.08);
-  border-color: rgba(245, 166, 35, 0.2);
-}
-.tier-low {
-  background: rgba(255, 100, 100, 0.08);
-  border-color: rgba(255, 100, 100, 0.2);
-}
-.tier-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.1em; }
-.tier-members { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
-
-.member-circle {
-  width: 80px; height: 80px; border-radius: 50%; display: flex;
-  flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.2s; position: relative;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-.member-circle:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-.member-circle-letter { font-size: 28px; font-weight: 700; color: white; text-transform: uppercase; }
-.member-circle-rank { font-size: 10px; color: var(--text); font-weight: 600; margin-top: 4px; opacity: 0.9; }
-
-/* Workspace Modals */
-.workspace-modal-bg {
-  display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
-  z-index: 1600; align-items: center; justify-content: center;
-}
-.workspace-modal-bg.open { display: flex; }
-.workspace-modal {
-  background: var(--surface); border: 1px solid rgba(93, 224, 168, 0.3);
-  border-radius: 14px; padding: 28px; width: 420px;
-  box-shadow: 0 16px 56px rgba(0, 0, 0, 0.6);
-}
-.workspace-modal h2 { font-size: 18px; font-weight: 700; color: var(--active); margin-bottom: 12px; }
-.workspace-modal p { font-size: 12px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
-.workspace-field { margin-bottom: 16px; }
-.workspace-field label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-.workspace-field input {
-  width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text); font-size: 13px; padding: 10px 12px;
-  font-family: var(--font-mono); transition: border-color 0.15s;
-}
-.workspace-field input:focus { border-color: var(--active); outline: none; }
-.workspace-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
-.workspace-btn-cancel {
-  font-family: var(--font-mono); font-size: 12px; background: transparent;
-  border: 1px solid var(--border2); color: var(--muted2); padding: 9px 18px;
-  border-radius: 8px; cursor: pointer; transition: all 0.2s;
-}
-.workspace-btn-cancel:hover { border-color: var(--muted); color: var(--text); }
-.workspace-btn-confirm {
-  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
-  background: var(--active); border: none; color: #0a1f16;
-  padding: 9px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
-}
-.workspace-btn-confirm:hover { opacity: 0.9; transform: translateY(-1px); }
-
-/* Member Details Popup */
-.member-details-modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px; width: 380px;
-}
-.member-details-header {
-  display: flex; align-items: center; gap: 16px; padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.member-details-avatar {
-  width: 60px; height: 60px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-size: 24px;
-  font-weight: 700; color: white;
-}
-.member-details-name { font-size: 14px; font-weight: 600; color: var(--text); }
-.member-details-completion { font-size: 20px; font-weight: 700; color: var(--active); }
-.member-tasks-list { max-height: 300px; overflow-y: auto; }
-.member-task-item {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 6px; padding: 12px; margin-bottom: 8px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.member-task-name { font-size: 12px; color: var(--text); flex: 1; }
-.member-task-percent {
-  font-size: 12px; font-weight: 600; color: var(--active);
-  background: var(--active-dim); padding: 4px 8px; border-radius: 4px;
-}
-
-/* ══════════════════════════════════════════
    HOURS REMAINING TRACKER
-
+══════════════════════════════════════════ */
 .hours-tracker {
   display: flex; gap: 24px; padding: 16px 40px; background: var(--surface);
   border-bottom: 1px solid var(--border); align-items: center; flex-wrap: wrap;
@@ -1927,7 +1606,16 @@ body.text-mode .btn .btn-text {
   cursor: grab;
 }
 .task-card:active {
-  transform: scale(0.98);
+  cursor: grabbing;
+}
+.task-card.dragging {
+  opacity: 0.5; transform: scale(0.98);
+  background: var(--border); border-color: var(--border2);
+}
+.task-card.drag-over {
+  border-color: var(--active); border-style: dashed;
+  background: var(--active-dim);
+  box-shadow: inset 0 0 0 2px var(--active);
 }
 .task-list-placeholder {
   height: 100px; background: var(--active-dim);
@@ -1940,7 +1628,7 @@ body.text-mode .btn .btn-text {
 
 /* Responsive */
 @media (max-width:640px) {
-  .flow-main { padding:20px 16px 120px; }
+  .flow-main { padding:20px 16px 80px; }
   .flow-header, .flow-stats, .data-bar, .filter-bar { padding-left:16px; padding-right:16px; }
   .tmpw-inbox { margin-left:16px; margin-right:16px; }
   .app-nav { padding:0 14px; }
@@ -1988,9 +1676,6 @@ body.text-mode .btn .btn-text {
     </button>
     <button class="nav-tab" onclick="switchPage('report')">
       📊 Reports
-    </button>
-    <button class="nav-tab" onclick="switchPage('workspace')">
-      👥 Workspace
     </button>
     <button class="nav-tab" onclick="switchPage('help')">
       ❓ Help
@@ -2159,15 +1844,6 @@ body.text-mode .btn .btn-text {
     <div class="collapsible-section" id="trashList"></div>
   </div>
 
-  <!-- Minimized Tasks Panel -->
-  <div class="minimized-panel" id="minimizedPanel">
-    <div class="minimized-header">
-      <button class="minimized-collapse-btn" id="minimizedCollapseBtn" onclick="toggleMinimizedPanel()" title="Toggle minimized panel">»</button>
-      <span class="minimized-title" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Minimized</span>
-    </div>
-    <div class="minimized-list" id="minimizedList"></div>
-  </div>
-
   <main class="flow-main">
     <div id="task-list"></div>
     <div class="empty" id="empty-state">
@@ -2313,74 +1989,7 @@ body.text-mode .btn .btn-text {
 <div class="page" id="page-report"></div>
 
 <!-- ══════════════════════════════════════════
-     PAGE 4 — WORKSPACE
-══════════════════════════════════════════ -->
-<div class="page" id="page-workspace">
-  <div class="workspace-container">
-    <div class="workspace-header">
-      <h1>👥 Workspace Collaboration</h1>
-      <p>Work together and track team performance</p>
-    </div>
-
-    <!-- Workspace Entry UI -->
-    <div id="workspace-entry" class="workspace-entry">
-      <div class="workspace-entry-buttons">
-        <button class="btn-primary" onclick="showWorkspaceModal('join')">
-          🔗 Join Workspace
-        </button>
-        <button class="btn-secondary" onclick="showWorkspaceModal('create')">
-          ✨ Create Workspace
-        </button>
-      </div>
-      <p class="workspace-entry-hint">Join an existing workspace or create a new one to collaborate with your team.</p>
-    </div>
-
-    <!-- Workspace Playground -->
-    <div id="workspace-active" class="workspace-active" style="display: none;">
-      <div class="workspace-sidebar">
-        <div class="workspace-info">
-          <div id="ws-name" class="ws-name"></div>
-          <div id="ws-members-count" class="ws-members-count"></div>
-          <div id="ws-id-section" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-top: 12px; font-size: 10px; display: none;">
-            <div style="color: var(--muted2); margin-bottom: 4px;">Workspace ID</div>
-            <div id="ws-id-display" style="color: var(--active); font-weight: 600; font-family: var(--font-mono); font-size: 12px; margin-bottom: 8px; word-break: break-all;"></div>
-            <button class="btn-small" style="font-size: 9px;" onclick="copyWorkspaceId()">📋 Copy ID</button>
-          </div>
-          <div style="display: flex; gap: 8px; flex-direction: column; margin-top: 12px;">
-            <button class="btn-small" onclick="leaveWorkspace()">Leave Workspace</button>
-            <button class="btn-small" style="background: rgba(255, 94, 108, 0.1); color: var(--danger);" onclick="deleteWorkspace()">Delete Workspace</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="playground">
-        <div class="playground-title">Team Performance Playground</div>
-        <div class="playground-grid">
-          <!-- Top Performers (80-100%) -->
-          <div class="playground-tier tier-top">
-            <div class="tier-label">🌟 Top Performers (80-100%)</div>
-            <div id="tier-top-members" class="tier-members"></div>
-          </div>
-
-          <!-- Mid Performers (50-79%) -->
-          <div class="playground-tier tier-mid">
-            <div class="tier-label">⚡ Mid Performers (50-79%)</div>
-            <div id="tier-mid-members" class="tier-members"></div>
-          </div>
-
-          <!-- Low Performers (0-49%) -->
-          <div class="playground-tier tier-low">
-            <div class="tier-label">📈 Starting Out (0-49%)</div>
-            <div id="tier-low-members" class="tier-members"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     PAGE 5 — HELP & GUIDES
+     PAGE 4 — HELP & GUIDES
 ══════════════════════════════════════════ -->
 <div class="page" id="page-help">
   <div class="help-container">
@@ -2752,7 +2361,7 @@ body.text-mode .btn .btn-text {
 <div class="break-modal-bg" id="breakModal">
   <div class="break-modal">
     <h2>Pause task</h2>
-    <div class="break-modal-sub">Take a timed break. Use Split timing to break up long tasks.</div>
+    <div class="break-modal-sub">Take a timed break or stop permanently to switch to another task.</div>
 
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Break duration</div>
     <div class="break-dur-grid">
@@ -2771,75 +2380,8 @@ body.text-mode .btn .btn-text {
 
     <div class="break-modal-actions">
       <button class="break-modal-cancel" id="breakModalCancel">Cancel</button>
+      <button class="break-modal-stop" id="breakModalStop">⏹ Stop permanently</button>
       <button class="break-modal-confirm" id="breakModalConfirm">⏸ Start break</button>
-    </div>
-  </div>
-</div>
-
-<!-- Split timing modal -->
-<div class="modal-bg" id="splitModal">
-  <div class="modal" style="max-width: 520px;">
-    <h2>Split Points</h2>
-    <p style="font-size: 12px; color: var(--muted); margin-bottom: 20px;" id="splitTaskInfo"></p>
-    
-    <!-- Existing splits list -->
-    <div id="splitExistingContainer" style="margin-bottom: 24px; display: none;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Existing splits</div>
-      <div id="splitExistingList" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 16px;">
-        <!-- Dynamically populated with existing splits -->
-      </div>
-    </div>
-    
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;">Add new split</div>
-    <div style="margin-bottom: 24px;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;">Choose split method</div>
-      <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-        <button class="split-method-btn active" data-method="time" onclick="switchSplitMethod('time')" style="flex: 1;">⏱ Time offset</button>
-        <button class="split-method-btn" data-method="percent" onclick="switchSplitMethod('percent')" style="flex: 1;">% Completion</button>
-      </div>
-    </div>
-
-    <!-- TIME METHOD -->
-    <div id="splitTimeMethod" style="display: block;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Time after previous split</div>
-      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 16px;">
-        <p style="font-size: 11px; color: var(--muted2); margin-bottom: 12px;" id="splitPrevInfo">Reference: Start of task</p>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <input type="number" id="splitOffsetMin" min="0" max="999" placeholder="0" style="flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono);" />
-          <span style="color: var(--muted); font-size: 11px;">min</span>
-          <input type="number" id="splitOffsetSec" min="0" max="59" placeholder="0" style="width: 60px; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono);" />
-          <span style="color: var(--muted); font-size: 11px;">sec</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PERCENTAGE METHOD -->
-    <div id="splitPercentMethod" style="display: none;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Split at % completion</div>
-      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 16px;">
-        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
-          <input type="number" id="splitPercent" min="0" max="100" placeholder="50" style="flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono); font-size: 14px;" />
-          <span style="color: var(--muted); font-size: 11px;">%</span>
-        </div>
-        <div style="font-size: 10px; color: var(--muted2); padding: 8px; background: var(--bg); border-radius: 4px;">
-          <span id="splitPercentDisplay">At 50% completion: ~0h 0m</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PRESET BUTTONS -->
-    <div id="splitPresetsContainer" style="margin-bottom: 16px; display: none;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Quick presets</div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="split-preset" onclick="setSplitPreset(25)" style="flex: 1; min-width: 60px;">25%</button>
-        <button class="split-preset" onclick="setSplitPreset(50)" style="flex: 1; min-width: 60px;">50%</button>
-        <button class="split-preset" onclick="setSplitPreset(75)" style="flex: 1; min-width: 60px;">75%</button>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeSplitModal()">Cancel</button>
-      <button class="btn-confirm" onclick="confirmAddSplit()">Add Split</button>
     </div>
   </div>
 </div>
@@ -3034,15 +2576,6 @@ body.text-mode .btn .btn-text {
     </div>
 
     <div class="settings-group">
-      <label class="settings-label">AppScript Integration</label>
-      <div class="settings-description">Cloud sync and workspace features are configured</div>
-      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-top: 8px; margin-bottom: 16px; font-size: 10px; color: var(--muted); font-family: var(--font-mono); word-break: break-all;">
-        <div style="color: var(--active); margin-bottom: 4px;">✓ Connected</div>
-        https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec
-      </div>
-    </div>
-
-    <div class="settings-group">
       <label class="settings-label">About</label>
       <div class="settings-description">Tempow v1.0.0 - Task Timer & Cloud Sync</div>
     </div>
@@ -3071,11 +2604,8 @@ function switchPage(name) {
   } else if (name === 'report') {
     document.querySelectorAll('.nav-tab')[2].classList.add('active');
     renderReportsPage();
-  } else if (name === 'workspace') {
-    document.querySelectorAll('.nav-tab')[3].classList.add('active');
-    renderWorkspacePage();
   } else if (name === 'help') {
-    document.querySelectorAll('.nav-tab')[4].classList.add('active');
+    document.querySelectorAll('.nav-tab')[3].classList.add('active');
   }
 }
 
@@ -3190,8 +2720,6 @@ let usualStartTime = null; // Usual start time (h, m) as fallback for auto-calcu
 let globalTick = null;
 let openTip = null;
 let breakModalTaskId = null;
-let splitModalTaskId = null;
-let splitModalMethod = 'time'; // 'time' or 'percent'
 let workStartTime = { h: 9, m: 0 };
 let workEndTime = { h: 18, m: 0 };
 
@@ -3574,117 +3102,6 @@ function restoreTask(id) {
   updateHoursTracker();
 }
 
-// ── Minimize/Restore Tasks ─────────────────────────────────────
-function getOrCreateTaskColor(taskId) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return '#5dd0a8';
-  
-  // Generate deterministic random color based on task ID if not set
-  if (!task.minimizedColor) {
-    const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
-      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
-      '#F8B88B', '#A8D5BA', '#D4A5FF', '#FFB6C1',
-      '#20B2AA', '#FF8C94', '#A4DE6C', '#87CEEB'
-    ];
-    const hash = Math.abs(taskId * 12345) % colors.length;
-    task.minimizedColor = colors[hash];
-  }
-  
-  return task.minimizedColor;
-}
-
-function minimizeTask(taskId) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return;
-  
-  // Mark as minimized
-  task.isMinimized = true;
-  task.minimizedColor = getOrCreateTaskColor(taskId); // Ensure color is set
-  
-  saveFlowData();
-  renderFlowList();
-  renderMinimizedTasks();
-}
-
-function restoreMinimizedTask(taskId) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return;
-  
-  // Unminimize
-  task.isMinimized = false;
-  
-  saveFlowData();
-  renderFlowList();
-  renderMinimizedTasks();
-}
-
-function renderMinimizedTasks() {
-  const panel = document.getElementById('minimizedPanel');
-  const list = document.getElementById('minimizedList');
-  
-  // Get all minimized tasks
-  const minimizedTasks = flowTasks.filter(t => t.isMinimized);
-  
-  // Show/hide panel
-  if (minimizedTasks.length === 0) {
-    panel.style.display = 'none';
-    return;
-  }
-  
-  panel.style.display = 'flex';
-  list.innerHTML = '';
-  
-  minimizedTasks.forEach(t => {
-    const firstLetter = t.name.charAt(0).toUpperCase();
-    const color = getOrCreateTaskColor(t.id);
-    
-    const icon = document.createElement('div');
-    icon.className = 'minimized-task';
-    icon.style.backgroundColor = color;
-    icon.setAttribute('data-letter', firstLetter);
-    icon.title = t.name;
-    icon.onclick = () => restoreMinimizedTask(t.id);
-    
-    // Add tooltip
-    const tooltip = document.createElement('div');
-    tooltip.className = 'minimized-task-tooltip';
-    tooltip.textContent = t.name.substring(0, 15) + (t.name.length > 15 ? '...' : '');
-    icon.appendChild(tooltip);
-    
-    // Note: Letter is displayed via CSS ::after pseudo-element with data-letter attribute
-    // Do NOT add innerHTML to avoid duplication
-    
-    list.appendChild(icon);
-  });
-}
-
-function toggleMinimizedPanel() {
-  const panel = document.getElementById('minimizedPanel');
-  const isCollapsed = panel.classList.contains('collapsed');
-  
-  if (isCollapsed) {
-    // Expand
-    panel.classList.remove('collapsed');
-    localStorage.setItem('minimizedPanelCollapsed', 'false');
-  } else {
-    // Collapse
-    panel.classList.add('collapsed');
-    localStorage.setItem('minimizedPanelCollapsed', 'true');
-  }
-}
-
-function loadMinimizedPanelState() {
-  const panel = document.getElementById('minimizedPanel');
-  const isCollapsed = localStorage.getItem('minimizedPanelCollapsed') === 'true';
-  
-  if (isCollapsed) {
-    panel.classList.add('collapsed');
-  } else {
-    panel.classList.remove('collapsed');
-  }
-}
-
 // ╔════════════════════════════════════════════════════════════════╗
 // ║ NEW FEATURE: ESTIMATED COMPLETION TIME                        ║
 // ║ This function calculates when your task will be done          ║
@@ -3799,8 +3216,7 @@ function addFlowTask() {
     segments: [], 
     dateAdded: Date.now(),
     isUntimed: isUntimed,
-    notes: '',
-    splits: [] // Array of split points: [{position: 0-1 (percentage), secs: seconds into task}]
+    notes: ''
   };
   
   flowTasks.push(taskObj);
@@ -3912,211 +3328,13 @@ document.getElementById('breakModalConfirm').addEventListener('click', () => {
   breakModalTaskId = null;
 });
 
-// ── Split Timing Modal ────────────────────────────────
-function openSplitModal(taskId) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return;
-  
-  splitModalTaskId = taskId;
-  splitModalMethod = 'time';
-  
-  // Reset inputs
-  document.getElementById('splitOffsetMin').value = '';
-  document.getElementById('splitOffsetSec').value = '';
-  document.getElementById('splitPercent').value = '50';
-  
-  // Update task info display
-  const allocMin = Math.floor(task.allocSecs / 60);
-  const allocSec = task.allocSecs % 60;
-  document.getElementById('splitTaskInfo').textContent = 
-    `${task.name} (${allocMin}m ${allocSec}s) - ${task.splits.length} split(s)`;
-  
-  // Populate existing splits list
-  const splitExistingContainer = document.getElementById('splitExistingContainer');
-  const splitExistingList = document.getElementById('splitExistingList');
-  
-  if (task.splits.length > 0) {
-    let html = '';
-    task.splits.forEach((split, idx) => {
-      const splitTime = Math.round(split.position * task.allocSecs);
-      const minVal = Math.floor(splitTime / 60);
-      const secVal = splitTime % 60;
-      const percentVal = Math.round(split.position * 100);
-      html += `<div class="split-item">
-        <span class="split-item-time">${percentVal}% • ${minVal}m ${secVal}s</span>
-        <button class="split-item-delete" onclick="deleteExistingSplit(${taskId},${idx})">✕ Delete</button>
-      </div>`;
-    });
-    splitExistingList.innerHTML = html;
-    splitExistingContainer.style.display = 'block';
-  } else {
-    splitExistingContainer.style.display = 'none';
-  }
-  
-  // Update reference info
-  const prevSplit = task.splits[task.splits.length - 1];
-  if (prevSplit) {
-    const splitMinSec = Math.floor(prevSplit.position * task.allocSecs);
-    const min = Math.floor(splitMinSec / 60);
-    const sec = splitMinSec % 60;
-    document.getElementById('splitPrevInfo').textContent = 
-      `Reference: After previous split at ${min}m ${sec}s`;
-  } else {
-    document.getElementById('splitPrevInfo').textContent = `Reference: Start of task`;
-  }
-  
-  // Switch to time method by default
-  switchSplitMethod('time');
-  
-  // Show modal
-  document.getElementById('splitModal').classList.add('open');
-  setTimeout(() => document.getElementById('splitOffsetMin').focus(), 60);
-}
-
-function closeSplitModal() {
-  document.getElementById('splitModal').classList.remove('open');
-  splitModalTaskId = null;
-  splitModalMethod = 'time';
-}
-
-function switchSplitMethod(method) {
-  splitModalMethod = method;
-  
-  // Update button states
-  document.querySelectorAll('.split-method-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.method === method);
-  });
-  
-  // Toggle input sections
-  const timeSection = document.getElementById('splitTimeMethod');
-  const percentSection = document.getElementById('splitPercentMethod');
-  const presetsContainer = document.getElementById('splitPresetsContainer');
-  
-  if (method === 'time') {
-    timeSection.style.display = 'block';
-    percentSection.style.display = 'none';
-    presetsContainer.style.display = 'none';
-    setTimeout(() => document.getElementById('splitOffsetMin').focus(), 0);
-  } else {
-    timeSection.style.display = 'none';
-    percentSection.style.display = 'block';
-    presetsContainer.style.display = 'block';
-    setTimeout(() => document.getElementById('splitPercent').focus(), 0);
-  }
-  
-  updateSplitDisplay();
-}
-
-function setSplitPreset(percentage) {
-  document.getElementById('splitPercent').value = percentage;
-  updateSplitDisplay();
-}
-
-function updateSplitDisplay() {
-  if (splitModalMethod === 'percent') {
-    const task = flowTasks.find(t => t.id === splitModalTaskId);
-    if (!task) return;
-    
-    const percent = parseInt(document.getElementById('splitPercent').value) || 50;
-    const splitSecs = Math.round((percent / 100) * task.allocSecs);
-    const min = Math.floor(splitSecs / 60);
-    const sec = splitSecs % 60;
-    
-    document.getElementById('splitPercentDisplay').textContent = 
-      `At ${percent}% completion: ~${min}h ${sec}m`;
-  }
-}
-
-function deleteExistingSplit(taskId, splitIndex) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task || !task.splits[splitIndex]) return;
-  
-  // Remove the split
-  task.splits.splice(splitIndex, 1);
-  saveFlowData();
-  
-  // Refresh the modal to show updated list
-  openSplitModal(taskId);
-  renderFlowList();
-}
-
-// Attach event listeners for split modal
-function attachSplitModalListeners() {
-  const splitPercentInput = document.getElementById('splitPercent');
-  if (splitPercentInput && !splitPercentInput._hasListener) {
-    splitPercentInput.addEventListener('input', updateSplitDisplay);
-    splitPercentInput._hasListener = true;
-  }
-  
-  const splitModal = document.getElementById('splitModal');
-  if (splitModal && !splitModal._hasClickListener) {
-    splitModal.addEventListener('click', (e) => {
-      if (e.target.id === 'splitModal') {
-        closeSplitModal();
-      }
-    });
-    splitModal._hasClickListener = true;
-  }
-}
-
-// Attach listeners on page load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', attachSplitModalListeners);
-} else {
-  attachSplitModalListeners();
-}
-
-function confirmAddSplit() {
-  if (!splitModalTaskId) return;
-  
-  const task = flowTasks.find(t => t.id === splitModalTaskId);
-  if (!task) return;
-  
-  let position = 0.5; // Default
-  
-  if (splitModalMethod === 'time') {
-    // Calculate position from time offset
-    const minInput = parseInt(document.getElementById('splitOffsetMin').value) || 0;
-    const secInput = parseInt(document.getElementById('splitOffsetSec').value) || 0;
-    const offsetSecs = minInput * 60 + secInput;
-    
-    if (offsetSecs <= 0) {
-      alert('Please enter a time offset greater than 0');
-      return;
-    }
-    
-    // Get reference point (start of task or previous split)
-    let referencePoint = 0;
-    const prevSplit = task.splits[task.splits.length - 1];
-    if (prevSplit) {
-      referencePoint = prevSplit.position * task.allocSecs;
-    }
-    
-    const newAbsolutePos = referencePoint + offsetSecs;
-    
-    if (newAbsolutePos >= task.allocSecs) {
-      alert(`Split point would exceed task duration. Maximum offset: ${Math.floor((task.allocSecs - referencePoint) / 60)}m ${(task.allocSecs - referencePoint) % 60}s`);
-      return;
-    }
-    
-    position = newAbsolutePos / task.allocSecs;
-  } else {
-    // Calculate position from percentage
-    const percent = parseInt(document.getElementById('splitPercent').value);
-    
-    if (percent <= 0 || percent >= 100) {
-      alert('Please enter a percentage between 1 and 99');
-      return;
-    }
-    
-    position = percent / 100;
-  }
-  
-  // Add the split point
-  if (addSplitPoint(splitModalTaskId, position)) {
-    closeSplitModal();
-  }
-}
+document.getElementById('breakModalStop').addEventListener('click', () => {
+  if (!breakModalTaskId) return;
+  const note = document.getElementById('breakNoteInput').value.trim();
+  _stopTaskPermanently(breakModalTaskId, note);
+  document.getElementById('breakModal').classList.remove('open');
+  breakModalTaskId = null;
+});
 
 // ── Task Notes Modal ──────────────────────────────────
 let notesModalTaskId = null;
@@ -4258,8 +3476,6 @@ function markDone(id) {
   playDing();
   showDoneBanner(t.name);
   renderFlowList();
-  // Sync workspace stats
-  syncMemberStatsToWorkspace();
 }
 
 function markUntimeTaskDone(id) {
@@ -4271,8 +3487,6 @@ function markUntimeTaskDone(id) {
   playDing();
   showDoneBanner(t.name);
   renderFlowList();
-  // Sync workspace stats
-  syncMemberStatsToWorkspace();
 }
 
 function deleteFlowTask(id) {
@@ -4340,22 +3554,6 @@ function ensureTick() {
         if (t.state === 'running' && totalWorkedSecs(t) >= t.allocSecs) {
           if (live) live.endTs = Date.now();
           t.state = 'done'; playDing(); showDoneBanner(t.name); renderFlowList(); return;
-        }
-
-        // ── Split timing detection ──────────────────────────────────
-        if (t.state === 'running' && t.splits && t.splits.length > 0) {
-          const workedSecs = totalWorkedSecs(t);
-          t.splits.forEach(split => {
-            const splitAtSecs = split.position * t.allocSecs;
-            // Check if just reached this split point (within 1 second)
-            if (!split.triggered && Math.abs(workedSecs - splitAtSecs) < 1.1) {
-              split.triggered = true;
-              // Auto-commit a break at this split point
-              const note = `Split timing break #${t.splits.filter(s => s.triggered).length}`;
-              _commitPause(t.id, note, 0); // 0 means no time limit, breaks when manually resumed
-              playDing(); // Ring once on split, no continuous alarm
-            }
-          });
         }
 
         if (t.state === 'paused' && live && live.breakLimitSecs > 0) {
@@ -4524,62 +3722,7 @@ function buildBarHTML(t) {
     }
     offset += w;
   });
-  
-  // Render split points as visual indicators (non-draggable, shown for reference)
-  if (t.splits && t.splits.length > 0) {
-    t.splits.forEach((split, i) => {
-      const leftPercent = split.position * 100;
-      const secsAtSplit = Math.round(split.position * t.allocSecs);
-      const fmtTime = fmtF(secsAtSplit);
-      html += `<div class="split-point" style="left:${leftPercent.toFixed(3)}%;pointer-events:none;">
-        <div class="split-tooltip">Split at ${fmtTime}</div>
-      </div>`;
-    });
-  }
-  
   return html;
-}
-
-// ── Split timing feature ──────────────────────────────
-
-
-function removeSplit(taskId, splitIndex, event) {
-  event.stopPropagation();
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task || !task.splits[splitIndex]) return;
-  
-  task.splits.splice(splitIndex, 1);
-  saveFlowData();
-  renderFlowList();
-}
-
-function addSplitPoint(taskId, position) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return;
-  
-  // Validate max 2 splits per hour
-  const secs = task.allocSecs;
-  const hoursPerSplit = secs / (60 * 60);
-  if (task.splits.length >= Math.ceil(hoursPerSplit * 2)) {
-    alert(`Maximum ${Math.ceil(hoursPerSplit * 2)} split(s) allowed for this task duration (Max 2 per hour)`);
-    return false;
-  }
-  
-  task.splits.push({
-    position: Math.max(0, Math.min(1, position)),
-    createdAt: Date.now()
-  });
-  
-  // Sort splits by position
-  task.splits.sort((a, b) => a.position - b.position);
-  
-  saveFlowData();
-  renderFlowList();
-  return true;
-}
-
-function addNewSplit(taskId) {
-  openSplitModal(taskId);
 }
 
 // ── Live update (no re-render) ────────────────────────
@@ -4681,18 +3824,19 @@ function updateFlowStats() {
 function renderFlowList() {
   closeTip();
   const list = document.getElementById('task-list');
-  document.getElementById('empty-state').style.display = flowTasks.filter(t => !t.isMinimized).length===0 ? 'block' : 'none';
+  document.getElementById('empty-state').style.display = flowTasks.length===0 ? 'block' : 'none';
   list.innerHTML = '';
   
-  // Filter tasks based on active filters AND exclude minimized tasks
-  const filteredTasks = flowTasks.filter(t => !t.isMinimized && shouldShowTask(t));
+  // Filter tasks based on active filters
+  const filteredTasks = flowTasks.filter(shouldShowTask);
   
-  // Sort tasks: running > paused (break) > idle > done (FULLY AUTOMATIC)
+  // Sort tasks: active tasks first (running, paused, idle), then done tasks at bottom
   const sortedTasks = [...filteredTasks].sort((a, b) => {
-    const stateOrder = {running: 0, paused: 1, idle: 2, done: 3};
-    const orderA = stateOrder[a.state] ?? 4;
-    const orderB = stateOrder[b.state] ?? 4;
-    return orderA - orderB;
+    // Done tasks go to the bottom
+    if (a.state === 'done' && b.state !== 'done') return 1;
+    if (a.state !== 'done' && b.state === 'done') return -1;
+    // Keep original order for other tasks
+    return 0;
   });
   
   sortedTasks.forEach(t => {
@@ -4739,10 +3883,6 @@ function renderFlowList() {
       if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Start</span></button>`;
       if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})"><span class="btn-icon">⏸</span> <span class="btn-text">Pause</span></button>`;
       if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Resume</span></button>`;
-      // Add split timing button for running/paused tasks - PROMINENT PLACEMENT
-      if ((t.state==='running' || t.state==='paused') && (!t.isUntimed)) {
-        ctrl += `<button class="btn split-btn" onclick="addNewSplit(${t.id})" title="Click to add a split point on the progress bar - drag it to position"><span class="btn-icon">⫽</span> <span class="btn-text">+ Split</span></button>`;
-      }
       if (t.state==='done')    ctrl += `<button class="btn" disabled><span class="btn-icon">✓</span> <span class="btn-text">Complete</span></button>`;
       if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)"><span class="btn-icon">✓</span> <span class="btn-text">Done</span></button>`;
       ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)"><span class="btn-icon">⏱</span> <span class="btn-text">Extend</span></button>`;
@@ -4758,7 +3898,6 @@ function renderFlowList() {
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock"><span class="btn-icon">⇄</span> <span class="btn-text">Clock</span></button>`;
     ctrl += `<button class="btn" onclick="openNotesModal(${t.id})" title="Add/edit quick notes for tomorrow"><span class="btn-icon">📝</span> <span class="btn-text">Notes</span></button>`;
     ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON"><span class="btn-icon">↓</span> <span class="btn-text">JSON</span></button>`;
-    ctrl += `<button class="btn" onclick="minimizeTask(${t.id})" title="Minimize task to floating panel"><span class="btn-icon">−</span> <span class="btn-text">Minimize</span></button>`;
     ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others"><span class="btn-icon">⊘</span> <span class="btn-text">Discard</span></button>`;
 
     // Apply view mode styling
@@ -4773,7 +3912,11 @@ function renderFlowList() {
     
     card.className = cardClass;
     card.id = 'flow-card-'+t.id;
-    // Draggable feature removed - only split point cursors are draggable
+    card.draggable = true;
+    card.addEventListener('dragstart', (e) => handleTaskDragStart(e, t.id));
+    card.addEventListener('dragover', () => handleTaskDragOver(event, flowTasks.indexOf(t)));
+    card.addEventListener('dragleave', handleTaskDragLeave);
+    card.addEventListener('drop', (e) => handleTaskDrop(e, t.id));
     
     // Generate task metadata
     let metaHTML = '';
@@ -4815,7 +3958,6 @@ function renderFlowList() {
   updateHoursTracker();
   renderDiscardedTasks();
   renderTrash();
-  renderMinimizedTasks();
   if (flowTasks.some(t=>t.state==='running'||t.state==='paused')) ensureTick();
   if (typeof saveFlowData === 'function') saveFlowData();
 }
@@ -6574,7 +5716,7 @@ function exportReportPDF() {
                   String(today.getDate()).padStart(2, '0');
   
   // Create filename
-  const filename ='Report '+ userName + '_' + dateStr + '.pdf';
+  const filename = userName + '_' + dateStr + '.pdf';
   
   // Get the report page element
   const reportPage = document.getElementById('page-report');
@@ -6813,7 +5955,6 @@ async function loadFlowData() {
           delete t.breaks; delete t.currentBreak; delete t.workedSecs;
         }
         if (!t.dateAdded) t.dateAdded = Date.now();
-        if (!t.splits) t.splits = []; // Initialize splits array for split timing feature
         return t;
       });
     }
@@ -7314,6 +6455,79 @@ function unmergeTask(taskId) {
 /* ═══════════════════════════════════════════
    DRAG AND DROP FUNCTIONALITY
 ═══════════════════════════════════════════ */
+let draggedTask = null;
+let draggedIndex = null;
+
+function handleTaskDragStart(e, taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  draggedTask = task;
+  draggedIndex = flowTasks.indexOf(task);
+  
+  const card = e.target.closest('.task-card');
+  if (card) {
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget);
+  }
+}
+
+function handleTaskDragOver(e, index) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  
+  const card = e.currentTarget;
+  if (card && draggedIndex !== null && draggedIndex !== index) {
+    card.classList.add('drag-over');
+  }
+}
+
+function handleTaskDragLeave(e) {
+  const card = e.currentTarget;
+  if (card) card.classList.remove('drag-over');
+}
+
+function handleTaskDrop(e, targetId) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (!draggedTask || draggedIndex === null) return;
+  
+  const targetTask = flowTasks.find(t => t.id === targetId);
+  if (!targetTask || draggedTask.id === targetId) {
+    resetDragState();
+    return;
+  }
+  
+  const targetIndex = flowTasks.indexOf(targetTask);
+  
+  // Remove dragged task from old position
+  flowTasks.splice(draggedIndex, 1);
+  
+  // Insert it at new position
+  const newIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+  flowTasks.splice(newIndex, 0, draggedTask);
+  
+  resetDragState();
+  renderFlowList();
+}
+
+function resetDragState() {
+  draggedTask = null;
+  draggedIndex = null;
+  document.querySelectorAll('.task-card').forEach(card => {
+    card.classList.remove('dragging', 'drag-over');
+  });
+}
+
+document.addEventListener('dragend', resetDragState);
+document.addEventListener('dragenter', e => {
+  if (!draggedTask) return;
+  const card = e.target.closest('.task-card');
+  if (card) card.classList.add('drag-over');
+});
+
 /* ═══════════════════════════════════════════
    COLLAPSIBLE SECTIONS
 ═══════════════════════════════════════════ */
@@ -7356,7 +6570,6 @@ function restoreCollapsibleStates() {
   await loadFlowData();
   renderFlowList();
   restoreCollapsibleStates();
-  loadMinimizedPanelState();
   
   // Auto-save task data every 5 seconds
   setInterval(() => {
@@ -7497,7 +6710,7 @@ setInterval(() => {
 ═══════════════════════════════════════════ */
 
 // Global AppScript URL - all users use the same backend
-const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec';
+const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz_CptcxE2YyH_zc-FDr-VVHPrQv0M2B1wsAXDIbLV9BWChmbZpJ-jps3-5YwYDmOR2/exec';
 
 // Simple hash function for generating sync ID
 function simpleHash(str) {
@@ -7861,14 +7074,6 @@ function openSettingsModal() {
   modal.classList.add('open');
 }
 
-function saveAppScriptUrl() {
-  // AppScript URL is now hardcoded
-  alert('AppScript URL is configured and ready to use!');
-  
-  localStorage.setItem('syncUrl', url);
-  alert('AppScript URL saved successfully!');
-}
-
 function closeSettingsModal() {
   const modal = document.getElementById('settingsModal');
   modal.classList.remove('open');
@@ -7970,603 +7175,7 @@ function restoreLoadContent() {
   loadContent.style.display = 'block';
 }
 
-/* ═══════════════════════════════════════════
-   WORKSPACE COLLABORATION FEATURE
-═══════════════════════════════════════════ */
-
-let currentWorkspaceId = null;
-let currentUserName = localStorage.getItem('tempow_user_name') || 'User';
-let workspaceMembers = [];
-
-// Get SYNC_URL from settings (should be set by user in AppScript deployment)
-const SYNC_URL = localStorage.getItem('syncUrl') || '';
-
-function getAppScriptUrl() {
-  return 'https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec';
-}
-
-// Show workspace modal (join or create)
-function showWorkspaceModal(mode) {
-  const modal = document.getElementById('workspaceModal');
-  const title = document.getElementById('wsModalTitle');
-  const desc = document.getElementById('wsModalDesc');
-  const joinForm = document.getElementById('wsJoinForm');
-  const createForm = document.getElementById('wsCreateForm');
-  const configReminder = document.getElementById('wsConfigReminder');
-  const hasAppScriptUrl = !!getAppScriptUrl();
-  
-  // Show/hide config reminder
-  configReminder.style.display = hasAppScriptUrl ? 'none' : 'block';
-  
-  if (mode === 'join') {
-    title.textContent = '🔗 Join Workspace';
-    desc.textContent = 'Enter the workspace ID to join an existing team';
-    joinForm.style.display = 'block';
-    createForm.style.display = 'none';
-  } else if (mode === 'create') {
-    title.textContent = '✨ Create Workspace';
-    desc.textContent = 'Create a new workspace for your team';
-    joinForm.style.display = 'none';
-    createForm.style.display = 'block';
-  }
-  
-  modal.classList.add('open');
-}
-
-function closeWorkspaceModal() {
-  document.getElementById('workspaceModal').classList.remove('open');
-  document.getElementById('wsIdInput').value = '';
-  document.getElementById('wsEmailInput').value = '';
-  document.getElementById('wsNameInput').value = '';
-  document.getElementById('wsCreatorEmailInput').value = '';
-  document.getElementById('wsCreatorNameInput').value = '';
-  document.getElementById('wsWorkspaceNameInput').value = '';
-}
-
-function copyWorkspaceId() {
-  const wsId = currentWorkspaceId;
-  navigator.clipboard.writeText(wsId).then(() => {
-    alert('✓ Workspace ID copied to clipboard!\n\nID: ' + wsId);
-  }).catch(() => {
-    alert('Workspace ID: ' + wsId + '\n\n(Copy to clipboard failed, but you can share this ID)');
-  });
-}
-
-async function fetchUserTasksFromSyncData(email, name) {
-  try {
-    const url = getAppScriptUrl();
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'getUserSyncData',
-        email: email,
-        username: name
-      })
-    });
-    
-    const result = await response.json();
-    if (result.success && result.data) {
-      try {
-        const userData = JSON.parse(result.data);
-        flowTasks = userData.tasks || [];
-        updateStats();
-        renderFlowList();
-        saveFlowData();
-        console.log('📥 Loaded', flowTasks.length, 'tasks from sync profile');
-      } catch (e) {
-        console.log('Could not parse user sync data:', e);
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching user sync data:', error);
-  }
-}
-
-async function createNewWorkspace() {
-  const creatorEmail = document.getElementById('wsCreatorEmailInput').value.trim();
-  const creatorName = document.getElementById('wsCreatorNameInput').value.trim();
-  const wsName = document.getElementById('wsWorkspaceNameInput').value.trim();
-  
-  if (!creatorEmail || !creatorName || !wsName) {
-    alert('Please enter your email, name, and workspace name');
-    return;
-  }
-  
-  try {
-    let url = getAppScriptUrl();
-    if (!url) {
-      // Prompt user to configure AppScript URL
-      const shouldConfigure = confirm('🔗 AppScript URL not configured!\n\nYou need to configure your AppScript deployment URL first.\n\nClick OK to go to Settings and paste your URL.');
-      if (shouldConfigure) {
-        openSettingsModal();
-        closeWorkspaceModal();
-      }
-      return;
-    }
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'createWorkspace',
-        workspaceName: wsName,
-        creatorEmail: creatorEmail,
-        creatorName: creatorName
-      })
-    });
-    
-    const result = await response.json();
-    if (result.success) {
-      currentWorkspaceId = result.workspaceId;
-      localStorage.setItem('tempow_workspace_id', currentWorkspaceId);
-      localStorage.setItem('tempow_user_email', creatorEmail);
-      localStorage.setItem('tempow_user_name', creatorName);
-      localStorage.setItem('tempow_workspace_member_name', creatorName);
-      closeWorkspaceModal();
-      renderWorkspacePage();
-      alert(`✨ Workspace created!\n\nWorkspace ID: ${result.workspaceId}\n\nShare this ID with team members to let them join.`);
-    } else {
-      alert('Error creating workspace: ' + result.error);
-    }
-  } catch (err) {
-    const url = getAppScriptUrl();
-    console.error('Create workspace error:', err);
-    alert('❌ Connection Error - Cannot reach AppScript.\n\nCheck:\n✓ AppScript URL is correct\n✓ Deployment is active\n✓ Internet connection works\n\nURL: ' + url.substring(0, 40) + '...');
-  }
-}
-
-async function joinWorkspace() {
-  const wsId = document.getElementById('wsIdInput').value.trim().toUpperCase();
-  const memberEmail = document.getElementById('wsEmailInput').value.trim();
-  const memberName = document.getElementById('wsNameInput').value.trim();
-  
-  if (!wsId || !memberEmail || !memberName) {
-    alert('Please enter workspace ID, email, and name');
-    return;
-  }
-  
-  try {
-    let url = getAppScriptUrl();
-    if (!url) {
-      const shouldConfigure = confirm('🔗 AppScript URL not configured!\n\nYou need to configure your AppScript deployment URL first.\n\nClick OK to go to Settings and paste your URL.');
-      if (shouldConfigure) {
-        openSettingsModal();
-        closeWorkspaceModal();
-      }
-      return;
-    }
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'joinWorkspace',
-        workspaceId: wsId,
-        memberEmail: memberEmail,
-        memberName: memberName
-      })
-    });
-    
-    const result = await response.json();
-    if (result.success) {
-      currentWorkspaceId = wsId;
-      currentUserName = memberName;
-      localStorage.setItem('tempow_workspace_id', wsId);
-      localStorage.setItem('tempow_workspace_member_name', memberName);
-      localStorage.setItem('tempow_user_email', memberEmail);
-      localStorage.setItem('tempow_user_name', memberName);
-      closeWorkspaceModal();
-      
-      // Fetch their tasks from sync_data sheet
-      await fetchUserTasksFromSyncData(memberEmail, memberName);
-      
-      renderWorkspacePage();
-      alert(`👥 Joined workspace!\n\nWelcome to the team, ${memberName}!\n\nYour tasks are being loaded from your sync profile.`);
-    } else {
-      alert('Error joining workspace: ' + result.error);
-    }
-  } catch (err) {
-    const url = getAppScriptUrl();
-    console.error('Join workspace error:', err);
-    alert('❌ Connection Error - Cannot reach AppScript.\n\nCheck:\n✓ AppScript URL is correct\n✓ Deployment is active\n✓ Internet connection works\n\nURL: ' + url.substring(0, 40) + '...');
-  }
-}
-
-async function renderWorkspacePage() {
-  const workspaceId = localStorage.getItem('tempow_workspace_id');
-  
-  if (!workspaceId) {
-    // Show entry UI
-    document.getElementById('workspace-entry').style.display = 'block';
-    document.getElementById('workspace-active').style.display = 'none';
-    document.getElementById('ws-id-section').style.display = 'none';
-    stopWorkspaceSync();
-  } else {
-    // Show active workspace
-    currentWorkspaceId = workspaceId;
-    document.getElementById('workspace-entry').style.display = 'none';
-    document.getElementById('workspace-active').style.display = 'flex';
-    
-    // Display workspace ID in sidebar for creator to share
-    document.getElementById('ws-id-display').textContent = workspaceId;
-    document.getElementById('ws-id-section').style.display = 'block';
-    
-    // Load and display members
-    await loadAndDisplayMembers(workspaceId);
-    
-    // Start periodic sync
-    startWorkspaceSync();
-  }
-}
-
-async function loadAndDisplayMembers(workspaceId) {
-  try {
-    const url = getAppScriptUrl();
-    if (!url) return;
-    
-    // Correct workspace endpoint for member listing
-    const response = await fetch(url + '?action=getMembers&workspaceId=' + workspaceId);
-    const result = await response.json();
-    
-    if (result.success && result.members) {
-      workspaceMembers = result.members;
-      displayPlayground(result.members);
-    }
-  } catch (err) {
-    console.error('Error loading members:', err);
-  }
-}
-
-async function deleteWorkspace() {
-  if (!currentWorkspaceId) {
-    alert('No workspace selected');
-    return;
-  }
-  
-  const confirmed = confirm('⚠️ Delete Workspace?\n\nThis will permanently delete the workspace and remove it for all members. This cannot be undone.\n\nAre you sure?');
-  if (!confirmed) return;
-  
-  const userEmail = localStorage.getItem('tempow_user_email') || 'user@example.com';
-  const userName = localStorage.getItem('tempow_user_name') || 'User';
-  
-  try {
-    const url = getAppScriptUrl();
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'deleteWorkspace',
-        workspaceId: currentWorkspaceId,
-        email: userEmail,
-        username: userName
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      alert('✓ Workspace deleted successfully');
-      leaveWorkspace();
-      // Show entry UI
-      document.getElementById('workspace-entry').style.display = 'block';
-      document.getElementById('workspace-active').style.display = 'none';
-    } else {
-      alert('Error: ' + (result.message || 'Could not delete workspace'));
-    }
-  } catch (error) {
-    console.error('Delete workspace error:', error);
-    alert('Error deleting workspace: ' + error.message);
-  }
-}
-
-function displayPlayground(members) {
-  // Separate members by tier
-  const topTier = members.filter(m => m.completionPercentage >= 80);
-  const midTier = members.filter(m => m.completionPercentage >= 50 && m.completionPercentage < 80);
-  const lowTier = members.filter(m => m.completionPercentage < 50);
-  
-  // Sort by completion % within each tier (descending)
-  const sortTier = (arr) => arr.sort((a, b) => b.completionPercentage - a.completionPercentage);
-  
-  // Display each tier
-  displayTier('tier-top-members', sortTier(topTier), 'top');
-  displayTier('tier-mid-members', sortTier(midTier), 'mid');
-  displayTier('tier-low-members', sortTier(lowTier), 'low');
-  
-  // Update header
-  document.getElementById('ws-members-count').textContent = `${members.length} team member${members.length !== 1 ? 's' : ''}`;
-}
-
-function displayTier(elementId, members, tier) {
-  const container = document.getElementById(elementId);
-  container.innerHTML = '';
-  
-  members.forEach((member, index) => {
-    const circle = document.createElement('div');
-    circle.className = 'member-circle';
-    
-    // Generate deterministic color based on member email
-    const hue = hashCode(member.memberEmail) % 360;
-    circle.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
-    
-    const letter = member.memberName.charAt(0).toUpperCase();
-    circle.innerHTML = `
-      <div class="member-circle-letter">${letter}</div>
-      <div class="member-circle-rank">#${index + 1}</div>
-    `;
-    
-    circle.onclick = () => showMemberDetails(member);
-    circle.title = `${member.memberName} - ${member.completionPercentage}%`;
-    
-    container.appendChild(circle);
-  });
-}
-
-function showMemberDetails(member) {
-  const modal = document.getElementById('memberDetailsModal');
-  const avatar = document.getElementById('memberAvatar');
-  const hue = hashCode(member.memberEmail) % 360;
-  
-  avatar.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
-  avatar.textContent = member.memberName.charAt(0).toUpperCase();
-  
-  document.getElementById('memberNameDisplay').textContent = member.memberName;
-  document.getElementById('memberCompletionDisplay').textContent = member.completionPercentage + '%';
-  
-  // Display member's tasks
-  displayMemberTasks(member);
-  
-  modal.classList.add('open');
-}
-
-async function displayMemberTasks(member) {
-  const list = document.getElementById('memberTasksList');
-  list.innerHTML = '';
-  
-  try {
-    const url = getAppScriptUrl();
-    if (!url) {
-      list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 11px; padding: 20px;">AppScript URL not configured</div>';
-      return;
-    }
-    
-    // Fetch member's sync data from AppScript
-    const response = await fetch(url + '?action=fetch&email=' + encodeURIComponent(member.memberEmail) + '&username=' + encodeURIComponent(member.memberName));
-    const result = await response.json();
-    
-    if (result.success && result.jsonData) {
-      // Parse member's task data
-      let tasks = [];
-      try {
-        tasks = JSON.parse(result.jsonData).flowTasks || [];
-      } catch (e) {
-        console.error('Error parsing member task data:', e);
-      }
-      
-      if (tasks.length === 0) {
-        list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 11px; padding: 20px;">No tasks yet</div>';
-        return;
-      }
-      
-      // Display tasks with completion percentage
-      tasks.forEach(task => {
-        const taskEl = document.createElement('div');
-        taskEl.className = 'member-task-item';
-        
-        const completionPercent = task.state === 'done' ? 100 : task.state === 'running' ? 50 : 0;
-        
-        taskEl.innerHTML = `
-          <div class="member-task-name">${task.name}</div>
-          <div class="member-task-percent">${completionPercent}%</div>
-        `;
-        
-        list.appendChild(taskEl);
-      });
-    } else {
-      list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 11px; padding: 20px;">No task data available</div>';
-    }
-  } catch (err) {
-    console.error('Error displaying member tasks:', err);
-    list.innerHTML = '<div style="text-align: center; color: var(--danger); font-size: 11px; padding: 20px;">Error loading tasks</div>';
-  }
-}
-
-function closeMemberDetailsModal() {
-  document.getElementById('memberDetailsModal').classList.remove('open');
-}
-
-function leaveWorkspace() {
-  if (confirm('Are you sure you want to leave this workspace?')) {
-    localStorage.removeItem('tempow_workspace_id');
-    localStorage.removeItem('tempow_workspace_member_name');
-    currentWorkspaceId = null;
-    document.getElementById('workspace-entry').style.display = 'block';
-    document.getElementById('workspace-active').style.display = 'none';
-    document.getElementById('ws-id-section').style.display = 'none';
-  }
-}
-
-// Simple hash function for deterministic colors
-function hashCode(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-}
-
-// Load workspace on init
-window.addEventListener('DOMContentLoaded', () => {
-  const wsId = localStorage.getItem('tempow_workspace_id');
-  if (wsId) {
-    currentWorkspaceId = wsId;
-  }
-});
-
-/* ═══════════════════════════════════════════
-   TASK SYNC WITH WORKSPACE
-═══════════════════════════════════════════ */
-
-// Calculate member's completion percentage based on their tasks
-function calculateMemberCompletionPercentage() {
-  if (flowTasks.length === 0) return 0;
-  
-  const completedTasks = flowTasks.filter(t => t.state === 'done').length;
-  const percentage = Math.round((completedTasks / flowTasks.length) * 100);
-  return percentage;
-}
-
-// Update member stats in workspace when tasks change
-async function syncMemberStatsToWorkspace() {
-  const workspaceId = localStorage.getItem('tempow_workspace_id');
-  if (!workspaceId) return; // Not in a workspace
-  
-  const completionPercentage = calculateMemberCompletionPercentage();
-  const userEmail = localStorage.getItem('tempow_user_email') || 'user@example.com';
-  const url = getAppScriptUrl();
-  
-  if (!url) return; // No AppScript URL configured
-  
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'updateMemberStats',
-        workspaceId: workspaceId,
-        memberEmail: userEmail,
-        completionPercentage: completionPercentage
-      })
-    });
-    
-    const result = await response.json();
-    if (result.success) {
-      console.log('Member stats updated:', result);
-    }
-  } catch (err) {
-    console.error('Error syncing member stats:', err);
-  }
-}
-
-// Auto-refresh workspace members periodically (every 30 seconds)
-let workspaceRefreshInterval = null;
-
-function startWorkspaceSync() {
-  if (workspaceRefreshInterval) return; // Already running
-  
-  workspaceRefreshInterval = setInterval(async () => {
-    const workspaceId = localStorage.getItem('tempow_workspace_id');
-    if (workspaceId) {
-      await syncMemberStatsToWorkspace();
-      await loadAndDisplayMembers(workspaceId);
-    }
-  }, 30000); // Update every 30 seconds
-}
-
-function stopWorkspaceSync() {
-  if (workspaceRefreshInterval) {
-    clearInterval(workspaceRefreshInterval);
-    workspaceRefreshInterval = null;
-  }
-}
-
 </script>
-
-<!-- Workspace Modals -->
-<div class="workspace-modal-bg" id="workspaceModal">
-  <div class="workspace-modal">
-    <h2 id="wsModalTitle">Join Workspace</h2>
-    <p id="wsModalDesc">Enter the workspace ID to join an existing team</p>
-
-    <!-- Configuration reminder -->
-    <div id="wsConfigReminder" style="background: rgba(93, 224, 168, 0.1); border: 1px solid rgba(93, 224, 168, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px; color: var(--muted); display: none;">
-      <div style="margin-bottom: 8px;"><span style="color: var(--active);">⚠</span> AppScript URL not configured</div>
-      <div style="margin-bottom: 8px;">You need to configure your AppScript deployment URL in Settings first.</div>
-      <button onclick="openSettingsModal(); closeWorkspaceModal();" style="background: var(--active); color: #0a1f16; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 10px; font-weight: 600; width: 100%;">Go to Settings</button>
-    </div>
-
-    <!-- Join Workspace Form -->
-    <div id="wsJoinForm">
-      <div class="workspace-field">
-        <label>Workspace ID</label>
-        <input type="text" id="wsIdInput" placeholder="ABC123" maxlength="6" style="text-transform: uppercase;" />
-        <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">6-character code provided by workspace creator</div>
-      </div>
-      <div class="workspace-field">
-        <label>Email Address</label>
-        <input type="email" id="wsEmailInput" placeholder="you@example.com" />
-        <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">Email you used to sync your tasks</div>
-      </div>
-      <div class="workspace-field">
-        <label>Name/Username</label>
-        <input type="text" id="wsNameInput" placeholder="Your Name" />
-        <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">Name you used to sync your tasks</div>
-      </div>
-      <div class="workspace-modal-actions">
-        <button class="workspace-btn-cancel" onclick="closeWorkspaceModal()">Cancel</button>
-        <button class="workspace-btn-confirm" onclick="joinWorkspace()">Join Workspace</button>
-      </div>
-    </div>
-
-    <!-- Create Workspace Form -->
-    <div id="wsCreateForm" style="display: none;">
-      <div class="workspace-field">
-        <label>Email Address</label>
-        <input type="email" id="wsCreatorEmailInput" placeholder="you@example.com" />
-        <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">Email you used to sync your tasks</div>
-      </div>
-      <div class="workspace-field">
-        <label>Name/Username</label>
-        <input type="text" id="wsCreatorNameInput" placeholder="Your Name" />
-        <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">Name you used to sync your tasks</div>
-      </div>
-      <div class="workspace-field">
-        <label>Workspace Name</label>
-        <input type="text" id="wsWorkspaceNameInput" placeholder="My Team" />
-      </div>
-      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 11px; color: var(--muted);">
-        <span style="color: var(--active);">✓</span> You'll be added as the workspace owner and receive a workspace ID to share with team members
-      </div>
-      <div class="workspace-modal-actions">
-        <button class="workspace-btn-cancel" onclick="closeWorkspaceModal()">Cancel</button>
-        <button class="workspace-btn-confirm" onclick="createNewWorkspace()">Create Workspace</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Member Details Popup -->
-<div class="workspace-modal-bg" id="memberDetailsModal">
-  <div class="member-details-modal">
-    <div class="member-details-header">
-      <div id="memberAvatar" class="member-details-avatar"></div>
-      <div>
-        <div class="member-details-name" id="memberNameDisplay"></div>
-        <div class="member-details-completion" id="memberCompletionDisplay">—%</div>
-      </div>
-      <button style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color: var(--muted2); cursor: pointer; font-size: 20px;" onclick="closeMemberDetailsModal()">×</button>
-    </div>
-
-    <div style="margin-bottom: 16px;">
-      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px;">Current Tasks</div>
-      <div class="member-tasks-list" id="memberTasksList"></div>
-    </div>
-
-    <div style="text-align: center; font-size: 11px; color: var(--muted);">
-      Showing completion % for current tasks
-    </div>
-  </div>
-</div>
 
 <!-- Footer with author credit -->
 <style>
@@ -8590,7 +7199,6 @@ function stopWorkspaceSync() {
 
 </body>
 </html>
-
 
 
 
