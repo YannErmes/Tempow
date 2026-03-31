@@ -3038,7 +3038,7 @@ body.text-mode .btn .btn-text {
       <div class="settings-description">Cloud sync and workspace features are configured</div>
       <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-top: 8px; margin-bottom: 16px; font-size: 10px; color: var(--muted); font-family: var(--font-mono); word-break: break-all;">
         <div style="color: var(--active); margin-bottom: 4px;">✓ Connected</div>
-        https://script.google.com/macros/s/AKfycbxA6kNPbw44-oPNlS5ZkdbmSPap3M6cfGVpdJzwo1bvF5MpUTwIlSAAQ0xe2xah0tZs/exec
+        https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec
       </div>
     </div>
 
@@ -7497,7 +7497,7 @@ setInterval(() => {
 ═══════════════════════════════════════════ */
 
 // Global AppScript URL - all users use the same backend
-const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxMO4ZKTPSsMbtMQKC31rkpw7wRpeYNEP011qliNFd4BuFlIKg9Rix73KxBNCXLpItp/exec';
+const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec';
 
 // Simple hash function for generating sync ID
 function simpleHash(str) {
@@ -7982,7 +7982,7 @@ let workspaceMembers = [];
 const SYNC_URL = localStorage.getItem('syncUrl') || '';
 
 function getAppScriptUrl() {
-  return 'https://script.google.com/macros/s/AKfycbxMO4ZKTPSsMbtMQKC31rkpw7wRpeYNEP011qliNFd4BuFlIKg9Rix73KxBNCXLpItp/exec';
+  return 'https://script.google.com/macros/s/AKfycbz8ajcxYOcdzK1qFDABBOf5d6E6XqSZKaSrwvJBYn4yxObQg4Rbi3mKunqzlnv8znrwNA/exec';
 }
 
 // Show workspace modal (join or create)
@@ -8211,7 +8211,8 @@ async function loadAndDisplayMembers(workspaceId) {
     const url = getAppScriptUrl();
     if (!url) return;
     
-    const response = await fetch(url + '?action=fetch&workspaceId=' + workspaceId);
+    // Correct workspace endpoint for member listing
+    const response = await fetch(url + '?action=getMembers&workspaceId=' + workspaceId);
     const result = await response.json();
     
     if (result.success && result.members) {
