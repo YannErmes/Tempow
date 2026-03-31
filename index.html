@@ -576,6 +576,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 
 /* Performance Pool Visualization */
 .performance-pool-container { position: relative; width: 100%; height: 400px; background: linear-gradient(135deg, rgba(93,224,168,0.05) 0%, rgba(245,166,35,0.05) 50%, rgba(255,94,108,0.05) 100%); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; margin: 20px 0; }
+.workspace-loading-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 15; border-radius: 16px; }
+.workspace-loading-overlay.active { display: flex; }
 .performance-pool-zones { position: absolute; inset: 0; }
 .zone-green { position: absolute; left: 0; top: 0; width: 35%; height: 100%; background: radial-gradient(ellipse at center, rgba(93,224,168,0.15) 0%, transparent 70%); border-right: 1px dashed rgba(93,224,168,0.3); }
 .zone-yellow { position: absolute; left: 35%; top: 0; width: 30%; height: 100%; background: radial-gradient(ellipse at center, rgba(245,166,35,0.15) 0%, transparent 70%); border-right: 1px dashed rgba(245,166,35,0.3); }
@@ -2005,8 +2007,8 @@ body.text-mode .btn .btn-text {
       <button class="data-btn" onclick="exportFlowJSON('done')"><span class="btn-icon">↓</span> <span class="btn-text">Completed only</span></button>
       <button class="data-btn" onclick="syncElapsedTime()"><span class="btn-icon">↻</span> <span class="btn-text">Sync elapsed</span></button>
       <div class="data-sep"></div>
-      <button class="data-btn" onclick="openSyncModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Sync to cloud</span></button>
-      <button class="data-btn" onclick="openLoadFromCloudModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Load from cloud</span></button>
+      <button class="data-btn" onclick="openSyncModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Back up</span></button>
+      <button class="data-btn" onclick="openLoadFromCloudModal()" style="color: var(--active);"><span class="btn-icon">☁</span> <span class="btn-text">Restore</span></button>
       <span id="syncStatus" style="font-size:10px;color:var(--muted);"></span>
       <span class="save-indicator" id="flowSaveIndicator">✓ Saved</span>
       <span style="font-size:10px;color:var(--muted);" id="flowLastSaved"></span>
@@ -2266,6 +2268,14 @@ body.text-mode .btn .btn-text {
     </div>
 
     <div class="performance-pool-container" id="performancePoolContainer">
+      <div class="workspace-loading-overlay" id="workspaceLoadingOverlay">
+        <div class="sync-spinner">
+          <div class="sync-spinner-center"></div>
+          <div class="sync-orb"></div>
+          <div class="sync-orb"></div>
+          <div class="sync-orb"></div>
+        </div>
+      </div>
       <div class="performance-pool-zones">
         <div class="zone-green"><div class="zone-label zone-label-green">Top 70%+</div></div>
         <div class="zone-yellow"><div class="zone-label zone-label-yellow">Middle 40-69%</div></div>
@@ -2495,14 +2505,14 @@ body.text-mode .btn .btn-text {
         <h2>☁ Cloud Sync — Backup & Restore</h2>
         
         <div class="help-subsection">
-          <h3>Why Sync to Cloud?</h3>
+          <h3>Why Back up?</h3>
           <p>Backup all your tasks to Google Sheets and access them from any device. Your data is secure and always recoverable.</p>
         </div>
 
         <div class="help-subsection">
           <h3>First-Time Sync Setup</h3>
           <ol>
-            <li>Go to <strong>Data</strong> section and click <strong>☁ Sync to cloud</strong></li>
+            <li>Go to <strong>Data</strong> section and click <strong>☁ Back up</strong></li>
             <li>Enter your email address (your unique identifier)</li>
             <li>Enter a username (alphanumeric, no spaces)</li>
             <li>Click <strong>☁ Sync now</strong></li>
@@ -2520,7 +2530,7 @@ body.text-mode .btn .btn-text {
         <div class="help-subsection">
           <h3>Loading from Cloud</h3>
           <ol>
-            <li>Click <strong>☁ Load from cloud</strong> in the Data section</li>
+            <li>Click <strong>☁ Restore</strong> in the Data section</li>
             <li>Enter the <strong>same email and username</strong> you used to sync</li>
             <li>Click the button to fetch your tasks</li>
             <li>You'll see a preview of how many tasks are ready to load</li>
@@ -2865,7 +2875,7 @@ body.text-mode .btn .btn-text {
 <!-- Cloud Sync Modal -->
 <div class="modal-bg" id="syncModal">
   <div class="modal" style="max-width: 400px;">
-    <h2>☁ Sync to Cloud</h2>
+    <h2>☁ Back up</h2>
     <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Save your tasks to Google Sheets and access them from any device.</p>
     
     <div class="modal-loading-container" id="syncLoadingContainer">
@@ -2912,7 +2922,7 @@ body.text-mode .btn .btn-text {
 <!-- Load from Cloud Modal -->
 <div class="modal-bg" id="loadFromCloudModal">
   <div class="modal" style="max-width: 400px;">
-    <h2>☁ Load from Cloud</h2>
+    <h2>☁ Restore</h2>
     <p style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Retrieve your tasks using your email and username.</p>
     
     <div class="modal-loading-container" id="loadLoadingContainer">
@@ -6697,12 +6707,16 @@ function showWorkspaceMemberDetails(member) {
 async function loadWorkspaceMembers(showLoading = true) {
   const settings = getWorkspaceSettings();
   const floatingUsersContainer = document.getElementById('floatingUsers');
+  const loadingOverlay = document.getElementById('workspaceLoadingOverlay');
 
   if (showLoading) {
-    floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">Loading members...</div>';
+    loadingOverlay.classList.add('active');
+  } else {
+    loadingOverlay.classList.remove('active');
   }
 
   if (!settings.workspaceId) {
+    loadingOverlay.classList.remove('active');
     floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">No workspace selected.</div>';
     return;
   }
@@ -6714,7 +6728,11 @@ async function loadWorkspaceMembers(showLoading = true) {
 
     if (!result.success) {
       if (showLoading) {
-        floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">${result.error || 'No members found.'}</div>`;
+        // Keep loading spinner active for initial errors and auto-retry, instead of text error.
+        loadingOverlay.classList.add('active');
+        setTimeout(() => loadWorkspaceMembers(true), 3000);
+      } else {
+        loadingOverlay.classList.remove('active');
       }
       return;
     }
@@ -6722,6 +6740,7 @@ async function loadWorkspaceMembers(showLoading = true) {
     const members = result.members || [];
 
     if (members.length === 0) {
+      loadingOverlay.classList.remove('active');
       if (showLoading) {
         floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">No members in this workspace yet.</div>';
       }
@@ -6784,6 +6803,9 @@ async function loadWorkspaceMembers(showLoading = true) {
       floatingUsersContainer.appendChild(userDiv);
     });
 
+    // Hide overlay once new members are ready
+    loadingOverlay.classList.remove('active');
+
     // Auto-select current user if present
     const currentUser = getCloudSyncSettings();
     if (currentUser && currentUser.username) {
@@ -6801,15 +6823,19 @@ async function loadWorkspaceMembers(showLoading = true) {
     
   } catch (err) {
     if (showLoading) {
-      floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">Connection ...</div>`;
+      // Keep loading spinner visible on initial failure and retry.
+      loadingOverlay.classList.add('active');
+      setTimeout(() => loadWorkspaceMembers(true), 3000);
+    } else {
+      loadingOverlay.classList.remove('active');
     }
     console.error('Workspace member refresh error:', err);
   }
 }
 
 function refreshWorkspaceMembers() {
-  // Background refresh without showing the loading overlay
-  loadWorkspaceMembers(false);
+  // Manual refresh shows loading animation and updates content when ready
+  loadWorkspaceMembers(true);
 }
 
 let workspaceAutoReloadInterval = null;
