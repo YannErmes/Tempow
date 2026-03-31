@@ -558,6 +558,51 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .brk-seg.live { animation: pulse 1.4s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
 
+/* Workspace page styles */
+.workspace-panel { padding: 20px 24px; max-width: 1120px; margin: 0 auto; }
+.workspace-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.workspace-controls input, .workspace-controls button { font-size: 13px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.workspace-controls button { cursor: pointer; background: var(--active-dim); border-color: var(--active); color: var(--active); }
+.workspace-status { font-size: 12px; color: var(--muted2); margin-top: 6px; }
+.workspace-boxes { display: grid; grid-template-columns: repeat(3, minmax(160px, 1fr)); gap: 12px; }
+.workspace-pool { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-height: 160px; }
+.workspace-pool h3 { margin: 0 0 8px; font-size: 13px; color: var(--text); }
+.workspace-pool .pool-score { font-size: 12px; color: var(--muted2); margin-bottom: 8px; }
+.workspace-user-dot { width: 42px; height: 42px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; margin: 4px; border: 2px solid #fff; text-transform: uppercase; }
+.workspace-user-dot[data-selected="true"] { box-shadow: 0 0 0 2px var(--active); }
+.workspace-member-task-list { margin-top: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.workspace-member-task-list .task-line { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.workspace-member-task-list .task-line:last-child { margin-bottom: 0; }
+
+/* Performance Pool Visualization */
+.performance-pool-container { position: relative; width: 100%; height: 400px; background: linear-gradient(135deg, rgba(93,224,168,0.05) 0%, rgba(245,166,35,0.05) 50%, rgba(255,94,108,0.05) 100%); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; margin: 20px 0; }
+.performance-pool-zones { position: absolute; inset: 0; }
+.zone-green { position: absolute; left: 0; top: 0; width: 35%; height: 100%; background: radial-gradient(ellipse at center, rgba(93,224,168,0.15) 0%, transparent 70%); border-right: 1px dashed rgba(93,224,168,0.3); }
+.zone-yellow { position: absolute; left: 35%; top: 0; width: 30%; height: 100%; background: radial-gradient(ellipse at center, rgba(245,166,35,0.15) 0%, transparent 70%); border-right: 1px dashed rgba(245,166,35,0.3); }
+.zone-red { position: absolute; right: 0; top: 0; width: 35%; height: 100%; background: radial-gradient(ellipse at center, rgba(255,94,108,0.15) 0%, transparent 70%); }
+.zone-label { position: absolute; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); z-index: 5; }
+.zone-label-green { left: 12px; top: 10px; color: rgba(93,224,168,0.6); }
+.zone-label-yellow { left: 50%; transform: translateX(-50%); top: 10px; color: rgba(245,166,35,0.6); }
+.zone-label-red { right: 12px; top: 10px; color: rgba(255,94,108,0.6); }
+.floating-users { position: absolute; inset: 0; }
+.floating-user { position: absolute; cursor: pointer; transition: all 0.3s ease; }
+.floating-user-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-transform: uppercase; transition: all 0.3s ease; }
+.floating-user:hover .floating-user-circle { transform: scale(1.15); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+.floating-user.selected .floating-user-circle { border-width: 4px; box-shadow: 0 0 20px rgba(93,224,168,0.8); }
+.floating-user-name { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 500; white-space: nowrap; color: var(--text); background: rgba(14,14,17,0.9); padding: 2px 6px; border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.floating-user:hover .floating-user-name { opacity: 1; }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+.floating-user-circle { animation: float var(--float-duration, 3s) ease-in-out infinite; }
+
+/* Performance Stats Panel */
+.performance-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+.stat-box-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.stat-box-value { font-size: 24px; font-weight: 700; color: var(--active); }
+.stat-box-sub { font-size: 10px; color: var(--muted2); margin-top: 4px; }
+.progress-bar-container { width: 100%; background: var(--track); border-radius: 4px; height: 6px; overflow: hidden; margin: 8px 0; }
+.progress-bar-fill { height: 100%; background: var(--active); transition: width 0.3s ease; }
+
 /* Split point styles - draggable cursors on progress bar */
 .split-point { 
   position: absolute; top: -2px; width: 14px; height: 14px; 
@@ -602,16 +647,27 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 }
 
 .modal-loading-container {
-  display: none;
+  position: absolute;
+  inset: 0;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
   padding: 40px 20px;
+  background: rgba(15, 15, 18, 0.95);
+  border-radius: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .modal-loading-container.active {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .sync-spinner {
@@ -1847,6 +1903,9 @@ body.text-mode .btn .btn-text {
     <button class="nav-tab" onclick="switchPage('report')">
       📊 Reports
     </button>
+    <button class="nav-tab" onclick="switchPage('workspace')">
+      🧩 Workspace
+    </button>
     <button class="nav-tab" onclick="switchPage('help')">
       ❓ Help
     </button>
@@ -2166,6 +2225,96 @@ body.text-mode .btn .btn-text {
      PAGE 3 — REPORTS
 ══════════════════════════════════════════ -->
 <div class="page" id="page-report"></div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 4 — WORKSPACE
+══════════════════════════════════════════ -->
+<div class="page" id="page-workspace">
+  <div class="workspace-panel">
+    <h2>🧩 Workspace</h2>
+    <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Create or integrate workspaces, view collaborators and shared performance.</p>
+
+    <div class="workspace-controls">
+      <div>
+        <label style="font-size:11px;color:var(--muted)">Create workspace (name)</label>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <input id="workspaceNameInput" type="text" placeholder="Workspace name" />
+          <button onclick="createWorkspace()">Generate ID</button>
+        </div>
+        <div class="workspace-status" id="workspaceCreateInfo"></div>
+      </div>
+
+      <div>
+        <label style="font-size:11px;color:var(--muted)">Integrate workspace (ID)</label>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <input id="workspaceIdInput" type="text" placeholder="Paste workspace ID" />
+          <button onclick="integrateWorkspace()">Integrate</button>
+        </div>
+        <div class="workspace-status" id="workspaceIntegrateInfo"></div>
+      </div>
+
+      <div>
+        <label style="font-size:11px;color:var(--muted)">Your identity</label>
+        <div style="font-size:12px;color:var(--text);margin-top:6px;" id="workspaceCurrentInfo">Not set</div>
+        <div class="workspace-status" id="workspaceSyncHint">Sync with cloud first (email+username) to finalize integration.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="margin: 0; font-size: 14px;">🎯 Performance Pool</h3>
+      <button onclick="refreshWorkspaceMembers()" style="padding: 6px 12px; background: var(--active-dim); border: 1px solid var(--active); color: var(--active); border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">↻ Refresh</button>
+    </div>
+
+    <div class="performance-pool-container" id="performancePoolContainer">
+      <div class="performance-pool-zones">
+        <div class="zone-green"><div class="zone-label zone-label-green">Top 70%+</div></div>
+        <div class="zone-yellow"><div class="zone-label zone-label-yellow">Middle 40-69%</div></div>
+        <div class="zone-red"><div class="zone-label zone-label-red">Low <40%</div></div>
+      </div>
+      <div class="floating-users" id="floatingUsers"></div>
+    </div>
+
+    <div class="workspace-member-task-list" id="workspaceMemberTaskList">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-weight:600;">Selected member details</div>
+        <div id="workspaceMemberEmail" style="font-size:10px;color:var(--muted);"></div>
+      </div>
+      <div id="workspaceMemberName" style="font-size:13px;color:var(--muted2);margin-bottom:12px;">Select a user circle to view profile.</div>
+      
+      <div class="performance-stats" id="memberStatsPanel" style="display: none;">
+        <div class="stat-box">
+          <div class="stat-box-label">Overall Score</div>
+          <div class="stat-box-value" id="memberScore">—</div>
+          <div class="stat-box-sub">completion rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-label">Tasks Done</div>
+          <div class="stat-box-value" id="memberTasksDone">—</div>
+          <div class="stat-box-sub">of total tasks</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-label">Time Tracked</div>
+          <div class="stat-box-value" id="memberTimeTracked">—</div>
+          <div class="stat-box-sub">hours worked</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-label">Efficiency</div>
+          <div class="stat-box-value" id="memberEfficiency">—</div>
+          <div class="stat-box-sub">work vs allocated</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <div style="font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Task Breakdown</div>
+        <div id="workspaceMemberTasks"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 5 — HELP & GUIDES
+══════════════════════════════════════════ -->
 
 <!-- ══════════════════════════════════════════
      PAGE 4 — HELP & GUIDES
@@ -2749,6 +2898,7 @@ body.text-mode .btn .btn-text {
       <div id="syncExistingInfo" style="background: var(--active-dim); border: 1px solid var(--active); border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 11px; color: var(--text); display: none;">
         <div style="margin-bottom: 6px;"><strong>✓ You've synced before</strong></div>
         <div style="color: var(--muted2);" id="syncExistingText"></div>
+        <div style="color: var(--muted2); margin-top: 4px;" id="syncWorkspaceInfo"></div>
       </div>
     </div>
 
@@ -2850,8 +3000,11 @@ function switchPage(name) {
   } else if (name === 'report') {
     document.querySelectorAll('.nav-tab')[2].classList.add('active');
     renderReportsPage();
-  } else if (name === 'help') {
+  } else if (name === 'workspace') {
     document.querySelectorAll('.nav-tab')[3].classList.add('active');
+    renderWorkspacePage();
+  } else if (name === 'help') {
+    document.querySelectorAll('.nav-tab')[4].classList.add('active');
   }
 }
 
@@ -6335,6 +6488,364 @@ function exportReportCSV() {
   URL.revokeObjectURL(url);
 }
 
+function getCloudSyncSettings() {
+  try {
+    return JSON.parse(localStorage.getItem('cloudSyncSettings') || '{}');
+  } catch (err) {
+    return {};
+  }
+}
+
+function getWorkspaceSettings() {
+  try {
+    return JSON.parse(localStorage.getItem('workspaceSettings') || '{}');
+  } catch (err) {
+    return {};
+  }
+}
+
+function saveWorkspaceSettings(settings) {
+  localStorage.setItem('workspaceSettings', JSON.stringify(settings || {}));
+}
+
+function updateCloudSyncWorkspace(workspaceId) {
+  const current = getCloudSyncSettings();
+  current.workspaceId = workspaceId || '';
+  localStorage.setItem('cloudSyncSettings', JSON.stringify(current));
+}
+
+function generateWorkspaceIdFromName(name) {
+  const base = simpleHash(name.trim().toLowerCase());
+  return `${base}-${Date.now().toString(36)}`;
+}
+
+function createWorkspace() {
+  const name = document.getElementById('workspaceNameInput').value.trim();
+  const status = document.getElementById('workspaceCreateInfo');
+
+  if (!name) {
+    status.textContent = 'Please enter a workspace name.';
+    status.style.color = 'var(--danger)';
+    return;
+  }
+
+  const workspaceId = generateWorkspaceIdFromName(name);
+
+  const settings = {
+    workspaceName: name,
+    workspaceId: workspaceId,
+    createdAt: new Date().toISOString()
+  };
+
+  saveWorkspaceSettings(settings);
+  status.textContent = `Workspace created: ${workspaceId}`;
+  status.style.color = 'var(--done)';
+  document.getElementById('workspaceIdInput').value = workspaceId;
+  renderWorkspacePage();
+}
+
+async function integrateWorkspace() {
+  const workspaceId = document.getElementById('workspaceIdInput').value.trim();
+  const status = document.getElementById('workspaceIntegrateInfo');
+
+  if (!workspaceId) {
+    status.textContent = 'Please paste a valid Workspace ID.';
+    status.style.color = 'var(--danger)';
+    return;
+  }
+
+  const cloudSettings = getCloudSyncSettings();
+  if (!cloudSettings.email || !cloudSettings.username) {
+    status.textContent = 'Please sync your account first (email/username required).';
+    status.style.color = 'var(--danger)';
+    return;
+  }
+
+  const userWorkspace = {
+    workspaceName: getWorkspaceSettings().workspaceName || '',
+    workspaceId: workspaceId,
+    integratedAt: new Date().toISOString()
+  };
+  saveWorkspaceSettings(userWorkspace);
+
+  // Save workspaceId in local cloud settings too for convenient display
+  updateCloudSyncWorkspace(workspaceId);
+
+  try {
+    await fetch(CLOUD_SYNC_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'integrateWorkspace',
+        email: cloudSettings.email,
+        username: cloudSettings.username,
+        workspaceId: workspaceId
+      })
+    });
+
+    status.textContent = `Workspace integrated. ID: ${workspaceId}`;
+    status.style.color = 'var(--done)';
+    renderWorkspacePage();
+  } catch (err) {
+    status.textContent = `Error connecting to backend: ${err.message}`;
+    status.style.color = 'var(--danger)';
+  }
+}
+
+function parseTasksFromMember(member) {
+  if (!member || !member.jsonData) return [];
+  try {
+    const parsed = typeof member.jsonData === 'string' ? JSON.parse(member.jsonData) : member.jsonData;
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed.tasks && Array.isArray(parsed.tasks)) return parsed.tasks;
+    return [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function getMemberPerformance(member) {
+  const tasks = parseTasksFromMember(member);
+  const totalAllocated = tasks.reduce((sum, t) => sum + (t.allocSecs || 0), 0);
+  const totalWorked = tasks.reduce((sum, t) => {
+    const worked = t && t.segments ? totalWorkedSecs(t) : 0;
+    return sum + (worked || 0);
+  }, 0);
+
+  const score = totalAllocated > 0 ? Math.round((totalWorked / totalAllocated) * 100) : 0;
+  const taskProgress = tasks.map(t => {
+    const worked = t && t.segments ? totalWorkedSecs(t) : 0;
+    const p = t.allocSecs > 0 ? Math.min(100, Math.round((worked / t.allocSecs) * 100)) : 0;
+    return { name: t.name || 'Untitled', progress: p };
+  });
+
+  return {
+    score: isFinite(score) ? Math.max(0, Math.min(100, score)) : 0,
+    tasks: taskProgress
+  };
+}
+
+function getAvatarColor(seed) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h + seed.charCodeAt(i) * 31) % 360;
+  return `hsl(${h}, 70%, 53%)`;
+}
+
+function getMemberFullStats(member) {
+  const tasks = parseTasksFromMember(member);
+  const perf = getMemberPerformance(member);
+  
+  const doneTasks = tasks.filter(t => t.state === 'done').length;
+  const totalWorked = tasks.reduce((sum, t) => sum + (t && t.segments ? totalWorkedSecs(t) : 0), 0);
+  const totalAllocated = tasks.reduce((sum, t) => sum + (t.allocSecs || 0), 0);
+  const efficiency = totalAllocated > 0 ? Math.round((totalWorked / totalAllocated) * 100) : 0;
+  
+  return {
+    score: perf.score,
+    doneTasks: doneTasks,
+    totalTasks: tasks.length,
+    timeTracked: Math.round(totalWorked / 3600),
+    efficiency: isFinite(efficiency) ? efficiency : 0,
+    tasks: perf.tasks
+  };
+}
+
+function showWorkspaceMemberDetails(member) {
+  const title = document.getElementById('workspaceMemberName');
+  const email = document.getElementById('workspaceMemberEmail');
+  const statsPanel = document.getElementById('memberStatsPanel');
+  const tasksContainer = document.getElementById('workspaceMemberTasks');
+  
+  const stats = getMemberFullStats(member);
+  
+  title.textContent = `${member.username || member.email || 'Unknown'}`; 
+  email.textContent = ''; // Hide email address
+  
+  // Show stats panel
+  statsPanel.style.display = 'grid';
+  document.getElementById('memberScore').textContent = `${stats.score}%`;
+  document.getElementById('memberTasksDone').textContent = `${stats.doneTasks}/${stats.totalTasks}`;
+  document.getElementById('memberTimeTracked').textContent = `${stats.timeTracked}h`;
+  document.getElementById('memberEfficiency').textContent = `${stats.efficiency}%`;
+  
+  // Show task breakdown
+  tasksContainer.innerHTML = '';
+  if (stats.tasks.length === 0) {
+    tasksContainer.innerHTML = '<div style="font-size:12px;color:var(--muted);">No tasks recorded for this member yet.</div>';
+    return;
+  }
+
+  stats.tasks.forEach(task => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '10px';
+    
+    const progressColor = task.progress >= 70 ? 'var(--done)' : task.progress >= 40 ? 'var(--active)' : 'var(--break)';
+    div.innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="font-size: 12px; color: var(--text);">${task.name}</span>
+        <span style="font-size: 12px; font-weight: 600; color: ${progressColor};">${task.progress}%</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: ${task.progress}%; background: ${progressColor};"></div>
+      </div>
+    `;
+    tasksContainer.appendChild(div);
+  });
+}
+
+async function loadWorkspaceMembers(showLoading = true) {
+  const settings = getWorkspaceSettings();
+  const floatingUsersContainer = document.getElementById('floatingUsers');
+
+  if (showLoading) {
+    floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">Loading members...</div>';
+  }
+
+  if (!settings.workspaceId) {
+    floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">No workspace selected.</div>';
+    return;
+  }
+
+  try {
+    const url = `${CLOUD_SYNC_URL}?action=workspace&workspaceId=${encodeURIComponent(settings.workspaceId)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (!result.success) {
+      if (showLoading) {
+        floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">${result.error || 'No members found.'}</div>`;
+      }
+      return;
+    }
+
+    const members = result.members || [];
+
+    if (members.length === 0) {
+      if (showLoading) {
+        floatingUsersContainer.innerHTML = '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px;">No members in this workspace yet.</div>';
+      }
+      return;
+    }
+
+    // Keep existing visible members until new list is ready
+    floatingUsersContainer.innerHTML = '';
+
+    const nameCounter = {};
+    const poolWidth = floatingUsersContainer.parentElement.offsetWidth;
+    const poolHeight = floatingUsersContainer.parentElement.offsetHeight;
+
+    members.forEach((member, idx) => {
+      const perf = getMemberPerformance(member);
+      const initial = ((member.username || member.email || 'U').trim()[0] || 'U').toUpperCase();
+      
+      if (nameCounter[initial]) {
+        nameCounter[initial]++;
+      } else {
+        nameCounter[initial] = 1;
+      }
+      
+      const color = getAvatarColor(`${initial}-${member.username || member.email}-${nameCounter[initial]}`);
+      
+      // Position based on performance zone
+      let xPercent;
+      if (perf.score >= 70) {
+        // Green zone: left 35%
+        xPercent = Math.random() * 30 + 2;
+      } else if (perf.score >= 40) {
+        // Yellow zone: middle 30%
+        xPercent = Math.random() * 25 + 37;
+      } else {
+        // Red zone: right 35%
+        xPercent = Math.random() * 30 + 63;
+      }
+      
+      const yPercent = Math.random() * 80 + 10;
+      const floatDuration = 2.5 + Math.random() * 2;
+      
+      const userDiv = document.createElement('div');
+      userDiv.className = 'floating-user';
+      userDiv.style.left = `${xPercent}%`;
+      userDiv.style.top = `${yPercent}%`;
+      userDiv.style.setProperty('--float-duration', `${floatDuration}s`);
+      userDiv.dataset.member = JSON.stringify(member);
+      
+      userDiv.innerHTML = `
+        <div class="floating-user-circle" style="background: ${color};">${initial}</div>
+        <div class="floating-user-name">${member.username || member.email}</div>
+      `;
+      
+      userDiv.onclick = () => {
+        document.querySelectorAll('.floating-user').forEach(el => el.classList.remove('selected'));
+        userDiv.classList.add('selected');
+        showWorkspaceMemberDetails(member);
+      };
+      
+      floatingUsersContainer.appendChild(userDiv);
+    });
+
+    // Auto-select current user if present
+    const currentUser = getCloudSyncSettings();
+    if (currentUser && currentUser.username) {
+      const currentDiv = Array.from(floatingUsersContainer.querySelectorAll('.floating-user')).find(div => {
+        const member = JSON.parse(div.dataset.member);
+        return member.username === currentUser.username;
+      });
+      
+      if (currentDiv) {
+        currentDiv.classList.add('selected');
+        const member = JSON.parse(currentDiv.dataset.member);
+        showWorkspaceMemberDetails(member);
+      }
+    }
+    
+  } catch (err) {
+    if (showLoading) {
+      floatingUsersContainer.innerHTML = `<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 12px;">Connection error: ${err.message}</div>`;
+    }
+    console.error('Workspace member refresh error:', err);
+  }
+}
+
+function refreshWorkspaceMembers() {
+  // Background refresh without showing the loading overlay
+  loadWorkspaceMembers(false);
+}
+
+let workspaceAutoReloadInterval = null;
+let workspaceFirstOpen = true;
+
+function renderWorkspacePage() {
+  const current = getWorkspaceSettings();
+  const currentIdentity = document.getElementById('workspaceCurrentInfo');
+  const currentHint = document.getElementById('workspaceSyncHint');
+
+  if (!currentIdentity) return;
+
+  currentIdentity.textContent = current.workspaceId ? `Workspace: ${current.workspaceName || '(unnamed)'} (${current.workspaceId})` : 'No workspace selected.';
+  currentHint.textContent = 'Members auto-refresh every 60 seconds. Click ⟳ to refresh now.';
+
+  if (current.workspaceId) {
+    document.getElementById('workspaceIdInput').value = current.workspaceId;
+  }
+
+  // Clear any existing auto-reload interval
+  if (workspaceAutoReloadInterval) {
+    clearInterval(workspaceAutoReloadInterval);
+  }
+
+  // Load members immediately (show loading only on first open, then silent updates)
+  loadWorkspaceMembers(workspaceFirstOpen);
+  workspaceFirstOpen = false;
+
+  // Set up auto-reload every 60 seconds (background refresh)
+  workspaceAutoReloadInterval = setInterval(() => {
+    if (document.getElementById('page-workspace').classList.contains('active')) {
+      loadWorkspaceMembers(false);
+    }
+  }, 60000);
+}
+
 function exportReportPDF() {
   // Get username from localStorage
   const userName = localStorage.getItem('tempow_user_name') || 'Report';
@@ -7244,6 +7755,7 @@ updateBadges();
 updateFlowLastSaved();
 updateHoursTracker();
 initializeButtonMode();
+renderWorkspacePage();
 
 // Check for elapsed time on initial load (if app was closed)
 if (!hasCheckedActivityOnLoad && window.api && window.api.getElapsedTime) {
@@ -7269,7 +7781,7 @@ setInterval(() => {
 ═══════════════════════════════════════════ */
 
 // Global AppScript URL - all users use the same backend
-const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz_CptcxE2YyH_zc-FDr-VVHPrQv0M2B1wsAXDIbLV9BWChmbZpJ-jps3-5YwYDmOR2/exec';
+const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbz5w72JKsJI_8IerpaijlnveSzpGCy-yXu-DxU6rb--9PgIul-eJqV4um9S6YcL_AfscQ/exec';
 
 // Simple hash function for generating sync ID
 function simpleHash(str) {
@@ -7313,6 +7825,7 @@ function openSyncModal() {
     const lastSync = settings.lastSync ? new Date(settings.lastSync).toLocaleString() : 'Never';
     document.getElementById('syncExistingInfo').style.display = 'block';
     document.getElementById('syncExistingText').textContent = `ID: ${syncId} • Last synced: ${lastSync}`;
+    document.getElementById('syncWorkspaceInfo').textContent = settings.workspaceId ? `Workspace ID: ${settings.workspaceId}` : 'No workspace integrated';
   }
   
   document.getElementById('syncStatus').style.display = 'none';
@@ -7346,6 +7859,8 @@ async function confirmSync() {
   showSyncLoadingAnimation();
   
   try {
+    const existingWorkspace = getWorkspaceSettings();
+    
     // Get current tasks from flowTasks
     const tasksToSync = JSON.stringify(flowTasks, null, 2);
     
@@ -7359,17 +7874,18 @@ async function confirmSync() {
       body: JSON.stringify({
         email: email,
         username: username,
-        jsonData: tasksToSync
+        jsonData: tasksToSync,
+        workspaceId: existingWorkspace.workspaceId || ''
       })
     });
     
     // Note: With no-cors mode, we can't read response, so we assume success
-    
     const syncSettings = {
       email: email,
       username: username,
       lastSync: new Date().toISOString(),
-      syncId: generateSyncId(email, username)
+      syncId: generateSyncId(email, username),
+      workspaceId: existingWorkspace.workspaceId || ''
     };
     
     localStorage.setItem('cloudSyncSettings', JSON.stringify(syncSettings));
@@ -7523,6 +8039,7 @@ async function confirmLoadFromCloud() {
       email: data.email,
       username: data.username,
       syncId: data.syncId,
+      workspaceId: data.workspaceId || '',
       reconstructedSyncId: reconstructedSyncId,
       lastSyncTime: data.lastSyncTime
     };
@@ -7556,6 +8073,16 @@ function doLoadTasks() {
   
   // Replace current tasks with loaded data
   flowTasks = Array.isArray(tasksData) ? tasksData : [];
+
+  // Persist workspace ID from loaded info if available
+  if (syncInfo && syncInfo.workspaceId) {
+    updateCloudSyncWorkspace(syncInfo.workspaceId);
+    const existingWorkspace = getWorkspaceSettings();
+    saveWorkspaceSettings({
+      ...existingWorkspace,
+      workspaceId: syncInfo.workspaceId
+    });
+  }
   
   // Save to local storage via Electron if available
   if (window.electron && window.electron.invoke) {
@@ -7697,12 +8224,20 @@ function showSyncLoadingAnimation() {
   syncContent.style.display = 'none';
   syncStatus.style.display = 'none';
   syncExistingInfo.style.display = 'none';
-  loadingContainer.classList.add('active');
+  // Use requestAnimationFrame to ensure smooth animation
+  requestAnimationFrame(() => {
+    loadingContainer.classList.add('active');
+  });
 }
 
 function hideSyncLoadingAnimation() {
   const loadingContainer = document.getElementById('syncLoadingContainer');
+  const syncContent = document.getElementById('syncContent');
   loadingContainer.classList.remove('active');
+  // Show content after animation completes
+  setTimeout(() => {
+    syncContent.style.display = 'block';
+  }, 300);
 }
 
 // Show loading animation during load
