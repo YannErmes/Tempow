@@ -28,6 +28,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #0e0e11; --surface: #16161a; --surface2: #1e1e24;
+  --bg-rgb: 14, 14, 17;
   --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
   --text: #f0eff5; --muted: #6b6a75; --muted2: #9998a5;
   --active: #5de0a8; --active-dim: rgba(93,224,168,0.12);
@@ -520,7 +521,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
   width: 100%;
 }
 
-.flow-main { padding: 28px 40px 80px; max-width: 900px; }
+.flow-main { padding: 28px 40px 120px; max-width: 900px; transition: padding-bottom 0.3s ease; }
 
 /* Task cards */
 .task-card {
@@ -556,6 +557,26 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-mono);
 .brk-seg:hover { filter: brightness(1.3); }
 .brk-seg.live { animation: pulse 1.4s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
+
+/* Split point styles - draggable cursors on progress bar */
+.split-point { 
+  position: absolute; top: -2px; width: 14px; height: 14px; 
+  background: var(--active); border: 2px solid #0e0e11; border-radius: 50%;
+  cursor: grab; z-index: 15; transition: filter 0.15s, box-shadow 0.15s;
+  transform: translateX(-50%); user-select: none;
+  pointer-events: auto; /* Ensure it captures mouse events */
+}
+.split-point:hover { filter: brightness(1.4); box-shadow: 0 0 8px rgba(93,224,168,0.5); }
+.split-point:active { cursor: grabbing; }
+.split-point.dragging { filter: brightness(1.6); box-shadow: 0 0 12px rgba(93,224,168,0.8); }
+.split-tooltip {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  background: var(--surface2); border: 1px solid var(--active); border-radius: 4px;
+  padding: 4px 8px; font-size: 9px; color: var(--active); white-space: nowrap;
+  margin-bottom: 4px; z-index: 16; opacity: 0; pointer-events: none;
+  transition: opacity 0.15s;
+}
+.split-point:hover .split-tooltip { opacity: 1; }
 
 /* ══════════════════════════════════════════
    2D SYNC ANIMATION & BUTTON MODE STYLES
@@ -953,6 +974,24 @@ body.text-mode .data-btn .btn-text {
 
 .btn .btn-text {
   display: inline;
+}
+
+/* Split button - prominent styling */
+.btn.split-btn {
+  background: var(--active-dim);
+  border-color: var(--active);
+  color: var(--active);
+  font-weight: 600;
+}
+
+.btn.split-btn:hover {
+  background: var(--active);
+  color: #0a1f16;
+  box-shadow: 0 0 12px rgba(93,224,168,0.3);
+}
+
+.btn.split-btn:active {
+  transform: scale(0.95);
 }
 
 body.icon-only-mode .btn {
@@ -1487,6 +1526,146 @@ body.text-mode .btn .btn-text {
 }
 
 /* ══════════════════════════════════════════
+   SPLIT TIMING MODAL
+══════════════════════════════════════════ */
+#splitModal .modal {
+  border-color: var(--active);
+}
+#splitModal .modal h2 {
+  color: var(--active);
+}
+.split-method-btn {
+  flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border2);
+  background: transparent; color: var(--muted2); font-family: var(--font-mono);
+  font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+}
+.split-method-btn:hover {
+  border-color: var(--active); color: var(--active);
+}
+.split-method-btn.active {
+  background: var(--active-dim); border-color: var(--active); color: var(--active);
+}
+.split-preset {
+  padding: 8px; border-radius: 6px; border: 1px solid var(--border2);
+  background: transparent; color: var(--muted2); font-family: var(--font-mono);
+  font-size: 11px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s;
+}
+.split-preset:hover {
+  border-color: var(--active); color: var(--active); background: var(--active-dim);
+}
+#splitModal input[type="number"] {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+  color: var(--text); font-family: var(--font-mono); font-size: 13px;
+  transition: border-color 0.15s;
+}
+#splitModal input[type="number"]:focus {
+  border-color: var(--active);
+}
+.split-time-inputs input {
+  padding: 8px;
+}
+.split-percent-input input {
+  padding: 8px;
+}
+.split-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px; margin-bottom: 6px; background: var(--bg);
+  border-radius: 4px; font-size: 12px; color: var(--text);
+}
+.split-item:last-child {
+  margin-bottom: 0;
+}
+.split-item-time {
+  font-family: var(--font-mono); font-weight: 500;
+}
+.split-item-delete {
+  background: transparent; border: 1px solid var(--muted2);
+  color: var(--muted2); padding: 4px 8px; border-radius: 4px;
+  cursor: pointer; font-size: 11px; transition: all 0.15s;
+}
+.split-item-delete:hover {
+  border-color: var(--warn); color: var(--warn); background: rgba(255,100,0,0.1);
+}
+.split-item-delete:active {
+  transform: scale(0.95);
+}
+
+/* ══════════════════════════════════════════
+   MINIMIZED TASKS PANEL
+══════════════════════════════════════════ */
+.minimized-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 100px;
+  background: rgba(var(--bg-rgb), 0.7);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex; flex-direction: row; z-index: 100;
+  padding-left: 12px; transition: height 0.3s ease;
+}
+.minimized-panel.collapsed {
+  height: 40px;
+}
+.minimized-panel.collapsed .minimized-title {
+  display: none;
+}
+.minimized-panel.collapsed .minimized-list {
+  display: none;
+}
+.minimized-header {
+  padding: 8px 6px; color: var(--muted); text-align: center;
+  border-bottom: 1px solid var(--border2); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.minimized-collapse-btn {
+  background: transparent; border: none; color: var(--muted2);
+  font-size: 14px; font-weight: 700; cursor: pointer; padding: 2px 4px;
+  transition: all 0.2s; flex-shrink: 0; width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+}
+.minimized-collapse-btn:hover {
+  color: var(--active); background: var(--surface2);
+}
+.minimized-panel.collapsed .minimized-collapse-btn {
+  width: 100%; height: auto;
+}
+.minimized-title {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex: 1; transition: opacity 0.3s ease;
+}
+.minimized-list {
+  flex: 1; overflow-x: auto; display: flex; flex-direction: row;
+  gap: 6px; padding: 8px; align-items: center; justify-content: flex-start; transition: display 0.3s ease;
+}
+.minimized-task {
+  width: 64px; height: 64px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; cursor: pointer;
+  font-size: 22px; font-weight: 700; color: white; transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative;
+  text-indent: 0; line-height: 1; letter-spacing: normal;
+}
+.minimized-task::before {
+  content: attr(data-letter);
+}
+.minimized-task::after {
+  content: none;
+}
+.minimized-task:hover {
+  transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.minimized-task-tooltip {
+  position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+  background: var(--surface); color: var(--text); padding: 6px 10px;
+  border-radius: 6px; font-size: 10px; white-space: nowrap;
+  border: 1px solid var(--border); opacity: 0; pointer-events: none;
+  transition: opacity 0.15s; z-index: 200;
+}
+.minimized-task:hover .minimized-task-tooltip {
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════
    EXTEND TIME MODAL
 ══════════════════════════════════════════ */
 .extend-time-modal-bg {
@@ -1606,16 +1785,7 @@ body.text-mode .btn .btn-text {
   cursor: grab;
 }
 .task-card:active {
-  cursor: grabbing;
-}
-.task-card.dragging {
-  opacity: 0.5; transform: scale(0.98);
-  background: var(--border); border-color: var(--border2);
-}
-.task-card.drag-over {
-  border-color: var(--active); border-style: dashed;
-  background: var(--active-dim);
-  box-shadow: inset 0 0 0 2px var(--active);
+  transform: scale(0.98);
 }
 .task-list-placeholder {
   height: 100px; background: var(--active-dim);
@@ -1628,7 +1798,7 @@ body.text-mode .btn .btn-text {
 
 /* Responsive */
 @media (max-width:640px) {
-  .flow-main { padding:20px 16px 80px; }
+  .flow-main { padding:20px 16px 120px; }
   .flow-header, .flow-stats, .data-bar, .filter-bar { padding-left:16px; padding-right:16px; }
   .tmpw-inbox { margin-left:16px; margin-right:16px; }
   .app-nav { padding:0 14px; }
@@ -1842,6 +2012,15 @@ body.text-mode .btn .btn-text {
       <button class="section-toggle" onclick="toggleSection(this, 'trashList')" title="Toggle trash">▼</button>
     </div>
     <div class="collapsible-section" id="trashList"></div>
+  </div>
+
+  <!-- Minimized Tasks Panel -->
+  <div class="minimized-panel" id="minimizedPanel">
+    <div class="minimized-header">
+      <button class="minimized-collapse-btn" id="minimizedCollapseBtn" onclick="toggleMinimizedPanel()" title="Toggle minimized panel">»</button>
+      <span class="minimized-title" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Minimized</span>
+    </div>
+    <div class="minimized-list" id="minimizedList"></div>
   </div>
 
   <main class="flow-main">
@@ -2361,7 +2540,7 @@ body.text-mode .btn .btn-text {
 <div class="break-modal-bg" id="breakModal">
   <div class="break-modal">
     <h2>Pause task</h2>
-    <div class="break-modal-sub">Take a timed break or stop permanently to switch to another task.</div>
+    <div class="break-modal-sub">Take a timed break. Use Split timing to break up long tasks.</div>
 
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Break duration</div>
     <div class="break-dur-grid">
@@ -2380,8 +2559,75 @@ body.text-mode .btn .btn-text {
 
     <div class="break-modal-actions">
       <button class="break-modal-cancel" id="breakModalCancel">Cancel</button>
-      <button class="break-modal-stop" id="breakModalStop">⏹ Stop permanently</button>
       <button class="break-modal-confirm" id="breakModalConfirm">⏸ Start break</button>
+    </div>
+  </div>
+</div>
+
+<!-- Split timing modal -->
+<div class="modal-bg" id="splitModal">
+  <div class="modal" style="max-width: 520px;">
+    <h2>Split Points</h2>
+    <p style="font-size: 12px; color: var(--muted); margin-bottom: 20px;" id="splitTaskInfo"></p>
+    
+    <!-- Existing splits list -->
+    <div id="splitExistingContainer" style="margin-bottom: 24px; display: none;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Existing splits</div>
+      <div id="splitExistingList" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 16px;">
+        <!-- Dynamically populated with existing splits -->
+      </div>
+    </div>
+    
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;">Add new split</div>
+    <div style="margin-bottom: 24px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;">Choose split method</div>
+      <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+        <button class="split-method-btn active" data-method="time" onclick="switchSplitMethod('time')" style="flex: 1;">⏱ Time offset</button>
+        <button class="split-method-btn" data-method="percent" onclick="switchSplitMethod('percent')" style="flex: 1;">% Completion</button>
+      </div>
+    </div>
+
+    <!-- TIME METHOD -->
+    <div id="splitTimeMethod" style="display: block;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Time after previous split</div>
+      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+        <p style="font-size: 11px; color: var(--muted2); margin-bottom: 12px;" id="splitPrevInfo">Reference: Start of task</p>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="number" id="splitOffsetMin" min="0" max="999" placeholder="0" style="flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono);" />
+          <span style="color: var(--muted); font-size: 11px;">min</span>
+          <input type="number" id="splitOffsetSec" min="0" max="59" placeholder="0" style="width: 60px; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono);" />
+          <span style="color: var(--muted); font-size: 11px;">sec</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERCENTAGE METHOD -->
+    <div id="splitPercentMethod" style="display: none;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Split at % completion</div>
+      <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+          <input type="number" id="splitPercent" min="0" max="100" placeholder="50" style="flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-mono); font-size: 14px;" />
+          <span style="color: var(--muted); font-size: 11px;">%</span>
+        </div>
+        <div style="font-size: 10px; color: var(--muted2); padding: 8px; background: var(--bg); border-radius: 4px;">
+          <span id="splitPercentDisplay">At 50% completion: ~0h 0m</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRESET BUTTONS -->
+    <div id="splitPresetsContainer" style="margin-bottom: 16px; display: none;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Quick presets</div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="split-preset" onclick="setSplitPreset(25)" style="flex: 1; min-width: 60px;">25%</button>
+        <button class="split-preset" onclick="setSplitPreset(50)" style="flex: 1; min-width: 60px;">50%</button>
+        <button class="split-preset" onclick="setSplitPreset(75)" style="flex: 1; min-width: 60px;">75%</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSplitModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmAddSplit()">Add Split</button>
     </div>
   </div>
 </div>
@@ -2720,6 +2966,8 @@ let usualStartTime = null; // Usual start time (h, m) as fallback for auto-calcu
 let globalTick = null;
 let openTip = null;
 let breakModalTaskId = null;
+let splitModalTaskId = null;
+let splitModalMethod = 'time'; // 'time' or 'percent'
 let workStartTime = { h: 9, m: 0 };
 let workEndTime = { h: 18, m: 0 };
 
@@ -3102,6 +3350,117 @@ function restoreTask(id) {
   updateHoursTracker();
 }
 
+// ── Minimize/Restore Tasks ─────────────────────────────────────
+function getOrCreateTaskColor(taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return '#5dd0a8';
+  
+  // Generate deterministic random color based on task ID if not set
+  if (!task.minimizedColor) {
+    const colors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
+      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+      '#F8B88B', '#A8D5BA', '#D4A5FF', '#FFB6C1',
+      '#20B2AA', '#FF8C94', '#A4DE6C', '#87CEEB'
+    ];
+    const hash = Math.abs(taskId * 12345) % colors.length;
+    task.minimizedColor = colors[hash];
+  }
+  
+  return task.minimizedColor;
+}
+
+function minimizeTask(taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  // Mark as minimized
+  task.isMinimized = true;
+  task.minimizedColor = getOrCreateTaskColor(taskId); // Ensure color is set
+  
+  saveFlowData();
+  renderFlowList();
+  renderMinimizedTasks();
+}
+
+function restoreMinimizedTask(taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  // Unminimize
+  task.isMinimized = false;
+  
+  saveFlowData();
+  renderFlowList();
+  renderMinimizedTasks();
+}
+
+function renderMinimizedTasks() {
+  const panel = document.getElementById('minimizedPanel');
+  const list = document.getElementById('minimizedList');
+  
+  // Get all minimized tasks
+  const minimizedTasks = flowTasks.filter(t => t.isMinimized);
+  
+  // Show/hide panel
+  if (minimizedTasks.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+  
+  panel.style.display = 'flex';
+  list.innerHTML = '';
+  
+  minimizedTasks.forEach(t => {
+    const firstLetter = t.name.charAt(0).toUpperCase();
+    const color = getOrCreateTaskColor(t.id);
+    
+    const icon = document.createElement('div');
+    icon.className = 'minimized-task';
+    icon.style.backgroundColor = color;
+    icon.setAttribute('data-letter', firstLetter);
+    icon.title = t.name;
+    icon.onclick = () => restoreMinimizedTask(t.id);
+    
+    // Add tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'minimized-task-tooltip';
+    tooltip.textContent = t.name.substring(0, 15) + (t.name.length > 15 ? '...' : '');
+    icon.appendChild(tooltip);
+    
+    // Note: Letter is displayed via CSS ::after pseudo-element with data-letter attribute
+    // Do NOT add innerHTML to avoid duplication
+    
+    list.appendChild(icon);
+  });
+}
+
+function toggleMinimizedPanel() {
+  const panel = document.getElementById('minimizedPanel');
+  const isCollapsed = panel.classList.contains('collapsed');
+  
+  if (isCollapsed) {
+    // Expand
+    panel.classList.remove('collapsed');
+    localStorage.setItem('minimizedPanelCollapsed', 'false');
+  } else {
+    // Collapse
+    panel.classList.add('collapsed');
+    localStorage.setItem('minimizedPanelCollapsed', 'true');
+  }
+}
+
+function loadMinimizedPanelState() {
+  const panel = document.getElementById('minimizedPanel');
+  const isCollapsed = localStorage.getItem('minimizedPanelCollapsed') === 'true';
+  
+  if (isCollapsed) {
+    panel.classList.add('collapsed');
+  } else {
+    panel.classList.remove('collapsed');
+  }
+}
+
 // ╔════════════════════════════════════════════════════════════════╗
 // ║ NEW FEATURE: ESTIMATED COMPLETION TIME                        ║
 // ║ This function calculates when your task will be done          ║
@@ -3216,7 +3575,8 @@ function addFlowTask() {
     segments: [], 
     dateAdded: Date.now(),
     isUntimed: isUntimed,
-    notes: ''
+    notes: '',
+    splits: [] // Array of split points: [{position: 0-1 (percentage), secs: seconds into task}]
   };
   
   flowTasks.push(taskObj);
@@ -3328,13 +3688,211 @@ document.getElementById('breakModalConfirm').addEventListener('click', () => {
   breakModalTaskId = null;
 });
 
-document.getElementById('breakModalStop').addEventListener('click', () => {
-  if (!breakModalTaskId) return;
-  const note = document.getElementById('breakNoteInput').value.trim();
-  _stopTaskPermanently(breakModalTaskId, note);
-  document.getElementById('breakModal').classList.remove('open');
-  breakModalTaskId = null;
-});
+// ── Split Timing Modal ────────────────────────────────
+function openSplitModal(taskId) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  splitModalTaskId = taskId;
+  splitModalMethod = 'time';
+  
+  // Reset inputs
+  document.getElementById('splitOffsetMin').value = '';
+  document.getElementById('splitOffsetSec').value = '';
+  document.getElementById('splitPercent').value = '50';
+  
+  // Update task info display
+  const allocMin = Math.floor(task.allocSecs / 60);
+  const allocSec = task.allocSecs % 60;
+  document.getElementById('splitTaskInfo').textContent = 
+    `${task.name} (${allocMin}m ${allocSec}s) - ${task.splits.length} split(s)`;
+  
+  // Populate existing splits list
+  const splitExistingContainer = document.getElementById('splitExistingContainer');
+  const splitExistingList = document.getElementById('splitExistingList');
+  
+  if (task.splits.length > 0) {
+    let html = '';
+    task.splits.forEach((split, idx) => {
+      const splitTime = Math.round(split.position * task.allocSecs);
+      const minVal = Math.floor(splitTime / 60);
+      const secVal = splitTime % 60;
+      const percentVal = Math.round(split.position * 100);
+      html += `<div class="split-item">
+        <span class="split-item-time">${percentVal}% • ${minVal}m ${secVal}s</span>
+        <button class="split-item-delete" onclick="deleteExistingSplit(${taskId},${idx})">✕ Delete</button>
+      </div>`;
+    });
+    splitExistingList.innerHTML = html;
+    splitExistingContainer.style.display = 'block';
+  } else {
+    splitExistingContainer.style.display = 'none';
+  }
+  
+  // Update reference info
+  const prevSplit = task.splits[task.splits.length - 1];
+  if (prevSplit) {
+    const splitMinSec = Math.floor(prevSplit.position * task.allocSecs);
+    const min = Math.floor(splitMinSec / 60);
+    const sec = splitMinSec % 60;
+    document.getElementById('splitPrevInfo').textContent = 
+      `Reference: After previous split at ${min}m ${sec}s`;
+  } else {
+    document.getElementById('splitPrevInfo').textContent = `Reference: Start of task`;
+  }
+  
+  // Switch to time method by default
+  switchSplitMethod('time');
+  
+  // Show modal
+  document.getElementById('splitModal').classList.add('open');
+  setTimeout(() => document.getElementById('splitOffsetMin').focus(), 60);
+}
+
+function closeSplitModal() {
+  document.getElementById('splitModal').classList.remove('open');
+  splitModalTaskId = null;
+  splitModalMethod = 'time';
+}
+
+function switchSplitMethod(method) {
+  splitModalMethod = method;
+  
+  // Update button states
+  document.querySelectorAll('.split-method-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.method === method);
+  });
+  
+  // Toggle input sections
+  const timeSection = document.getElementById('splitTimeMethod');
+  const percentSection = document.getElementById('splitPercentMethod');
+  const presetsContainer = document.getElementById('splitPresetsContainer');
+  
+  if (method === 'time') {
+    timeSection.style.display = 'block';
+    percentSection.style.display = 'none';
+    presetsContainer.style.display = 'none';
+    setTimeout(() => document.getElementById('splitOffsetMin').focus(), 0);
+  } else {
+    timeSection.style.display = 'none';
+    percentSection.style.display = 'block';
+    presetsContainer.style.display = 'block';
+    setTimeout(() => document.getElementById('splitPercent').focus(), 0);
+  }
+  
+  updateSplitDisplay();
+}
+
+function setSplitPreset(percentage) {
+  document.getElementById('splitPercent').value = percentage;
+  updateSplitDisplay();
+}
+
+function updateSplitDisplay() {
+  if (splitModalMethod === 'percent') {
+    const task = flowTasks.find(t => t.id === splitModalTaskId);
+    if (!task) return;
+    
+    const percent = parseInt(document.getElementById('splitPercent').value) || 50;
+    const splitSecs = Math.round((percent / 100) * task.allocSecs);
+    const min = Math.floor(splitSecs / 60);
+    const sec = splitSecs % 60;
+    
+    document.getElementById('splitPercentDisplay').textContent = 
+      `At ${percent}% completion: ~${min}h ${sec}m`;
+  }
+}
+
+function deleteExistingSplit(taskId, splitIndex) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task || !task.splits[splitIndex]) return;
+  
+  // Remove the split
+  task.splits.splice(splitIndex, 1);
+  saveFlowData();
+  
+  // Refresh the modal to show updated list
+  openSplitModal(taskId);
+  renderFlowList();
+}
+
+// Attach event listeners for split modal
+function attachSplitModalListeners() {
+  const splitPercentInput = document.getElementById('splitPercent');
+  if (splitPercentInput && !splitPercentInput._hasListener) {
+    splitPercentInput.addEventListener('input', updateSplitDisplay);
+    splitPercentInput._hasListener = true;
+  }
+  
+  const splitModal = document.getElementById('splitModal');
+  if (splitModal && !splitModal._hasClickListener) {
+    splitModal.addEventListener('click', (e) => {
+      if (e.target.id === 'splitModal') {
+        closeSplitModal();
+      }
+    });
+    splitModal._hasClickListener = true;
+  }
+}
+
+// Attach listeners on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', attachSplitModalListeners);
+} else {
+  attachSplitModalListeners();
+}
+
+function confirmAddSplit() {
+  if (!splitModalTaskId) return;
+  
+  const task = flowTasks.find(t => t.id === splitModalTaskId);
+  if (!task) return;
+  
+  let position = 0.5; // Default
+  
+  if (splitModalMethod === 'time') {
+    // Calculate position from time offset
+    const minInput = parseInt(document.getElementById('splitOffsetMin').value) || 0;
+    const secInput = parseInt(document.getElementById('splitOffsetSec').value) || 0;
+    const offsetSecs = minInput * 60 + secInput;
+    
+    if (offsetSecs <= 0) {
+      alert('Please enter a time offset greater than 0');
+      return;
+    }
+    
+    // Get reference point (start of task or previous split)
+    let referencePoint = 0;
+    const prevSplit = task.splits[task.splits.length - 1];
+    if (prevSplit) {
+      referencePoint = prevSplit.position * task.allocSecs;
+    }
+    
+    const newAbsolutePos = referencePoint + offsetSecs;
+    
+    if (newAbsolutePos >= task.allocSecs) {
+      alert(`Split point would exceed task duration. Maximum offset: ${Math.floor((task.allocSecs - referencePoint) / 60)}m ${(task.allocSecs - referencePoint) % 60}s`);
+      return;
+    }
+    
+    position = newAbsolutePos / task.allocSecs;
+  } else {
+    // Calculate position from percentage
+    const percent = parseInt(document.getElementById('splitPercent').value);
+    
+    if (percent <= 0 || percent >= 100) {
+      alert('Please enter a percentage between 1 and 99');
+      return;
+    }
+    
+    position = percent / 100;
+  }
+  
+  // Add the split point
+  if (addSplitPoint(splitModalTaskId, position)) {
+    closeSplitModal();
+  }
+}
 
 // ── Task Notes Modal ──────────────────────────────────
 let notesModalTaskId = null;
@@ -3556,6 +4114,22 @@ function ensureTick() {
           t.state = 'done'; playDing(); showDoneBanner(t.name); renderFlowList(); return;
         }
 
+        // ── Split timing detection ──────────────────────────────────
+        if (t.state === 'running' && t.splits && t.splits.length > 0) {
+          const workedSecs = totalWorkedSecs(t);
+          t.splits.forEach(split => {
+            const splitAtSecs = split.position * t.allocSecs;
+            // Check if just reached this split point (within 1 second)
+            if (!split.triggered && Math.abs(workedSecs - splitAtSecs) < 1.1) {
+              split.triggered = true;
+              // Auto-commit a break at this split point
+              const note = `Split timing break #${t.splits.filter(s => s.triggered).length}`;
+              _commitPause(t.id, note, 0); // 0 means no time limit, breaks when manually resumed
+              playDing(); // Ring once on split, no continuous alarm
+            }
+          });
+        }
+
         if (t.state === 'paused' && live && live.breakLimitSecs > 0) {
           if (live.secs >= live.breakLimitSecs && !live.overrun) {
             live.overrun = true;
@@ -3722,7 +4296,62 @@ function buildBarHTML(t) {
     }
     offset += w;
   });
+  
+  // Render split points as visual indicators (non-draggable, shown for reference)
+  if (t.splits && t.splits.length > 0) {
+    t.splits.forEach((split, i) => {
+      const leftPercent = split.position * 100;
+      const secsAtSplit = Math.round(split.position * t.allocSecs);
+      const fmtTime = fmtF(secsAtSplit);
+      html += `<div class="split-point" style="left:${leftPercent.toFixed(3)}%;pointer-events:none;">
+        <div class="split-tooltip">Split at ${fmtTime}</div>
+      </div>`;
+    });
+  }
+  
   return html;
+}
+
+// ── Split timing feature ──────────────────────────────
+
+
+function removeSplit(taskId, splitIndex, event) {
+  event.stopPropagation();
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task || !task.splits[splitIndex]) return;
+  
+  task.splits.splice(splitIndex, 1);
+  saveFlowData();
+  renderFlowList();
+}
+
+function addSplitPoint(taskId, position) {
+  const task = flowTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  // Validate max 2 splits per hour
+  const secs = task.allocSecs;
+  const hoursPerSplit = secs / (60 * 60);
+  if (task.splits.length >= Math.ceil(hoursPerSplit * 2)) {
+    alert(`Maximum ${Math.ceil(hoursPerSplit * 2)} split(s) allowed for this task duration (Max 2 per hour)`);
+    return false;
+  }
+  
+  task.splits.push({
+    position: Math.max(0, Math.min(1, position)),
+    createdAt: Date.now()
+  });
+  
+  // Sort splits by position
+  task.splits.sort((a, b) => a.position - b.position);
+  
+  saveFlowData();
+  renderFlowList();
+  return true;
+}
+
+function addNewSplit(taskId) {
+  openSplitModal(taskId);
 }
 
 // ── Live update (no re-render) ────────────────────────
@@ -3824,19 +4453,18 @@ function updateFlowStats() {
 function renderFlowList() {
   closeTip();
   const list = document.getElementById('task-list');
-  document.getElementById('empty-state').style.display = flowTasks.length===0 ? 'block' : 'none';
+  document.getElementById('empty-state').style.display = flowTasks.filter(t => !t.isMinimized).length===0 ? 'block' : 'none';
   list.innerHTML = '';
   
-  // Filter tasks based on active filters
-  const filteredTasks = flowTasks.filter(shouldShowTask);
+  // Filter tasks based on active filters AND exclude minimized tasks
+  const filteredTasks = flowTasks.filter(t => !t.isMinimized && shouldShowTask(t));
   
-  // Sort tasks: active tasks first (running, paused, idle), then done tasks at bottom
+  // Sort tasks: running > paused (break) > idle > done (FULLY AUTOMATIC)
   const sortedTasks = [...filteredTasks].sort((a, b) => {
-    // Done tasks go to the bottom
-    if (a.state === 'done' && b.state !== 'done') return 1;
-    if (a.state !== 'done' && b.state === 'done') return -1;
-    // Keep original order for other tasks
-    return 0;
+    const stateOrder = {running: 0, paused: 1, idle: 2, done: 3};
+    const orderA = stateOrder[a.state] ?? 4;
+    const orderB = stateOrder[b.state] ?? 4;
+    return orderA - orderB;
   });
   
   sortedTasks.forEach(t => {
@@ -3883,6 +4511,10 @@ function renderFlowList() {
       if (t.state==='idle')    ctrl += `<button class="btn start"  onclick="startTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Start</span></button>`;
       if (t.state==='running') ctrl += `<button class="btn pause"  onclick="pauseTask(${t.id})"><span class="btn-icon">⏸</span> <span class="btn-text">Pause</span></button>`;
       if (t.state==='paused')  ctrl += `<button class="btn resume" onclick="resumeTask(${t.id})"><span class="btn-icon">▶</span> <span class="btn-text">Resume</span></button>`;
+      // Add split timing button for running/paused tasks - PROMINENT PLACEMENT
+      if ((t.state==='running' || t.state==='paused') && (!t.isUntimed)) {
+        ctrl += `<button class="btn split-btn" onclick="addNewSplit(${t.id})" title="Click to add a split point on the progress bar - drag it to position"><span class="btn-icon">⫽</span> <span class="btn-text">+ Split</span></button>`;
+      }
       if (t.state==='done')    ctrl += `<button class="btn" disabled><span class="btn-icon">✓</span> <span class="btn-text">Complete</span></button>`;
       if (canDone) ctrl += `<button class="btn done-early" onclick="markDone(${t.id})" title="Mark as done early (only available after 50% of time)"><span class="btn-icon">✓</span> <span class="btn-text">Done</span></button>`;
       ctrl += `<button class="btn" onclick="openExtendModal(${t.id})" title="Add extra time (max 25% of initial)"><span class="btn-icon">⏱</span> <span class="btn-text">Extend</span></button>`;
@@ -3898,6 +4530,7 @@ function renderFlowList() {
     ctrl += `<button class="btn transfer-btn${inTray?' in-tray':''}" onclick="addToTray(${t.id},'flow')" title="Send to 24h Clock"><span class="btn-icon">⇄</span> <span class="btn-text">Clock</span></button>`;
     ctrl += `<button class="btn" onclick="openNotesModal(${t.id})" title="Add/edit quick notes for tomorrow"><span class="btn-icon">📝</span> <span class="btn-text">Notes</span></button>`;
     ctrl += `<button class="btn" onclick="exportSingleFlowTask(${t.id})" title="Download this task as JSON"><span class="btn-icon">↓</span> <span class="btn-text">JSON</span></button>`;
+    ctrl += `<button class="btn" onclick="minimizeTask(${t.id})" title="Minimize task to floating panel"><span class="btn-icon">−</span> <span class="btn-text">Minimize</span></button>`;
     ctrl += `<button class="btn discard" onclick="discardTask(${t.id})" title="Hide this task temporarily to focus on others"><span class="btn-icon">⊘</span> <span class="btn-text">Discard</span></button>`;
 
     // Apply view mode styling
@@ -3912,11 +4545,7 @@ function renderFlowList() {
     
     card.className = cardClass;
     card.id = 'flow-card-'+t.id;
-    card.draggable = true;
-    card.addEventListener('dragstart', (e) => handleTaskDragStart(e, t.id));
-    card.addEventListener('dragover', () => handleTaskDragOver(event, flowTasks.indexOf(t)));
-    card.addEventListener('dragleave', handleTaskDragLeave);
-    card.addEventListener('drop', (e) => handleTaskDrop(e, t.id));
+    // Draggable feature removed - only split point cursors are draggable
     
     // Generate task metadata
     let metaHTML = '';
@@ -3958,6 +4587,7 @@ function renderFlowList() {
   updateHoursTracker();
   renderDiscardedTasks();
   renderTrash();
+  renderMinimizedTasks();
   if (flowTasks.some(t=>t.state==='running'||t.state==='paused')) ensureTick();
   if (typeof saveFlowData === 'function') saveFlowData();
 }
@@ -5716,7 +6346,7 @@ function exportReportPDF() {
                   String(today.getDate()).padStart(2, '0');
   
   // Create filename
-  const filename = userName + '_' + dateStr + '.pdf';
+  const filename ='Report '+ userName + '_' + dateStr + '.pdf';
   
   // Get the report page element
   const reportPage = document.getElementById('page-report');
@@ -5955,6 +6585,7 @@ async function loadFlowData() {
           delete t.breaks; delete t.currentBreak; delete t.workedSecs;
         }
         if (!t.dateAdded) t.dateAdded = Date.now();
+        if (!t.splits) t.splits = []; // Initialize splits array for split timing feature
         return t;
       });
     }
@@ -6455,79 +7086,6 @@ function unmergeTask(taskId) {
 /* ═══════════════════════════════════════════
    DRAG AND DROP FUNCTIONALITY
 ═══════════════════════════════════════════ */
-let draggedTask = null;
-let draggedIndex = null;
-
-function handleTaskDragStart(e, taskId) {
-  const task = flowTasks.find(t => t.id === taskId);
-  if (!task) return;
-  
-  draggedTask = task;
-  draggedIndex = flowTasks.indexOf(task);
-  
-  const card = e.target.closest('.task-card');
-  if (card) {
-    card.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.currentTarget);
-  }
-}
-
-function handleTaskDragOver(e, index) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  
-  const card = e.currentTarget;
-  if (card && draggedIndex !== null && draggedIndex !== index) {
-    card.classList.add('drag-over');
-  }
-}
-
-function handleTaskDragLeave(e) {
-  const card = e.currentTarget;
-  if (card) card.classList.remove('drag-over');
-}
-
-function handleTaskDrop(e, targetId) {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  if (!draggedTask || draggedIndex === null) return;
-  
-  const targetTask = flowTasks.find(t => t.id === targetId);
-  if (!targetTask || draggedTask.id === targetId) {
-    resetDragState();
-    return;
-  }
-  
-  const targetIndex = flowTasks.indexOf(targetTask);
-  
-  // Remove dragged task from old position
-  flowTasks.splice(draggedIndex, 1);
-  
-  // Insert it at new position
-  const newIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
-  flowTasks.splice(newIndex, 0, draggedTask);
-  
-  resetDragState();
-  renderFlowList();
-}
-
-function resetDragState() {
-  draggedTask = null;
-  draggedIndex = null;
-  document.querySelectorAll('.task-card').forEach(card => {
-    card.classList.remove('dragging', 'drag-over');
-  });
-}
-
-document.addEventListener('dragend', resetDragState);
-document.addEventListener('dragenter', e => {
-  if (!draggedTask) return;
-  const card = e.target.closest('.task-card');
-  if (card) card.classList.add('drag-over');
-});
-
 /* ═══════════════════════════════════════════
    COLLAPSIBLE SECTIONS
 ═══════════════════════════════════════════ */
@@ -6570,6 +7128,7 @@ function restoreCollapsibleStates() {
   await loadFlowData();
   renderFlowList();
   restoreCollapsibleStates();
+  loadMinimizedPanelState();
   
   // Auto-save task data every 5 seconds
   setInterval(() => {
@@ -7199,6 +7758,7 @@ function restoreLoadContent() {
 
 </body>
 </html>
+
 
 
 
