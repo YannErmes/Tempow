@@ -1,0 +1,979 @@
+<!-- Calendar Page Module for Tempow -->
+<!-- Embed this into index.html as a new page or use as standalone -->
+
+<div id="calendar-page" class="page">
+  <!-- Calendar Header -->
+  <div class="calendar-header">
+    <div class="calendar-header-left">
+      <button class="calendar-nav-btn" id="prev-month">← Previous</button>
+      <h2 id="calendar-title">May 2026</h2>
+      <button class="calendar-nav-btn" id="next-month">Next →</button>
+      <button class="calendar-today-btn" id="today-btn">Today</button>
+    </div>
+    <div class="calendar-header-right">
+      <button class="calendar-sync-btn" id="sync-google-btn">
+        <span class="sync-icon">☁</span> Sync to Google Calendar
+      </button>
+      <button class="calendar-settings-btn" id="calendar-settings">⚙️</button>
+    </div>
+  </div>
+
+  <!-- Calendar Container -->
+  <div class="calendar-container">
+    <!-- Month View -->
+    <div class="calendar-month-view">
+      <div class="calendar-weekdays">
+        <div class="weekday">Sun</div>
+        <div class="weekday">Mon</div>
+        <div class="weekday">Tue</div>
+        <div class="weekday">Wed</div>
+        <div class="weekday">Thu</div>
+        <div class="weekday">Fri</div>
+        <div class="weekday">Sat</div>
+      </div>
+      <div class="calendar-days" id="calendar-grid"></div>
+    </div>
+
+    <!-- Right Sidebar: Upcoming Tasks -->
+    <div class="calendar-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">📋 Transfer Tasks</h3>
+        <div class="task-transfer-area" id="pending-tasks-list">
+          <!-- Tasks from main app will be listed here -->
+          <p class="empty-state">No tasks pending transfer</p>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">📅 Today's Events</h3>
+        <div class="today-events-list" id="today-events"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">⏰ Scheduled Tasks</h3>
+        <div class="scheduled-tasks-list" id="scheduled-tasks"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Detail Modal -->
+  <div class="calendar-modal-bg" id="calendar-modal-bg">
+    <div class="calendar-modal">
+      <div class="modal-header">
+        <h2 id="modal-date-title">May 15, 2026</h2>
+        <button class="modal-close-btn" id="modal-close">&times;</button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="modal-section">
+          <h3>Tasks for this day</h3>
+          <div class="modal-tasks-list" id="modal-tasks-list"></div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Add New Event</h3>
+          <form id="add-event-form" class="event-form">
+            <input type="text" id="event-title" placeholder="Event title" required>
+            <div class="time-inputs">
+              <input type="time" id="event-time" value="09:00">
+              <input type="number" id="event-duration" placeholder="Duration (min)" value="60" min="15" step="15">
+            </div>
+            <textarea id="event-notes" placeholder="Notes (optional)"></textarea>
+            <div class="modal-actions">
+              <button type="submit" class="btn-save">Save Event</button>
+              <button type="button" class="btn-cancel" id="form-cancel">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Calendar Auth Modal -->
+  <div class="google-auth-modal-bg" id="google-auth-modal">
+    <div class="google-auth-modal">
+      <h2>Connect to Google Calendar</h2>
+      <p>Allow Tempow to sync your tasks with Google Calendar</p>
+      <div class="auth-options">
+        <button class="btn-google-auth" id="google-auth-btn">
+          🔗 Connect Google Calendar
+        </button>
+        <button class="btn-google-auth-cancel" id="google-auth-cancel">Cancel</button>
+      </div>
+      <p class="auth-note">Your data stays private and secure</p>
+    </div>
+  </div>
+</div>
+
+<!-- Styles for Calendar Page -->
+<style>
+/* ══════════════════════════════════════════
+   CALENDAR PAGE STYLES
+═════════════════════════════════════════════ */
+
+#calendar-page {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendar-header-left,
+.calendar-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.calendar-header-left h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  min-width: 180px;
+  text-align: center;
+}
+
+.calendar-nav-btn,
+.calendar-today-btn,
+.calendar-sync-btn,
+.calendar-settings-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-nav-btn:hover,
+.calendar-today-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+  background: var(--surface2);
+}
+
+.calendar-sync-btn {
+  background: var(--active);
+  color: #0a1f16;
+  border: none;
+  font-weight: 600;
+}
+
+.calendar-sync-btn:hover {
+  opacity: 0.85;
+}
+
+.sync-icon {
+  margin-right: 6px;
+}
+
+.calendar-settings-btn {
+  font-size: 16px;
+  padding: 8px 10px;
+}
+
+/* Main Calendar Container */
+.calendar-container {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 28px;
+  padding: 28px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Month View */
+.calendar-month-view {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.weekday {
+  padding: 14px 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  background: var(--surface);
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  padding: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  min-height: 100px;
+}
+
+.calendar-day:hover {
+  background: var(--surface2);
+  border-color: var(--active);
+}
+
+.calendar-day.today {
+  background: var(--active-dim);
+  border-color: var(--active);
+}
+
+.calendar-day.today .day-number {
+  color: var(--active);
+  font-weight: 700;
+}
+
+.calendar-day.other-month {
+  opacity: 0.4;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.other-month .day-number {
+  color: var(--muted);
+}
+
+.day-number {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 9px;
+}
+
+.day-event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--active);
+  display: inline-block;
+}
+
+.day-event-item {
+  font-size: 9px;
+  color: var(--muted2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.day-event-item.has-tasks {
+  color: var(--active);
+}
+
+/* Sidebar */
+.calendar-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.sidebar-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Task Transfer Area */
+.task-transfer-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.transfer-task-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  transition: all 0.2s;
+}
+
+.transfer-task-item:hover {
+  background: var(--surface2);
+  border-color: var(--active);
+}
+
+.transfer-task-item.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+}
+
+.transfer-task-name {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transfer-task-icon {
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.transfer-task-icon:hover {
+  opacity: 1;
+  color: var(--active);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 12px 8px;
+}
+
+/* Today's Events & Scheduled Tasks */
+.today-events-list,
+.scheduled-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.event-item,
+.scheduled-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 10px;
+  color: var(--text);
+}
+
+.event-time {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.event-time-val {
+  color: var(--active);
+  font-weight: 600;
+}
+
+.event-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Modal Styles */
+.calendar-modal-bg,
+.google-auth-modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-modal-bg.open,
+.google-auth-modal-bg.open {
+  display: flex;
+}
+
+.calendar-modal,
+.google-auth-modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--muted2);
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  color: var(--text);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-section h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.modal-task-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 11px;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Event Form */
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-form input,
+.event-form textarea {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: var(--muted);
+}
+
+.event-form input:focus,
+.event-form textarea:focus {
+  border-color: var(--active);
+  outline: none;
+  background: var(--surface2);
+}
+
+.time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.event-form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btn-save,
+.btn-cancel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.btn-save {
+  background: var(--active);
+  color: #0a1f16;
+}
+
+.btn-save:hover {
+  opacity: 0.85;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+}
+
+.btn-cancel:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* Google Auth Modal */
+.google-auth-modal {
+  text-align: center;
+}
+
+.google-auth-modal h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.google-auth-modal p {
+  color: var(--muted2);
+  margin-bottom: 20px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.btn-google-auth,
+.btn-google-auth-cancel {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.btn-google-auth {
+  background: #4285f4;
+  color: white;
+}
+
+.btn-google-auth:hover {
+  background: #1f66d9;
+  transform: translateY(-1px);
+}
+
+.btn-google-auth-cancel {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+}
+
+.btn-google-auth-cancel:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.auth-note {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .calendar-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .calendar-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .calendar-header-left,
+  .calendar-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .calendar-header-left h2 {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .calendar-header {
+    padding: 12px 16px;
+  }
+
+  .calendar-header-left h2 {
+    font-size: 18px;
+  }
+
+  .calendar-nav-btn,
+  .calendar-today-btn {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .calendar-sync-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .calendar-day {
+    min-height: 80px;
+    padding: 8px;
+  }
+
+  .day-number {
+    font-size: 11px;
+  }
+
+  .day-event-item {
+    font-size: 8px;
+  }
+}
+</style>
+
+<!-- JavaScript for Calendar Functionality -->
+<script>
+(function() {
+  'use strict';
+
+  let currentDate = new Date();
+  let calendarEvents = JSON.parse(localStorage.getItem('tempow-calendar-events')) || {};
+  let googleAuthToken = localStorage.getItem('tempow-google-auth-token');
+  let selectedDate = null;
+
+  // Initialize Calendar
+  function initCalendar() {
+    renderCalendar();
+    setupEventListeners();
+    updateTodayEvents();
+    updateScheduledTasks();
+  }
+
+  // Render Calendar Grid
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const prevLastDay = new Date(year, month, 0);
+
+    const firstDayOfWeek = firstDay.getDay();
+    const lastDateOfMonth = lastDay.getDate();
+    const lastDateOfPrevMonth = prevLastDay.getDate();
+
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+
+    // Title
+    document.getElementById('calendar-title').textContent = 
+      firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    // Previous month days
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      const dayDiv = createDayElement(lastDateOfPrevMonth - i, true);
+      grid.appendChild(dayDiv);
+    }
+
+    // Current month days
+    for (let i = 1; i <= lastDateOfMonth; i++) {
+      const dayDiv = createDayElement(i, false, year, month);
+      grid.appendChild(dayDiv);
+    }
+
+    // Next month days
+    const totalCells = grid.children.length;
+    const remainingCells = 42 - totalCells;
+    for (let i = 1; i <= remainingCells; i++) {
+      const dayDiv = createDayElement(i, true);
+      grid.appendChild(dayDiv);
+    }
+  }
+
+  function createDayElement(day, isOtherMonth, year, month) {
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'calendar-day';
+    if (isOtherMonth) dayDiv.classList.add('other-month');
+
+    if (!isOtherMonth) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const today = new Date();
+      if (dateStr === today.toISOString().split('T')[0]) {
+        dayDiv.classList.add('today');
+      }
+      dayDiv.dataset.date = dateStr;
+      dayDiv.addEventListener('click', () => openDayModal(dateStr));
+    }
+
+    dayDiv.innerHTML = `<div class="day-number">${day}</div><div class="day-events"></div>`;
+    return dayDiv;
+  }
+
+  function openDayModal(dateStr) {
+    selectedDate = dateStr;
+    const date = new Date(dateStr + 'T00:00:00');
+    document.getElementById('modal-date-title').textContent = 
+      date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    
+    const eventsForDay = calendarEvents[dateStr] || [];
+    const tasksList = document.getElementById('modal-tasks-list');
+    
+    if (eventsForDay.length === 0) {
+      tasksList.innerHTML = '<p class="empty-state">No events scheduled</p>';
+    } else {
+      tasksList.innerHTML = eventsForDay.map((event, idx) => `
+        <div class="modal-task-item">
+          <span><strong>${event.time}</strong> - ${event.title}</span>
+          <button class="delete-event-btn" data-idx="${idx}" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;">×</button>
+        </div>
+      `).join('');
+      
+      tasksList.querySelectorAll('.delete-event-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => deleteEvent(dateStr, parseInt(e.target.dataset.idx)));
+      });
+    }
+
+    document.getElementById('add-event-form').reset();
+    document.getElementById('calendar-modal-bg').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('calendar-modal-bg').classList.remove('open');
+    selectedDate = null;
+  }
+
+  function saveEvent(e) {
+    e.preventDefault();
+    if (!selectedDate) return;
+
+    const title = document.getElementById('event-title').value;
+    const time = document.getElementById('event-time').value;
+    const notes = document.getElementById('event-notes').value;
+
+    if (!calendarEvents[selectedDate]) {
+      calendarEvents[selectedDate] = [];
+    }
+
+    calendarEvents[selectedDate].push({ title, time, notes });
+    localStorage.setItem('tempow-calendar-events', JSON.stringify(calendarEvents));
+
+    renderCalendar();
+    updateTodayEvents();
+    closeModal();
+    showNotification('Event saved!');
+  }
+
+  function deleteEvent(dateStr, index) {
+    if (calendarEvents[dateStr]) {
+      calendarEvents[dateStr].splice(index, 1);
+      localStorage.setItem('tempow-calendar-events', JSON.stringify(calendarEvents));
+      renderCalendar();
+      updateTodayEvents();
+      openDayModal(dateStr);
+    }
+  }
+
+  function updateTodayEvents() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayEvents = calendarEvents[today] || [];
+    const container = document.getElementById('today-events');
+    
+    if (todayEvents.length === 0) {
+      container.innerHTML = '<p class="empty-state">No events today</p>';
+    } else {
+      container.innerHTML = todayEvents.map(event => `
+        <div class="event-item">
+          <div class="event-time">
+            <span class="event-time-val">${event.time}</span>
+          </div>
+          <div class="event-name">${event.title}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function updateScheduledTasks() {
+    const container = document.getElementById('scheduled-tasks');
+    const scheduled = [];
+    
+    Object.keys(calendarEvents).forEach(dateStr => {
+      if (calendarEvents[dateStr].length > 0) {
+        scheduled.push({ date: dateStr, events: calendarEvents[dateStr] });
+      }
+    });
+
+    if (scheduled.length === 0) {
+      container.innerHTML = '<p class="empty-state">No scheduled tasks</p>';
+    } else {
+      container.innerHTML = scheduled.slice(0, 5).map(item => `
+        <div class="scheduled-item">
+          <div style="font-size:10px;color:var(--muted);">${new Date(item.date).toLocaleDateString()}</div>
+          <div style="font-weight:500;margin-top:2px;">${item.events[0].title}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function setupEventListeners() {
+    document.getElementById('prev-month').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    document.getElementById('today-btn').addEventListener('click', () => {
+      currentDate = new Date();
+      renderCalendar();
+    });
+
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('form-cancel').addEventListener('click', closeModal);
+    document.getElementById('add-event-form').addEventListener('submit', saveEvent);
+
+    document.getElementById('sync-google-btn').addEventListener('click', () => {
+      document.getElementById('google-auth-modal').classList.add('open');
+    });
+
+    document.getElementById('google-auth-btn').addEventListener('click', handleGoogleAuth);
+    document.getElementById('google-auth-cancel').addEventListener('click', () => {
+      document.getElementById('google-auth-modal').classList.remove('open');
+    });
+  }
+
+  function handleGoogleAuth() {
+    // Placeholder for Google Calendar API integration
+    // In production, use Google Calendar API with OAuth 2.0
+    alert('Google Calendar integration coming soon!\n\nIn production, this would:\n1. Open Google OAuth consent screen\n2. Request calendar.events scope\n3. Sync all events to your Google Calendar');
+    document.getElementById('google-auth-modal').classList.remove('open');
+    showNotification('Google Calendar sync ready!');
+  }
+
+  function showNotification(msg) {
+    const notif = document.createElement('div');
+    notif.style.cssText = 'position:fixed;top:20px;right:20px;background:var(--active);color:#0a1f16;padding:12px 20px;border-radius:8px;font-size:12px;z-index:9999;animation:slideIn 0.3s ease';
+    notif.textContent = msg;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
+  }
+
+  // Close modal on outside click
+  document.addEventListener('click', (e) => {
+    const modalBg = document.getElementById('calendar-modal-bg');
+    if (e.target === modalBg) closeModal();
+  });
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCalendar);
+  } else {
+    initCalendar();
+  }
+})();
+</script>
