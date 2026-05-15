@@ -1066,6 +1066,272 @@ body.text-mode .btn .btn-text {
 }
 
 /* ══════════════════════════════════════════
+   CALENDAR PAGE STYLES
+══════════════════════════════════════════ */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.calendar-nav-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  border-color: var(--active);
+  color: var(--active);
+}
+
+.calendar-current-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.calendar-today-btn {
+  background: var(--active-dim);
+  border: 1px solid var(--active);
+  color: var(--active);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-today-btn:hover {
+  background: var(--active);
+  color: #0a1f16;
+}
+
+.calendar-view-toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-view-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.calendar-view-btn:hover {
+  border-color: var(--active);
+  color: var(--active);
+}
+
+.calendar-view-btn.active {
+  background: var(--active);
+  border-color: var(--active);
+  color: #0a1f16;
+}
+
+.calendar-container {
+  display: flex;
+  padding: 20px 40px;
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.calendar-main {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 600px;
+}
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-month-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.calendar-month-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px;
+}
+
+.calendar-day-cell {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 80px;
+}
+
+.calendar-day-cell:hover {
+  border-color: var(--active);
+  background: var(--surface2);
+}
+
+.calendar-day-cell.today {
+  background: var(--active-dim);
+  border-color: var(--active);
+}
+
+.calendar-day-cell.other-month {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.calendar-day-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.calendar-day-tasks {
+  font-size: 9px;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-day-task {
+  background: var(--active-dim);
+  color: var(--active);
+  padding: 2px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.calendar-day-task:hover {
+  background: var(--active);
+  color: #0a1f16;
+}
+
+.calendar-sidebar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sidebar-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--active);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item-cal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.task-item-cal:hover {
+  border-color: var(--active);
+  background: var(--surface2);
+}
+
+.task-item-cal-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.task-item-cal-time {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.repeat-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.repeat-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted2);
+  cursor: pointer;
+}
+
+.repeat-options input[type="checkbox"] {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
+/* ══════════════════════════════════════════
    HELP PAGE STYLES
 ══════════════════════════════════════════ */
 .help-container {
@@ -1263,7 +1529,7 @@ body.text-mode .btn .btn-text {
 /* Tempow modal */
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center; }
 .modal-bg.open { display:flex; }
-.modal { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:28px; width:360px; }
+.modal { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:28px; width:360px; max-height: 85vh; overflow-y: auto; }
 .modal h2 { font-family:var(--font-display); font-size:17px; font-weight:700; margin-bottom:20px; }
 .field { margin-bottom:16px; }
 .field label { display:block; font-size:11px; color:var(--muted2); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
@@ -1406,6 +1672,87 @@ body.text-mode .btn .btn-text {
   border-color: var(--done);
   color: #fff;
 }
+
+/* ── Date Range Filter Buttons ── */
+.date-range-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.date-range-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.date-range-btn.active {
+  background: #5de0a8;
+  border-color: #5de0a8;
+  color: #0a1f16;
+}
+
+.date-filter-wrapper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#timerDateFilter {
+  padding: 6px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+.date-picker-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.date-picker-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-picker-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+  background: rgba(93, 224, 168, 0.08);
+}
+
+.date-picker-btn.active {
+  background: #5de0a8;
+  border-color: #5de0a8;
+  color: #0a1f16;
+}
+
 .data-btn.clr { border-color: transparent; color: var(--muted); }
 .data-btn.clr:hover { color: var(--danger); border-color: var(--danger); }
 .data-sep { width: 1px; height: 18px; background: var(--border2); margin: 0 4px; flex-shrink: 0; }
@@ -1864,6 +2211,44 @@ body.text-mode .btn .btn-text {
   .task-estimate { display: block; width: 100%; }
   .filter-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
   .filter-section { width: 100%; }
+  .date-filter-wrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .date-range-btn {
+    padding: 5px 10px;
+    font-size: 10px;
+    flex: 1 1 calc(50% - 4px);
+    min-width: 70px;
+  }
+  #timerDateFilter {
+    padding: 5px 6px;
+    font-size: 10px;
+    flex: 0 1 auto;
+    width: 120px;
+  }
+  .date-picker-btn {
+    padding: 5px 10px;
+    font-size: 10px;
+    flex: 1 1 auto;
+  }
+  .date-picker-btn span {
+    display: none;
+  }
+}
+
+@media (max-width:480px) {
+  .date-range-btn {
+    padding: 4px 8px;
+    font-size: 9px;
+    flex: 1 1 calc(50% - 4px);
+    min-width: 60px;
+  }
+  #timerDateFilter {
+    padding: 4px 6px;
+    font-size: 9px;
+    width: 100px;
+  }
 }
 
 </style>
@@ -1901,6 +2286,10 @@ body.text-mode .btn .btn-text {
     <button class="nav-tab clock-tab" onclick="switchPage('clock')">
       ◕ 24h Clock
       <span class="transfer-badge" id="clock-badge"></span>
+    </button>
+    <button class="nav-tab" onclick="switchPage('calendar')">
+      📅 Calendar
+      <span class="transfer-badge" id="calendar-badge"></span>
     </button>
     <button class="nav-tab" onclick="switchPage('report')">
       📊 Reports
@@ -2030,6 +2419,21 @@ body.text-mode .btn .btn-text {
         <button class="filter-btn" data-filter="idle" onclick="toggleFilter('idle')">Idle</button>
         <button class="filter-btn" data-filter="timed" onclick="toggleFilter('timed')">⏱ Timed</button>
         <button class="filter-btn" data-filter="untimed" onclick="toggleFilter('untimed')">☐ Untimed</button>
+      </div>
+      <div class="filter-section">
+        <span class="filter-label" style="display: block; margin-bottom: 8px;">📅 Filter by Date</span>
+        <div class="date-filter-wrapper">
+          <button class="date-range-btn active" data-range="all" onclick="setDateRange('all')">All Time</button>
+          <button class="date-range-btn" data-range="today" onclick="setDateRange('today')">Today</button>
+          <button class="date-range-btn" data-range="yesterday" onclick="setDateRange('yesterday')">Yesterday</button>
+          <button class="date-range-btn" data-range="week" onclick="setDateRange('week')">This Week</button>
+          <button class="date-range-btn" data-range="month" onclick="setDateRange('month')">This Month</button>
+          <button class="date-range-btn" data-range="year" onclick="setDateRange('year')">This Year</button>
+          <div class="date-picker-dropdown" id="datePickerDropdown">
+            <button class="date-picker-btn" onclick="toggleDatePicker()" title="Select a specific date">📆 <span id="selectedDateDisplay">Pick Date</span></button>
+            <input type="date" id="timerDateFilter" onchange="setDateRange('custom')" style="display: none;" />
+          </div>
+        </div>
       </div>
       <div class="filter-section">
         <span class="filter-label">View</span>
@@ -2227,6 +2631,91 @@ body.text-mode .btn .btn-text {
      PAGE 3 — REPORTS
 ══════════════════════════════════════════ -->
 <div class="page" id="page-report"></div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 3A — CALENDAR
+══════════════════════════════════════════ -->
+<div class="page" id="page-calendar">
+  <div class="calendar-header">
+    <div class="calendar-header-left">
+      <button onclick="prevCalendarMonth()" class="calendar-nav-btn">◀</button>
+      <div class="calendar-current-date">
+        <span id="calendarMonthYear" style="font-size: 14px; font-weight: 600;"></span>
+        <button onclick="calendarToday()" class="calendar-today-btn">Today</button>
+      </div>
+      <button onclick="nextCalendarMonth()" class="calendar-nav-btn">▶</button>
+    </div>
+    <div class="calendar-header-right">
+      <div class="calendar-view-toggle">
+        <button class="calendar-view-btn" data-view="month" onclick="setCalendarView('month')">Month</button>
+        <button class="calendar-view-btn" data-view="week" onclick="setCalendarView('week')">Week</button>
+        <button class="calendar-view-btn" data-view="day" onclick="setCalendarView('day')">Day</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-container">
+    <div class="calendar-main" id="calendarMain"></div>
+    <div class="calendar-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">📋 Today's Tasks</div>
+        <div id="todayTasksList" class="tasks-list"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">➕ Add Task to Calendar</div>
+        <button onclick="openCalendarTaskModal()" class="btn-add" style="width: 100%;">Create Task</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">🔗 Google Calendar Sync</div>
+        <button onclick="syncGoogleCalendar()" class="btn btn-report" style="width: 100%;">Connect</button>
+        <div id="googleSyncStatus" style="font-size: 10px; color: var(--muted); margin-top: 6px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Task Modal -->
+  <div class="modal-bg" id="calendarTaskModal">
+    <div class="modal" style="width: 500px;">
+      <h2>Add Task to Calendar</h2>
+      <div class="field">
+        <label>Task Name</label>
+        <input type="text" id="calTaskName" placeholder="Enter task name">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="calTaskDate">
+      </div>
+      <div class="field">
+        <label>Start Time (Hour)</label>
+        <input type="number" id="calTaskHour" min="0" max="23" placeholder="9" value="9">
+      </div>
+      <div class="field">
+        <label>Duration (minutes)</label>
+        <input type="number" id="calTaskDuration" min="15" max="240" placeholder="60" value="60">
+      </div>
+      <div class="field">
+        <label>Repeat</label>
+        <div class="repeat-options">
+          <label><input type="checkbox" id="calRepeatMon" value="0"> Mon</label>
+          <label><input type="checkbox" id="calRepeatTue" value="1"> Tue</label>
+          <label><input type="checkbox" id="calRepeatWed" value="2"> Wed</label>
+          <label><input type="checkbox" id="calRepeatThu" value="3"> Thu</label>
+          <label><input type="checkbox" id="calRepeatFri" value="4"> Fri</label>
+          <label><input type="checkbox" id="calRepeatSat" value="5"> Sat</label>
+          <label><input type="checkbox" id="calRepeatSun" value="6"> Sun</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="calTaskNotes" placeholder="Optional notes..." rows="3"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeCalendarTaskModal()">Cancel</button>
+        <button class="btn-confirm" onclick="saveCalendarTask()">Add Task</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      PAGE 4 — WORKSPACE
@@ -2672,6 +3161,21 @@ body.text-mode .btn .btn-text {
         <option value="210">3.5 hours</option><option value="240">4 hours</option>
       </select>
     </div>
+    <div style="border-top: 1px solid var(--border); margin: 12px 0; padding: 12px 0 0 0;">
+      <label style="font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Schedule to calendar (optional)</label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+        <input type="date" id="inp-schedule-date" style="padding: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text);" />
+        <select id="inp-schedule-hour" style="padding: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text);">
+          <option value="">Select hour...</option>
+          <option value="0">12:00 AM</option><option value="1">1:00 AM</option><option value="2">2:00 AM</option><option value="3">3:00 AM</option>
+          <option value="4">4:00 AM</option><option value="5">5:00 AM</option><option value="6">6:00 AM</option><option value="7">7:00 AM</option>
+          <option value="8">8:00 AM</option><option value="9" selected>9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option>
+          <option value="12">12:00 PM</option><option value="13">1:00 PM</option><option value="14">2:00 PM</option><option value="15">3:00 PM</option>
+          <option value="16">4:00 PM</option><option value="17">5:00 PM</option><option value="18">6:00 PM</option><option value="19">7:00 PM</option>
+          <option value="20">8:00 PM</option><option value="21">9:00 PM</option><option value="22">10:00 PM</option><option value="23">11:00 PM</option>
+        </select>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-confirm" onclick="addFlowTask()">Add task</button>
@@ -3027,14 +3531,17 @@ function switchPage(name) {
   } else if (name === 'clock') {
     document.querySelectorAll('.nav-tab')[1].classList.add('active');
     renderClockPage();
-  } else if (name === 'report') {
+  } else if (name === 'calendar') {
     document.querySelectorAll('.nav-tab')[2].classList.add('active');
+    initCalendarPage();
+  } else if (name === 'report') {
+    document.querySelectorAll('.nav-tab')[3].classList.add('active');
     renderReportsPage();
   } else if (name === 'workspace') {
-    document.querySelectorAll('.nav-tab')[3].classList.add('active');
+    document.querySelectorAll('.nav-tab')[4].classList.add('active');
     renderWorkspacePage();
   } else if (name === 'help') {
-    document.querySelectorAll('.nav-tab')[4].classList.add('active');
+    document.querySelectorAll('.nav-tab')[5].classList.add('active');
   }
 }
 
@@ -3165,6 +3672,10 @@ let activeFilters = {
   timed: false,
   untimed: false
 };
+
+// Date filtering settings
+let activeDateRange = 'all'; // 'all', 'today', 'yesterday', 'week', 'month', 'year', 'custom'
+let customDateFilter = null; // ISO date string for custom date filter
 
 function fmtF(s) {
   const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
@@ -3709,6 +4220,8 @@ function openModal() {
 function closeModal() { 
   document.getElementById('addTaskModal').classList.remove('open'); 
   document.getElementById('inp-name').value=''; 
+  document.getElementById('inp-schedule-date').value='';
+  document.getElementById('inp-schedule-hour').value='9';
 }
 function switchTaskType(type) {
   document.querySelectorAll('.task-type-btn').forEach(btn => {
@@ -3750,6 +4263,9 @@ function addFlowTask() {
     return;
   }
   
+  const scheduleDate = document.getElementById('inp-schedule-date').value;
+  const scheduleHour = document.getElementById('inp-schedule-hour').value;
+  
   const taskObj = { 
     id: Date.now() + Math.random(),
     name, 
@@ -3761,6 +4277,27 @@ function addFlowTask() {
     notes: '',
     splits: [] // Array of split points: [{position: 0-1 (percentage), secs: seconds into task}]
   };
+  
+  // If scheduled to calendar, add to calendar instead
+  if (scheduleDate && scheduleHour !== '') {
+    const calTask = {
+      id: taskObj.id,
+      name,
+      scheduledDate: scheduleDate,
+      hour: parseInt(scheduleHour),
+      duration: dur,
+      notes: '',
+      repeatDays: null,
+      createdAt: Date.now(),
+      completed: false
+    };
+    calendarTasks.push(calTask);
+    saveCalendarData();
+    alert(`Task "${name}" scheduled to calendar on ${new Date(scheduleDate).toLocaleDateString()} at ${String(parseInt(scheduleHour)).padStart(2, '0')}:00`);
+    closeModal();
+    renderFlowList();
+    return;
+  }
   
   flowTasks.push(taskObj);
   closeModal(); 
@@ -3819,12 +4356,143 @@ function setViewMode(mode) {
 }
 
 function shouldShowTask(task) {
-  if (activeFilters.all) return true;
+  // Check state and type filters
+  let stateTypeMatch = false;
+  if (activeFilters.all) {
+    stateTypeMatch = true;
+  } else {
+    const stateMatch = activeFilters[task.state] || false;
+    const typeMatch = (task.isUntimed && activeFilters.untimed) || (!task.isUntimed && activeFilters.timed) || false;
+    stateTypeMatch = stateMatch || typeMatch;
+  }
   
-  const stateMatch = activeFilters[task.state] || false;
-  const typeMatch = (task.isUntimed && activeFilters.untimed) || (!task.isUntimed && activeFilters.timed) || false;
+  if (!stateTypeMatch) return false;
   
-  return stateMatch || typeMatch;
+  // Check date filter
+  return isTaskInDateRange(task);
+}
+
+function isTaskInDateRange(task) {
+  if (activeDateRange === 'all') return true;
+  
+  // Get task creation date
+  const taskDate = new Date(task.createdAt);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const weekStart = new Date(today);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  switch (activeDateRange) {
+    case 'today':
+      return taskDate >= today && taskDate < tomorrow;
+    
+    case 'yesterday':
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return taskDate >= yesterday && taskDate < today;
+    
+    case 'week':
+      return taskDate >= weekStart && taskDate < tomorrow;
+    
+    case 'month':
+      const nextMonth = new Date(monthStart);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      return taskDate >= monthStart && taskDate < nextMonth;
+    
+    case 'year':
+      const yearStart = new Date(today.getFullYear(), 0, 1);
+      const nextYear = new Date(yearStart);
+      nextYear.setFullYear(nextYear.getFullYear() + 1);
+      return taskDate >= yearStart && taskDate < nextYear;
+    
+    case 'custom':
+      if (!customDateFilter) return true;
+      const filterDate = new Date(customDateFilter);
+      const filterDateNext = new Date(filterDate);
+      filterDateNext.setDate(filterDateNext.getDate() + 1);
+      return taskDate >= filterDate && taskDate < filterDateNext;
+    
+    default:
+      return true;
+  }
+}
+
+function setDateRange(range) {
+  activeDateRange = range;
+  
+  if (range === 'custom') {
+    const dateInput = document.getElementById('timerDateFilter');
+    if (dateInput.value) {
+      customDateFilter = dateInput.value;
+    } else {
+      // If no date selected, default to all
+      activeDateRange = 'all';
+    }
+  } else {
+    customDateFilter = null;
+  }
+  
+  updateDateRangeButtons();
+  renderFlowList();
+}
+
+function updateDateRangeButtons() {
+  document.querySelectorAll('.date-range-btn').forEach(btn => {
+    const range = btn.dataset.range;
+    btn.classList.toggle('active', activeDateRange === range);
+  });
+  updateDatePickerDisplay();
+}
+
+function toggleDatePicker() {
+  const dateInput = document.getElementById('timerDateFilter');
+  const pickerBtn = document.querySelector('.date-picker-btn');
+  
+  if (dateInput.style.display === 'none') {
+    dateInput.style.display = 'inline-block';
+    pickerBtn.classList.add('active');
+    dateInput.focus();
+    dateInput.click();
+  } else {
+    dateInput.style.display = 'none';
+    pickerBtn.classList.remove('active');
+  }
+}
+
+function updateDatePickerDisplay() {
+  const dateInput = document.getElementById('timerDateFilter');
+  const displayEl = document.getElementById('selectedDateDisplay');
+  
+  if (activeDateRange === 'custom' && customDateFilter) {
+    const d = new Date(customDateFilter);
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    displayEl.textContent = dateStr;
+  } else if (activeDateRange !== 'all') {
+    displayEl.textContent = activeDateRange.charAt(0).toUpperCase() + activeDateRange.slice(1);
+  } else {
+    displayEl.textContent = 'Pick Date';
+  }
+}
+
+function syncCalendarToTimer(selectedDate) {
+  // Function to sync calendar date selection to timer filter
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  const dateInput = document.getElementById('timerDateFilter');
+  dateInput.value = dateStr;
+  setDateRange('custom');
+  
+  // Show the timer tab
+  const timerTab = document.querySelector('.nav-tab[onclick*=\"showPage\"][data-page=\"flow\"]') || 
+                   Array.from(document.querySelectorAll('.nav-tab')).find(t => t.textContent.includes('Timer'));
+  if (timerTab) {
+    timerTab.click();
+  }
 }
 
 // ── Break modal ──────────────────────────────────────
@@ -7041,6 +7709,8 @@ function saveFlowData() {
       dayStartTime: dayStartTime,
       workStartTime: workStartTime,
       workEndTime: workEndTime,
+      activeDateRange: activeDateRange,
+      customDateFilter: customDateFilter,
       savedAt: new Date().toISOString()
     };
     
@@ -7146,6 +7816,16 @@ async function loadFlowData() {
     // Load day start time
     if (data.dayStartTime) {
       dayStartTime = data.dayStartTime;
+    }
+    
+    // Load date filter state
+    if (data.activeDateRange) {
+      activeDateRange = data.activeDateRange;
+    }
+    if (data.customDateFilter) {
+      customDateFilter = data.customDateFilter;
+      const dateInput = document.getElementById('timerDateFilter');
+      if (dateInput) dateInput.value = customDateFilter;
     }
     
     if (data.tasks && Array.isArray(data.tasks)) {
@@ -7699,6 +8379,7 @@ function restoreCollapsibleStates() {
   loadUsualStartTime();
   await loadFlowData();
   renderFlowList();
+  updateDateRangeButtons();
   restoreCollapsibleStates();
   loadMinimizedPanelState();
   
@@ -7805,6 +8486,330 @@ document.addEventListener('mousemove', () => {
 document.addEventListener('keydown', () => {
   lastActivityTime = Date.now();
 });
+
+/* ═══════════════════════════════════════════
+   CALENDAR FUNCTIONALITY
+═══════════════════════════════════════════ */
+
+// Calendar state
+let calendarTasks = [];
+let calendarCurrentDate = new Date();
+let calendarCurrentView = 'month';
+const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function initCalendarPage() {
+  calendarCurrentDate = new Date();
+  renderCalendarView();
+  renderTodaysTasks();
+  updateGoogleSyncStatus();
+}
+
+function setCalendarView(view) {
+  calendarCurrentView = view;
+  document.querySelectorAll('.calendar-view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  renderCalendarView();
+}
+
+function prevCalendarMonth() {
+  calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+  renderCalendarView();
+  renderTodaysTasks();
+}
+
+function nextCalendarMonth() {
+  calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+  renderCalendarView();
+  renderTodaysTasks();
+}
+
+function calendarToday() {
+  calendarCurrentDate = new Date();
+  renderCalendarView();
+  renderTodaysTasks();
+}
+
+function renderCalendarView() {
+  const container = document.getElementById('calendarMain');
+  const monthYearEl = document.getElementById('calendarMonthYear');
+  
+  if (!container) return;
+  
+  // Update month/year display
+  monthYearEl.textContent = `${monthNames[calendarCurrentDate.getMonth()]} ${calendarCurrentDate.getFullYear()}`;
+  
+  if (calendarCurrentView === 'month') {
+    renderMonthView();
+  } else if (calendarCurrentView === 'week') {
+    renderWeekView();
+  } else if (calendarCurrentView === 'day') {
+    renderDayView();
+  }
+}
+
+function renderMonthView() {
+  const container = document.getElementById('calendarMain');
+  const year = calendarCurrentDate.getFullYear();
+  const month = calendarCurrentDate.getMonth();
+  
+  // Get first day of month and number of days
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  
+  let html = '<div class="calendar-month-header">';
+  weekDays.forEach(day => {
+    html += `<div class="calendar-month-day-header">${day.slice(0, 3)}</div>`;
+  });
+  html += '</div>';
+  
+  html += '<div class="calendar-month-grid">';
+  
+  // Previous month days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="calendar-day-cell other-month"><div class="calendar-day-number">${daysInPrevMonth - i}</div></div>`;
+  }
+  
+  // Current month days
+  const today = new Date();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cellDate = new Date(year, month, day);
+    const isToday = cellDate.toDateString() === today.toDateString();
+    const dayTasks = getTasksForDate(cellDate);
+    
+    html += `<div class="calendar-day-cell ${isToday ? 'today' : ''}" onclick="selectCalendarDate(${day})">
+      <div class="calendar-day-number">${day}</div>
+      <div class="calendar-day-tasks">`;
+    
+    dayTasks.slice(0, 2).forEach(task => {
+      html += `<div class="calendar-day-task" title="${task.name}">${task.name.slice(0, 12)}</div>`;
+    });
+    
+    if (dayTasks.length > 2) {
+      html += `<div style="font-size: 8px; color: var(--muted); margin-top: 2px;">+${dayTasks.length - 2} more</div>`;
+    }
+    
+    html += `</div></div>`;
+  }
+  
+  // Next month days
+  const totalCells = firstDay + daysInMonth;
+  const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let day = 1; day <= remainingCells; day++) {
+    html += `<div class="calendar-day-cell other-month"><div class="calendar-day-number">${day}</div></div>`;
+  }
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderWeekView() {
+  const container = document.getElementById('calendarMain');
+  // Get start of week (Sunday)
+  const weekStart = new Date(calendarCurrentDate);
+  weekStart.setDate(calendarCurrentDate.getDate() - calendarCurrentDate.getDay());
+  
+  let html = '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px;">';
+  
+  for (let i = 0; i < 7; i++) {
+    const dayDate = new Date(weekStart);
+    dayDate.setDate(weekStart.getDate() + i);
+    const isToday = dayDate.toDateString() === new Date().toDateString();
+    const dayTasks = getTasksForDate(dayDate);
+    
+    html += `<div class="calendar-day-cell ${isToday ? 'today' : ''}" style="min-height: 200px;">
+      <div class="calendar-day-number">${weekDays[dayDate.getDay()].slice(0, 3)} ${dayDate.getDate()}</div>
+      <div class="calendar-day-tasks">`;
+    
+    dayTasks.forEach(task => {
+      html += `<div class="calendar-day-task">${task.hour}:00 - ${task.name}</div>`;
+    });
+    
+    html += `</div></div>`;
+  }
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderDayView() {
+  const container = document.getElementById('calendarMain');
+  const dayTasks = getTasksForDate(calendarCurrentDate);
+  
+  let html = `<div style="padding: 20px;">
+    <h3 style="margin-top: 0; font-size: 16px; color: var(--text); margin-bottom: 16px;">
+      ${weekDays[calendarCurrentDate.getDay()]}, ${monthNames[calendarCurrentDate.getMonth()]} ${calendarCurrentDate.getDate()}
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 12px;">`;
+  
+  if (dayTasks.length === 0) {
+    html += '<div style="color: var(--muted); font-size: 14px; padding: 40px; text-align: center;">No tasks scheduled for this day</div>';
+  } else {
+    dayTasks.forEach(task => {
+      html += `<div class="task-item-cal">
+        <div class="task-item-cal-name">${task.name}</div>
+        <div class="task-item-cal-time">${String(task.hour).padStart(2, '0')}:00 - ${task.duration} min</div>
+      </div>`;
+    });
+  }
+  
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+function getTasksForDate(date) {
+  const dateStr = date.toISOString().split('T')[0];
+  return calendarTasks.filter(task => task.scheduledDate === dateStr);
+}
+
+function renderTodaysTasks() {
+  const list = document.getElementById('todayTasksList');
+  const today = new Date().toISOString().split('T')[0];
+  const todaysTasks = calendarTasks.filter(t => t.scheduledDate === today);
+  
+  if (!list) return;
+  
+  if (todaysTasks.length === 0) {
+    list.innerHTML = '<div style="color: var(--muted); font-size: 12px; text-align: center; padding: 20px;">No tasks today</div>';
+    return;
+  }
+  
+  list.innerHTML = todaysTasks.map(task => `
+    <div class="task-item-cal">
+      <div class="task-item-cal-name">${task.name}</div>
+      <div class="task-item-cal-time">${String(task.hour).padStart(2, '0')}:00 (${task.duration} min)</div>
+      <div style="font-size: 9px; color: var(--muted); margin-top: 6px; cursor: pointer;" onclick="transferToTimer('${task.id}')">➜ Move to Timer</div>
+    </div>
+  `).join('');
+}
+
+function selectCalendarDate(day) {
+  calendarCurrentDate.setDate(day);
+  renderDayView();
+}
+
+function openCalendarTaskModal() {
+  const today = new Date();
+  document.getElementById('calTaskDate').valueAsDate = today;
+  document.getElementById('calTaskHour').value = '9';
+  document.getElementById('calTaskDuration').value = '60';
+  document.getElementById('calTaskName').value = '';
+  document.getElementById('calTaskNotes').value = '';
+  document.querySelectorAll('.repeat-options input').forEach(cb => cb.checked = false);
+  document.getElementById('calendarTaskModal').classList.add('open');
+  document.getElementById('calTaskName').focus();
+}
+
+function closeCalendarTaskModal() {
+  document.getElementById('calendarTaskModal').classList.remove('open');
+}
+
+function saveCalendarTask() {
+  const name = document.getElementById('calTaskName').value.trim();
+  const date = document.getElementById('calTaskDate').value;
+  const hour = parseInt(document.getElementById('calTaskHour').value) || 0;
+  const duration = parseInt(document.getElementById('calTaskDuration').value) || 60;
+  const notes = document.getElementById('calTaskNotes').value.trim();
+  
+  if (!name || !date) {
+    alert('Please enter task name and select a date');
+    return;
+  }
+  
+  // Get repeat days
+  const repeatDays = [];
+  document.querySelectorAll('.repeat-options input:checked').forEach(cb => {
+    repeatDays.push(parseInt(cb.value));
+  });
+  
+  const task = {
+    id: Date.now() + Math.random(),
+    name,
+    scheduledDate: date,
+    hour,
+    duration,
+    notes,
+    repeatDays: repeatDays.length > 0 ? repeatDays : null,
+    createdAt: Date.now(),
+    completed: false
+  };
+  
+  calendarTasks.push(task);
+  saveCalendarData();
+  closeCalendarTaskModal();
+  renderCalendarView();
+  renderTodaysTasks();
+  alert(`Task "${name}" added to calendar!`);
+}
+
+function transferToTimer(taskId) {
+  const task = calendarTasks.find(t => t.id === taskId);
+  if (!task) return;
+  
+  // Add to timer with scheduled date and time
+  const newTask = {
+    id: Date.now() + Math.random(),
+    name: task.name,
+    allocSecs: task.duration * 60,
+    state: 'idle',
+    segments: [],
+    dateAdded: Date.now(),
+    isUntimed: false,
+    notes: task.notes || '',
+    scheduledDate: task.scheduledDate,
+    scheduledHour: task.hour
+  };
+  
+  flowTasks.push(newTask);
+  saveFlowData();
+  renderFlowList();
+  alert(`"${task.name}" moved to Timer page!`);
+  switchPage('flow');
+}
+
+function saveCalendarData() {
+  try {
+    localStorage.setItem('calendar_tasks', JSON.stringify(calendarTasks));
+  } catch(e) {
+    console.error('Error saving calendar data:', e);
+  }
+}
+
+function loadCalendarData() {
+  try {
+    const saved = localStorage.getItem('calendar_tasks');
+    if (saved) {
+      calendarTasks = JSON.parse(saved);
+    }
+  } catch(e) {
+    console.error('Error loading calendar data:', e);
+  }
+}
+
+// Google Calendar sync placeholder (basic setup)
+function syncGoogleCalendar() {
+  const status = document.getElementById('googleSyncStatus');
+  status.textContent = 'Google Calendar integration coming soon...';
+}
+
+function updateGoogleSyncStatus() {
+  const status = document.getElementById('googleSyncStatus');
+  const isSynced = localStorage.getItem('google_calendar_token');
+  if (isSynced) {
+    status.textContent = '✓ Connected';
+    status.style.color = 'var(--active)';
+  } else {
+    status.textContent = 'Not connected';
+    status.style.color = 'var(--muted)';
+  }
+}
+
+// Load calendar data on initialization
+loadCalendarData();
+
+
 
 // Detect clicks anywhere on the page
 document.addEventListener('click', () => {
